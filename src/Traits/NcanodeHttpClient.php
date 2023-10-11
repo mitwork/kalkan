@@ -7,13 +7,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use Mitwork\Kalkan\Exceptions\NcanodeStatusException;
 use Mitwork\Kalkan\Exceptions\NcanodeUnavailableException;
 
-if (!function_exists('config')) {
-    function config(string $key): string {
-        return 'http://localhost:14579';
-    }
-}
-
-
 trait NcanodeHttpClient
 {
     /**
@@ -73,11 +66,12 @@ trait NcanodeHttpClient
 
     /**
      * @param array $options
+     * @param string $host
      * @return void
      */
-    private function init(array $options = []): void
+    private function init(array $options = [], string $host = 'http://localhost:14579'): void
     {
-        $host = config('kalkan.ncanode.host');
+        $host = function_exists('config') ? config('kalkan.ncanode.host') : $host;
 
         $defaults = [
             'base_uri' => $host,
