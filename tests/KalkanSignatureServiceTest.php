@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
+use Orchestra\Testbench\Concerns\WithWorkbench;
+use Orchestra\Testbench\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
 
 #[CoversClass(\Mitwork\Kalkan\Services\KalkanSignatureService::class)]
 final class KalkanSignatureServiceTest extends TestCase
 {
+    use WithWorkbench;
+
     private string $testKey = <<<'CER'
 MIIHRwIBAzCCBwEGCSqGSIb3DQEHAaCCBvIEggbuMIAwgAYJKoZIhvcNAQcBoIAEggFAMIIBPDCCATgGCyqGSIb3DQEMCgECoIGfMIGcMCgGCiqGSIb3DQEM
 AQMwGgQUQCbD4ydHQMY4sqvLlv/MBBPJmR0CAgQABHCiANeFAv643/qPCBQPBp6WmarE46Tiz77mNR2qZXo8ZEXYXnQu40E/b7M7STlGZxCmGWa22eoQDepY

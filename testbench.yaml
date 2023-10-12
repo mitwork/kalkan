@@ -1,0 +1,5 @@
+providers:
+  - Mitwork\Kalkan\KalkanServiceProvider
+
+workbench:
+  install: false

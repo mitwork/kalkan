@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use Orchestra\Testbench\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
 
 #[CoversClass(\Mitwork\Kalkan\Services\DataValidationService::class)]
 final class DataValidationServiceTest extends TestCase

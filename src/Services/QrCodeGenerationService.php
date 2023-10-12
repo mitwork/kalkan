@@ -18,15 +18,24 @@ class QrCodeGenerationService extends BaseService
     protected string $link;
 
     /**
-     * Generate QR-code
+     * Генерация QR-кода
      *
      * @param  string  $link Ссылка
      * @param  int  $size Размер
      * @param  int  $margin Отступы
+     * @param  string|null  $prefix Префикс ссылки
      * @return ResultInterface Результаты генерации
      */
-    public function generate(string $link, int $size = 200, int $margin = 5): ResultInterface
+    public function generate(string $link, int $size = 200, int $margin = 5, ?string $prefix = ''): ResultInterface
     {
+        if ($prefix === '') {
+            $prefix = config('kalkan.links.prefix', $prefix);
+        }
+
+        if ($prefix) {
+            $link = sprintf('%s%s', $prefix, $link);
+        }
+
         $qrCode = QrCode::create($link)
             ->setEncoding(new Encoding('UTF-8'))
             ->setErrorCorrectionLevel(ErrorCorrectionLevel::Low)
@@ -43,15 +52,23 @@ class QrCodeGenerationService extends BaseService
     }
 
     /**
-     * Validate QR-code
+     * Проверка QR-кода
      *
      * @param  string  $link Ожидаемая ссылка
      * @return bool Результат
      */
-    public function validate(string $link): bool
+    public function validate(string $link, string $prefix = ''): bool
     {
+        if (! $prefix) {
+            $prefix = config('kalkan.links.prefix', $prefix);
+        }
+
+        if ($prefix) {
+            $link = sprintf('%s%s', $prefix, $link);
+        }
+
         try {
-            $this->writer->validateResult($this->generate($this->link), $link);
+            $this->writer->validateResult($this->generate($this->link, prefix: null), $link);
         } catch (\Exception $exception) {
             $this->setError($exception->getMessage());
 
