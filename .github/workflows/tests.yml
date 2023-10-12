@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev
 
 jobs:
   tests:
@@ -13,7 +14,7 @@ jobs:
       fail-fast: true
       matrix:
         php: [ 8.1, 8.2, 8.3 ]
-        laravel: [ 10 ]
+        laravel: [ 8, 9, 10 ]
 
     name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
 
@@ -43,7 +44,7 @@ jobs:
       ncanode:
         image: malikzh/ncanode
         env:
-          NCANODE_CRL_URL: http://test.pki.gov.kz/crl/nca_gost2022_test.crl
+          NCANODE_CRL_URL: http://test.pki.gov.kz/crl/nca_gost_test_2022.crl
           NCANODE_CA_URL: "http://test.pki.gov.kz/cert/nca_gost2022_test.cer http://test.pki.gov.kz/cert/root_test_gost_2022.cer"
           NCANODE_OCSP_URL: http://test.pki.gov.kz/ocsp/
           NCANODE_TSP_URL: http://test.pki.gov.kz/tsp/
@@ -58,7 +59,7 @@ jobs:
       fail-fast: true
       matrix:
         stack: [ kalkan ]
-        laravel: [ 10 ]
+        laravel: [ 8, 9, 10 ]
 
     name: Test Stubs - Laravel ${{ matrix.laravel }} - ${{ matrix.stack }}
 
