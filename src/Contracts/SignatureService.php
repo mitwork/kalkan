@@ -34,10 +34,11 @@ interface SignatureService
      * @param  bool  $withTsp Метка времени
      * @param  string  $tsaPolicy Политика TSP-запроса
      * @param  bool  $detached Открепленная подпись
+     * @param  string|null  $cms Исходные (подписанные данные)
      * @param  bool  $raw Возврат подписанной строки, либо ответа
      * @return string|array Подписанные данные или ответ сервиса
      *
      * @throws NcanodeUnavailableException
      */
-    public function signCms(string $data, string $key, string $password, string $alias = null, bool $withTsp = true, string $tsaPolicy = 'TSA_GOST_POLICY', bool $detached = false, bool $raw = false): string|array;
+    public function signCms(string $data, string $key, string $password, string $alias = null, bool $withTsp = true, string $tsaPolicy = 'TSA_GOST_POLICY', bool $detached = false, string $cms = null, bool $raw = false): string|array;
 }

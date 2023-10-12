@@ -62,7 +62,7 @@ class TestController extends Controller
         $result = $this->signatureService->signXml($xml, $key, $password);
         
         // dd($result);
-        // <?xml ...
+        // <?xml...
         
         return $result;
     }

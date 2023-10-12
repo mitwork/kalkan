@@ -49,7 +49,7 @@ class KalkanSignatureService extends BaseService implements SignatureService
     /**
      * {@inheritDoc}
      */
-    public function signCms(string $data, string $key, string $password, string $alias = null, bool $withTsp = true, string $tsaPolicy = self::TSA_POLICY, bool $detached = false, bool $raw = false): string|array
+    public function signCms(string $data, string $key, string $password, string $alias = null, bool $withTsp = true, string $tsaPolicy = self::TSA_POLICY, bool $detached = false, string $cms = null, bool $raw = false): string|array
     {
         if (str_contains($key, PHP_EOL)) {
             $key = str_replace(PHP_EOL, '', $key);
@@ -69,8 +69,17 @@ class KalkanSignatureService extends BaseService implements SignatureService
             'detached' => $detached,
         ];
 
+        if ($cms) {
+            $template['cms'] = $cms;
+        }
+
         $message = json_encode($template);
-        $response = $this->request('/cms/sign', $message);
+
+        if ($cms) {
+            $response = $this->request('/cms/sign/add', $message);
+        } else {
+            $response = $this->request('/cms/sign', $message);
+        }
 
         $this->setResponse($response);
 

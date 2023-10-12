@@ -73,4 +73,41 @@ XML;
 
         $this->assertIsString($result, 'Подписание CMS не работает');
     }
+
+    public function testMultipleCmsSigningIsWorking(): void
+    {
+        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+        $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService();
+
+        $data = 'test';
+
+        $result = $signatureService->signCms($data, $this->testKey, $this->testPassword);
+        $response = $signatureService->getResponse();
+
+        $this->assertIsArray($response, 'Получен некорректный ответ сервиса');
+        $this->assertArrayHasKey('status', $response, 'Ответ не содержит статус');
+        $this->assertEquals(200, $response['status'], 'Получен некорректный ответ сервиса');
+
+        $this->assertArrayHasKey('cms', $response, 'Ответ не содержит извлеченные данные');
+
+        $this->assertIsString($result, 'Подписание CMS не работает');
+
+        $result = $signatureService->signCms($data, $this->testKey, $this->testPassword, cms: $result);
+        $response = $signatureService->getResponse();
+
+        $this->assertIsArray($response, 'Получен некорректный ответ сервиса');
+        $this->assertArrayHasKey('status', $response, 'Ответ не содержит статус');
+        $this->assertEquals(200, $response['status'], 'Получен некорректный ответ сервиса');
+
+        $this->assertArrayHasKey('cms', $response, 'Ответ не содержит извлеченные данные');
+
+        $this->assertIsString($result, 'Подписание CMS не работает');
+
+        $result = $validationService->verifyCms($result, $data);
+        $response = $validationService->getResponse();
+
+        $this->assertTrue($result, 'Проверка подлинности CMS не работает');
+        $this->assertCount(2, $response['signers'], 'Сведения о второй подписи не добавлены');
+
+    }
 }
