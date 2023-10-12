@@ -3,6 +3,7 @@
 namespace Mitwork\Kalkan\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class InstallCommand extends Command
 {
@@ -31,7 +32,7 @@ class InstallCommand extends Command
         $this->callSilent('vendor:publish', ['--tag' => 'kalkan-config', '--force' => true]);
 
         // Kalkan Provider...
-        $this->installServiceProviderAfter('RouteServiceProvider', 'KalkanServiceProvider');
+        // $this->installServiceProviderAfter('RouteServiceProvider', 'KalkanServiceProvider');
 
         // Tests...
         // $stubs = $this->getTestStubsPath();
