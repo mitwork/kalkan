@@ -21,6 +21,7 @@
   "require-dev": {
     "khanamiryan/qrcode-detector-decoder": "^2.0",
     "laravel/pint": "^1.13",
+    "phpstan/phpstan": "^1.10",
     "phpunit/phpunit": "^10.4"
   },
   "autoload": {
