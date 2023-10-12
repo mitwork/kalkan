@@ -31,6 +31,13 @@
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Mitwork\\Kalkan\\KalkanServiceProvider"
+      ]
+    }
+  },
   "config": {
     "sort-packages": true,
     "preferred-install": "dist",
