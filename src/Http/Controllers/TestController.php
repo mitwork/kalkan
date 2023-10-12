@@ -15,9 +15,12 @@ class TestController extends \Illuminate\Routing\Controller
         public DocumentService $documentService,
         public QrCodeGenerationService $qrCodeGenerationService,
     ) {
-
+        //
     }
 
+    /**
+     * Шаг 1 - отправка документа, для последующей работы
+     */
     public function prepareDocument(Request $request): JsonResponse
     {
         $request->validate([
@@ -46,6 +49,9 @@ class TestController extends \Illuminate\Routing\Controller
 
     }
 
+    /**
+     * Шаг 2 - Генерация QR-кода
+     */
     public function generateQrCode(Request $request): JsonResponse
     {
         $request->validate([
@@ -68,6 +74,9 @@ class TestController extends \Illuminate\Routing\Controller
         ]);
     }
 
+    /**
+     * Шаг 3 - генерация ссылки
+     */
     public function generateLink(Request $request): JsonResponse
     {
         $request->validate([
@@ -87,6 +96,9 @@ class TestController extends \Illuminate\Routing\Controller
         return response()->json($data);
     }
 
+    /**
+     * Шаг 4 - генерация кросс-ссылок
+     */
     public function generateCrossLink(Request $request): JsonResponse
     {
         $request->validate([
@@ -107,6 +119,9 @@ class TestController extends \Illuminate\Routing\Controller
         );
     }
 
+    /**
+     * Шаг 5 - работа с контентом документа
+     */
     public function prepareContent(Request $request): JsonResponse
     {
         $request->validate([
@@ -114,6 +129,8 @@ class TestController extends \Illuminate\Routing\Controller
         ]);
 
         $data = Cache::get($request->get('id'));
+
+        // Отправка исходных данных
 
         if ($request->isMethod('GET')) {
 
@@ -128,6 +145,8 @@ class TestController extends \Illuminate\Routing\Controller
             }
 
         }
+
+        // Обработка подписанных данных
 
         if (request()->isMethod('PUT')) {
 
