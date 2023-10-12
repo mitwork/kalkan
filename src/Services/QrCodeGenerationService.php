@@ -8,28 +8,24 @@ use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\Writer\Result\ResultInterface;
+use Mitwork\Kalkan\Contracts\BaseService;
 
-class QrCodeGenerationService
+class QrCodeGenerationService extends BaseService
 {
-    /**
-     * @var PngWriter
-     */
     protected PngWriter $writer;
 
-    /**
-     * @var string
-     */
     protected string $link;
 
     /**
      * Generate QR-code
      *
-     * @param string $link Ссылка
-     * @param int $size Размер
-     * @param int $margin Отступы
-     * @return \Endroid\QrCode\Writer\Result\ResultInterface
+     * @param  string  $link Ссылка
+     * @param  int  $size Размер
+     * @param  int  $margin Отступы
+     * @return ResultInterface Результаты генерации
      */
-    public function generate(string $link, int $size = 200, int $margin = 5): \Endroid\QrCode\Writer\Result\ResultInterface
+    public function generate(string $link, int $size = 200, int $margin = 5): ResultInterface
     {
         $qrCode = QrCode::create($link)
             ->setEncoding(new Encoding('UTF-8'))
@@ -49,14 +45,16 @@ class QrCodeGenerationService
     /**
      * Validate QR-code
      *
-     * @param string $link
-     * @return bool
+     * @param  string  $link Ожидаемая ссылка
+     * @return bool Результат
      */
     public function validate(string $link): bool
     {
         try {
             $this->writer->validateResult($this->generate($this->link), $link);
         } catch (\Exception $exception) {
+            $this->setError($exception->getMessage());
+
             return false;
         }
 

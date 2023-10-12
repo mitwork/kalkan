@@ -2,25 +2,22 @@
 
 namespace Mitwork\Kalkan\Services;
 
+use Mitwork\Kalkan\Contracts\BaseService;
 use Mitwork\Kalkan\Contracts\ValidationService;
 use Mitwork\Kalkan\Traits\NcanodeHttpClient;
 
-class KalkanValidationService implements ValidationService
+class KalkanValidationService extends BaseService implements ValidationService
 {
     use NcanodeHttpClient;
 
     /**
-     * @param string $xml
-     * @param bool $verifyCrl
-     * @param bool $verifyOcsp
-     * @param bool $raw
-     * @return bool|array
+     * {@inheritDoc}
      */
     public function verifyXml(string $xml, bool $verifyCrl = true, bool $verifyOcsp = true, bool $raw = false): bool|array
     {
         $template = [
             'revocationCheck' => [],
-            'xml' => $xml
+            'xml' => $xml,
         ];
 
         if ($verifyOcsp) {
@@ -39,6 +36,8 @@ class KalkanValidationService implements ValidationService
 
         $response = $this->request('/xml/verify', $message);
 
+        $this->setResponse($response);
+
         if ($raw) {
             return $response;
         }
@@ -48,19 +47,18 @@ class KalkanValidationService implements ValidationService
     }
 
     /**
-     * @param string $cms
-     * @param string $data
-     * @param bool $verifyCrl
-     * @param bool $verifyOcsp
-     * @param bool $raw
-     * @return bool|array
+     * {@inheritDoc}
      */
     public function verifyCms(string $cms, string $data, bool $verifyCrl = true, bool $verifyOcsp = true, bool $raw = false): bool|array
     {
+        if (str_contains($cms, PHP_EOL)) {
+            $cms = str_replace(PHP_EOL, '', $cms);
+        }
+
         $template = [
             'revocationCheck' => [],
             'cms' => $cms,
-            'data' => $data
+            'data' => $data,
         ];
 
         if ($verifyOcsp) {
@@ -78,6 +76,8 @@ class KalkanValidationService implements ValidationService
         $message = json_encode($template);
 
         $response = $this->request('/cms/verify', $message);
+
+        $this->setResponse($response);
 
         if ($raw) {
             return $response;

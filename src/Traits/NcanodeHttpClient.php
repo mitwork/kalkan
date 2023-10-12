@@ -9,9 +9,6 @@ use Mitwork\Kalkan\Exceptions\NcanodeUnavailableException;
 
 trait NcanodeHttpClient
 {
-    /**
-     * @var Client|null
-     */
     protected ?Client $client = null;
 
     /**
@@ -21,16 +18,16 @@ trait NcanodeHttpClient
         'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) Chrome/77.0.3865.35 Safari/537.36',
         'Accept' => 'application/json',
         'Accept-Language' => 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,bg;q=0.6',
-        'Content-Type' => 'application/json'
+        'Content-Type' => 'application/json',
     ];
 
     /**
-     * Send HTTP request
+     * Отправка запроса
      *
-     * @param string $url
-     * @param string|array|null $body
-     * @param array $options
-     * @return array
+     * @param  string  $url Ссылка
+     * @param  string|array|null  $body Тело запроса
+     * @param  array  $options Параметры
+     * @return array Результат
      */
     public function request(string $url, string|array $body = null, array $options = []): array
     {
@@ -54,8 +51,8 @@ trait NcanodeHttpClient
             $response = $request->getBody()->getContents();
             $message = json_decode($response, true);
 
-            if (!$message || !isset($message['status']) || $message['status'] !== 200) {
-                throw NcanodeStatusException::create(500, $response);
+            if (! $message || ! isset($message['status']) || $message['status'] !== 200) {
+                throw NcanodeStatusException::create($request->getStatusCode(), $response);
             }
 
             return $message;
@@ -65,9 +62,10 @@ trait NcanodeHttpClient
     }
 
     /**
-     * @param array $options
-     * @param string $host
-     * @return void
+     * Инициализация
+     *
+     * @param  array  $options Параметры
+     * @param  string  $host Хост по-умолчанию
      */
     private function init(array $options = [], string $host = 'http://localhost:14579'): void
     {
@@ -85,11 +83,12 @@ trait NcanodeHttpClient
     }
 
     /**
-     * Send POST request
+     * Отправка POST-запроса
      *
-     * @param string $url
-     * @param string|array $body
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param  string  $url Ссылка
+     * @param  string|array  $body Тело запроса
+     * @return \Psr\Http\Message\ResponseInterface Результат
+     *
      * @throws GuzzleException
      */
     private function post(string $url, string|array $body): \Psr\Http\Message\ResponseInterface
@@ -98,10 +97,11 @@ trait NcanodeHttpClient
     }
 
     /**
-     * Send GET request
+     * Отправка GET-запроса
      *
-     * @param string $url
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param  string  $url Ссылка
+     * @return \Psr\Http\Message\ResponseInterface Результат
+     *
      * @throws GuzzleException
      */
     private function get(string $url): \Psr\Http\Message\ResponseInterface

@@ -8,6 +8,6 @@ class NcanodeUnavailableException extends InvalidArgumentException
 {
     public static function create(string $error): self
     {
-        return new static("NCANode is not available: `{$error}`.");
+        return new static("Сервис NCANode недоступен: `{$error}`.");
     }
 }

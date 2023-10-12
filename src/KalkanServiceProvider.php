@@ -2,15 +2,12 @@
 
 namespace Mitwork\Kalkan;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 
 class KalkanServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services...
-     *
-     * @return void
      */
     public function boot(): void
     {

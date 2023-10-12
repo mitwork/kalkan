@@ -2,24 +2,25 @@
 
 namespace Mitwork\Kalkan\Services;
 
+use Mitwork\Kalkan\Contracts\BaseService;
 use Mitwork\Kalkan\Contracts\ExtractionService;
 use Mitwork\Kalkan\Traits\NcanodeHttpClient;
 
-class KalkanExtractionService implements ExtractionService
+class KalkanExtractionService extends BaseService implements ExtractionService
 {
     use NcanodeHttpClient;
 
     /**
-     * Extract CMS data
-     *
-     * @param string $cms
-     * @param bool $decode
-     * @return string
+     * {@inheritDoc}
      */
     public function extractCms(string $cms, bool $decode = false): string
     {
+        if (str_contains($cms, PHP_EOL)) {
+            $cms = str_replace(PHP_EOL, '', $cms);
+        }
+
         $template = [
-            'cms' => $cms
+            'cms' => $cms,
         ];
 
         $message = json_encode($template);
@@ -27,6 +28,8 @@ class KalkanExtractionService implements ExtractionService
         $response = $this->request('/cms/extract', $message);
 
         $data = $response['data'];
+
+        $this->setResponse($response);
 
         if ($decode) {
             return base64_decode($data);

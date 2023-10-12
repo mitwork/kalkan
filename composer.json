@@ -13,12 +13,14 @@
     "php": "^8.2",
     "ext-gd": "*",
     "ext-json": "*",
+    "ext-xml": "*",
     "illuminate/support": "^10.28",
     "guzzlehttp/guzzle": "^7.8",
     "endroid/qr-code": "^5.0"
   },
   "require-dev": {
     "khanamiryan/qrcode-detector-decoder": "^2.0",
+    "laravel/pint": "^1.13",
     "phpunit/phpunit": "^10.4"
   },
   "autoload": {
