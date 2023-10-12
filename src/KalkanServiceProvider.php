@@ -22,6 +22,7 @@ class KalkanServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configurePublishing();
+        $this->configureCommands();
     }
 
     /**
@@ -38,5 +39,21 @@ class KalkanServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/kalkan.php' => config_path('kalkan.php'),
         ], 'kalkan-config');
+    }
+
+    /**
+     * Configure the commands offered by the application.
+     *
+     * @return void
+     */
+    protected function configureCommands()
+    {
+        if (! $this->app->runningInConsole()) {
+            return;
+        }
+
+        $this->commands([
+            Console\InstallCommand::class,
+        ]);
     }
 }
