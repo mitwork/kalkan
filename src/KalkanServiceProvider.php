@@ -3,6 +3,7 @@
 namespace Mitwork\Kalkan;
 
 use Illuminate\Support\ServiceProvider;
+use Mitwork\Kalkan\Console\InstallCommand;
 
 class KalkanServiceProvider extends ServiceProvider
 {
@@ -11,7 +12,7 @@ class KalkanServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/kalkan.php', 'kalkan');
     }
@@ -30,7 +31,7 @@ class KalkanServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function configurePublishing()
+    protected function configurePublishing(): void
     {
         if (! $this->app->runningInConsole()) {
             return;
@@ -46,14 +47,14 @@ class KalkanServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function configureCommands()
+    protected function configureCommands(): void
     {
         if (! $this->app->runningInConsole()) {
             return;
         }
 
         $this->commands([
-            Console\InstallCommand::class,
+            InstallCommand::class,
         ]);
     }
 }
