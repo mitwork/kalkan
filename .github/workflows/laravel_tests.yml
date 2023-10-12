@@ -1,0 +1,37 @@
+name: Laravel Package Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  laravel_tests:
+    runs-on: ubuntu-latest
+
+    services:
+      ncanode:
+        image: malikzh/ncanode
+        env:
+          NCANODE_CRL_URL: http://test.pki.gov.kz/crl/nca_gost2022_test.crl
+          NCANODE_CA_URL: "http://test.pki.gov.kz/cert/nca_gost2022_test.cer http://test.pki.gov.kz/cert/root_test_gost_2022.cer"
+          NCANODE_OCSP_URL: http://test.pki.gov.kz/ocsp/
+          NCANODE_TSP_URL: http://test.pki.gov.kz/tsp/
+        ports:
+          - 14579:14579
+        options: --health-cmd="wget -O - http://127.0.0.1:14579/actuator/health | grep -v DOWN || exit 1" --health-interval=20s --health-timeout=30s --health-retries=7
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2' # Укажите требуемую версию PHP для вашего пакета
+
+      - name: Install Dependencies
+        run: |
+          composer install
+
+      - name: Run Tests
+        run: vendor/bin/phpunit tests

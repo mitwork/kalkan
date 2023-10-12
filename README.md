@@ -1,4 +1,4 @@
-## MITWORK Kalkan Laravel Package
+# MITWORK Kalkan Laravel Package
 
 Данная библиотека реализует следующие возможности:
 
@@ -12,20 +12,20 @@
 - [NCALayer](https://ncl.pki.gov.kz/) - подписание данных на стороне клиента в браузере;
 - [NCANode](https://v3.ncanode.kz/) - проверка, валидация и извлечение подписанных данных.
 
-### Установка
+## Установка
 
 ```shell
 composer require mitwork/kalkan
 ```
 
-### Настройка
+## Настройка
 
 Параметры `config/kalkan.php`:
 
 ```php
 return [
     'ncanode' => [
-        'host' => env('NCANODE_HOST', 'http://localhost:3333') // Хост для подключения к NCANode
+        'host' => env('NCANODE_HOST', 'http://localhost:14579') // Хост для подключения к NCANode
     ],
     'links' => [
         'prefix' => 'mobileSign:%s',
@@ -34,6 +34,8 @@ return [
     ]
 ];
 ```
+
+## Использование
 
 ### Подписание и проверка XML данных
 
@@ -136,4 +138,18 @@ class TestController extends Controller
         return $result;
     }
 }
+```
+
+## Тестирование
+
+Для запуска тестов необходимо выполнить команду:
+
+```shell
+./vendor/bin/phpunit tests
+```
+
+**Важно** - в тестах используются тестовые сертификаты из [SDK](https://pki.gov.kz/get-sdk/) НУЦ РК, для проверки необходимо запустить NCANode со следующими параметрами:
+
+```shell
+NCANODE_DEBUG=true NCANODE_CRL_URL=http://test.pki.gov.kz/crl/nca_gost2022_test.crl NCANODE_CA_URL="http://test.pki.gov.kz/cert/nca_gost2022_test.cer http://test.pki.gov.kz/cert/root_test_gost_2022.cer" NCANODE_OCSP_URL=http://test.pki.gov.kz/ocsp/ NCANODE_TSP_URL=http://test.pki.gov.kz/tsp/ java -jar NCANode.jar
 ```
