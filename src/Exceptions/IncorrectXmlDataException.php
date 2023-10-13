@@ -8,6 +8,6 @@ class IncorrectXmlDataException extends InvalidArgumentException
 {
     public static function create(string $error): self
     {
-        return new static("Некорректные XML-данные: `{$error}`");
+        return new static(__('kalkan::exceptions.incorrect_xml_data', ['error' => $error]));
     }
 }

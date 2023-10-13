@@ -8,6 +8,6 @@ class IncorrectJsonDataException extends InvalidArgumentException
 {
     public static function create(): self
     {
-        return new static('Некорректные JSON-данные');
+        return new static(__('kalkan::exceptions.incorrect_json_data'));
     }
 }

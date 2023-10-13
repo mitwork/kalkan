@@ -4,6 +4,7 @@ namespace Mitwork\Kalkan\Services;
 
 use Mitwork\Kalkan\Contracts\SignatureService;
 use Mitwork\Kalkan\Enums\TsaPolicy;
+use Mitwork\Kalkan\Exceptions\KalkanSignatureException;
 use Mitwork\Kalkan\Traits\NcanodeHttpClient;
 
 class KalkanSignatureService extends BaseService implements SignatureService
@@ -13,7 +14,7 @@ class KalkanSignatureService extends BaseService implements SignatureService
     /**
      * {@inheritDoc}
      */
-    public function signXml(string $xml, string $key, string $password, string $alias = null, bool $clearSignatures = false, bool $trimXml = false, bool $raw = false): string|array
+    public function signXml(string $xml, string $key, string $password, string $alias = null, bool $clearSignatures = false, bool $trimXml = false, bool $raw = false, bool $throw = false): string|array
     {
         if (str_contains($key, PHP_EOL)) {
             $key = str_replace(PHP_EOL, '', $key);
@@ -41,13 +42,19 @@ class KalkanSignatureService extends BaseService implements SignatureService
             return $response;
         }
 
-        return $response['xml'];
+        $result = $response['xml'] ?? '';
+
+        if ($result === '' && $throw) {
+            throw KalkanSignatureException::create($response);
+        }
+
+        return $result;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function signCms(string $data, string $key, string $password, string $alias = null, bool $withTsp = true, TsaPolicy $tsaPolicy = TsaPolicy::TSA_GOST_POLICY, bool $detached = false, string $cms = null, bool $raw = false): string|array
+    public function signCms(string $data, string $key, string $password, string $alias = null, bool $withTsp = true, TsaPolicy $tsaPolicy = TsaPolicy::TSA_GOST_POLICY, bool $detached = false, string $cms = null, bool $raw = false, bool $throw = false): string|array
     {
         if (str_contains($key, PHP_EOL)) {
             $key = str_replace(PHP_EOL, '', $key);
@@ -85,6 +92,12 @@ class KalkanSignatureService extends BaseService implements SignatureService
             return $response;
         }
 
-        return $response['cms'];
+        $result = $response['cms'] ?? '';
+
+        if ($result === '' && $throw) {
+            throw KalkanSignatureException::create($response);
+        }
+
+        return $result;
     }
 }

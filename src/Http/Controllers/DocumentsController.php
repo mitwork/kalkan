@@ -41,7 +41,7 @@ class DocumentsController extends \Illuminate\Routing\Controller
 
         if (! $this->documentService->saveDocument($id, $request->validated())) {
             return response()->json([
-                'message' => 'Невозможно сохранить документ',
+                'message' => __('kalkan::messages.unable_to_save_document'),
             ], 500);
         }
 
@@ -123,7 +123,7 @@ class DocumentsController extends \Illuminate\Routing\Controller
 
         if (! $document) {
             return response()->json([
-                'message' => 'Невозможно получить документ',
+                'message' => __('kalkan::messages.unable_to_get_document'),
             ], 500);
         }
 
@@ -149,7 +149,9 @@ class DocumentsController extends \Illuminate\Routing\Controller
      */
     public function processContent(ProcessDocumentRequest $request): JsonResponse
     {
-        $document = $this->documentService->getDocument($request->input('id'));
+        $id = $request->input('id');
+
+        $document = $this->documentService->getDocument($id);
         $documents = $request->input('documentsToSign');
 
         foreach ($documents as $signedDocument) {
@@ -163,18 +165,18 @@ class DocumentsController extends \Illuminate\Routing\Controller
             }
 
             if ($result !== true) {
-                DocumentRejected::dispatch($request->input('id'), $this->validationService->getError());
+                DocumentRejected::dispatch($id, $this->validationService->getError());
 
                 return response()->json(['error' => $this->validationService->getError()], 422);
             }
 
-            if (! $this->documentService->processDocument($request->input('id'))) {
-                DocumentRejected::dispatch($request->input('id'), 'Невозможно обработать документ');
+            if (! $this->documentService->processDocument($id)) {
+                DocumentRejected::dispatch($id, __('kalkan::messages.unable_to_process_document'));
 
-                return response()->json(['error' => 'Невозможно обработать документ'], 500);
+                return response()->json(['error' => __('kalkan::messages.unable_to_process_document')], 500);
             }
 
-            DocumentSigned::dispatch($request->input('id'), $document['content'], $signature);
+            DocumentSigned::dispatch($id, $document['content'], $signature);
         }
 
         return response()->json([]);
@@ -190,7 +192,7 @@ class DocumentsController extends \Illuminate\Routing\Controller
         $status = $this->documentService->checkDocument($id);
 
         if (is_null($status)) {
-            return response()->json(['error' => 'Документ не найден', 'status' => $status], 404);
+            return response()->json(['error' => __('kalkan::messages.document_not_found'), 'status' => $status], 404);
         }
 
         return response()->json(['status' => $status]);
