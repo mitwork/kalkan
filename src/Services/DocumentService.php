@@ -183,7 +183,27 @@ class DocumentService
     }
 
     /**
+     * Проверка статус подписания документа
+     *
+     * @param  string|int  $id Идентификатор
+     * @return bool|null Результат
+     */
+    public function checkDocument(string|int $id): ?bool
+    {
+        $document = Cache::get($id);
+
+        if (! $document) {
+            return null;
+        }
+
+        return isset($document['status']) && $document['status'] === true;
+    }
+
+    /**
      * Обработка документа
+     *
+     * @param  string|int  $id Идентификатор
+     * @return bool Статус обработки
      */
     public function processDocument(string|int $id): bool
     {
@@ -193,6 +213,14 @@ class DocumentService
             unset($this->documents['xml'][$id]);
         }
 
-        return Cache::forget($id);
+        $document = Cache::get($id);
+
+        if (! $document) {
+            return false;
+        }
+
+        $document['status'] = true;
+
+        return Cache::put($id, $document);
     }
 }

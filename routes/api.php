@@ -19,3 +19,6 @@ Route::get('/documents/content', [\Mitwork\Kalkan\Http\Controllers\DocumentsCont
 
 // Шаг 4 - Работа с данными - обработка
 Route::put('/documents/content', [\Mitwork\Kalkan\Http\Controllers\DocumentsController::class, 'processContent'])->name('process-content');
+
+// Шаг 5 - Проверка статуса подписания документа
+Route::get('/documents/check/{id}', [\Mitwork\Kalkan\Http\Controllers\DocumentsController::class, 'check'])->name('check-document');
