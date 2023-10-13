@@ -1,6 +1,6 @@
 # История версий
 
-## Текущая версия
+## V1.0.3
 
 - Переводы и локализация;
 - Дополнительные исключения `KalkanExtractionException`, `KalkanSignatureException`, `KalkanValidationException`;
