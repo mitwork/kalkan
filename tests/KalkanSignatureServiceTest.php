@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mitwork\Kalkan\Tests;
 
 use Illuminate\Support\Str;
+use Mitwork\Kalkan\Exceptions\KalkanValidationException;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(\Mitwork\Kalkan\Services\KalkanSignatureService::class)]
@@ -90,6 +91,27 @@ XML;
 
         $this->assertTrue($result, 'Проверка подлинности CMS не работает');
         $this->assertCount(2, $response['signers'], 'Сведения о второй подписи не добавлены');
+
+    }
+
+    public function testSingingExceptionsIsWorking(): void
+    {
+        $this->loadCertificates('revoked');
+
+        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+        $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService();
+
+        $content = Str::random();
+
+        foreach ($this->certificates as $certificate) {
+
+            $result = $signatureService->signCms($content, $certificate['content'], $certificate['password']);
+
+            $this->assertThrows(
+                fn () => $validationService->verifyCms($result, $content, throw: true),
+                KalkanValidationException::class
+            );
+        }
 
     }
 }

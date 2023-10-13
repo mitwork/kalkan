@@ -21,6 +21,8 @@ class KalkanServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'kalkan');
+
         $this->configurePublishing();
         $this->configureCommands();
         $this->configureRoutes();
@@ -38,6 +40,10 @@ class KalkanServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/kalkan.php' => config_path('kalkan.php'),
         ], 'kalkan-config');
+
+        $this->publishes([
+            __DIR__.'/../lang' => $this->app->langPath('vendor/kalkan'),
+        ], 'kalkan-translations');
     }
 
     /**

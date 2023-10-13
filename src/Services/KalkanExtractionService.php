@@ -2,8 +2,8 @@
 
 namespace Mitwork\Kalkan\Services;
 
-use Mitwork\Kalkan\Contracts\BaseService;
 use Mitwork\Kalkan\Contracts\ExtractionService;
+use Mitwork\Kalkan\Exceptions\KalkanExtractionException;
 use Mitwork\Kalkan\Traits\NcanodeHttpClient;
 
 class KalkanExtractionService extends BaseService implements ExtractionService
@@ -13,7 +13,7 @@ class KalkanExtractionService extends BaseService implements ExtractionService
     /**
      * {@inheritDoc}
      */
-    public function extractCms(string $cms, bool $decode = false): string
+    public function extractCms(string $cms, bool $decode = false, bool $throw = false): string
     {
         if (str_contains($cms, PHP_EOL)) {
             $cms = str_replace(PHP_EOL, '', $cms);
@@ -33,6 +33,10 @@ class KalkanExtractionService extends BaseService implements ExtractionService
 
         if ($decode) {
             return base64_decode($data);
+        }
+
+        if (! $data && $throw) {
+            throw KalkanExtractionException::create($response);
         }
 
         return $data;

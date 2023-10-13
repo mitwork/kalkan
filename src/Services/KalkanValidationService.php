@@ -2,9 +2,9 @@
 
 namespace Mitwork\Kalkan\Services;
 
-use Mitwork\Kalkan\Contracts\BaseService;
 use Mitwork\Kalkan\Contracts\ValidationService;
 use Mitwork\Kalkan\Enums\RevocationCheck;
+use Mitwork\Kalkan\Exceptions\KalkanValidationException;
 use Mitwork\Kalkan\Traits\NcanodeHttpClient;
 
 class KalkanValidationService extends BaseService implements ValidationService
@@ -14,7 +14,7 @@ class KalkanValidationService extends BaseService implements ValidationService
     /**
      * {@inheritDoc}
      */
-    public function verifyXml(string $xml, bool $verifyCrl = true, bool $verifyOcsp = true, bool $raw = false): bool|array
+    public function verifyXml(string $xml, bool $verifyCrl = true, bool $verifyOcsp = true, bool $raw = false, bool $throw = false): bool|array
     {
         $template = [
             'revocationCheck' => [],
@@ -43,14 +43,20 @@ class KalkanValidationService extends BaseService implements ValidationService
             return $response;
         }
 
-        return isset($response['valid']) && $response['valid'] === true;
+        $result = isset($response['valid']) && $response['valid'] === true;
+
+        if ($result === false && $throw) {
+            throw KalkanValidationException::create($response);
+        }
+
+        return $result;
 
     }
 
     /**
      * {@inheritDoc}
      */
-    public function verifyCms(string $cms, string $data, bool $verifyCrl = true, bool $verifyOcsp = true, bool $raw = false): bool|array
+    public function verifyCms(string $cms, string $data, bool $verifyCrl = true, bool $verifyOcsp = true, bool $raw = false, bool $throw = false): bool|array
     {
         if (str_contains($cms, PHP_EOL)) {
             $cms = str_replace(PHP_EOL, '', $cms);
@@ -84,6 +90,12 @@ class KalkanValidationService extends BaseService implements ValidationService
             return $response;
         }
 
-        return isset($response['valid']) && $response['valid'] === true;
+        $result = isset($response['valid']) && $response['valid'] === true;
+
+        if ($result === false && $throw) {
+            throw KalkanValidationException::create($response);
+        }
+
+        return $result;
     }
 }

@@ -5,6 +5,9 @@ namespace Mitwork\Kalkan\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\URL;
 use Mitwork\Kalkan\Enums\ContentType;
+use Mitwork\Kalkan\Events\DocumentRejected;
+use Mitwork\Kalkan\Events\DocumentSaved;
+use Mitwork\Kalkan\Events\DocumentSigned;
 use Mitwork\Kalkan\Http\Requests\FetchDocumentRequest;
 use Mitwork\Kalkan\Http\Requests\ProcessDocumentRequest;
 use Mitwork\Kalkan\Http\Requests\StoreDocumentRequest;
@@ -38,9 +41,11 @@ class DocumentsController extends \Illuminate\Routing\Controller
 
         if (! $this->documentService->saveDocument($id, $request->validated())) {
             return response()->json([
-                'message' => 'Невозможно сохранить документ',
+                'message' => __('kalkan::messages.unable_to_save_document'),
             ], 500);
         }
+
+        DocumentSaved::dispatch($id);
 
         $link = $this->generateSignedLink('generate-link', ['id' => $id]);
         $result = $this->qrCodeGenerationService->generate($link);
@@ -118,7 +123,7 @@ class DocumentsController extends \Illuminate\Routing\Controller
 
         if (! $document) {
             return response()->json([
-                'message' => 'Невозможно получить документ',
+                'message' => __('kalkan::messages.unable_to_get_document'),
             ], 500);
         }
 
@@ -144,24 +149,34 @@ class DocumentsController extends \Illuminate\Routing\Controller
      */
     public function processContent(ProcessDocumentRequest $request): JsonResponse
     {
-        $document = $this->documentService->getDocument($request->input('id'));
+        $id = $request->input('id');
+
+        $document = $this->documentService->getDocument($id);
         $documents = $request->input('documentsToSign');
 
         foreach ($documents as $signedDocument) {
 
             if ($document['type'] === ContentType::XML->value) {
-                $result = $this->validationService->verifyXml($signedDocument['documentXml']);
+                $signature = $signedDocument['documentXml'];
+                $result = $this->validationService->verifyXml($signature);
             } else {
-                $result = $this->validationService->verifyCms($signedDocument['documentCms'], $document['content']);
+                $signature = $signedDocument['documentCms'];
+                $result = $this->validationService->verifyCms($signature, $document['content']);
             }
 
             if ($result !== true) {
+                DocumentRejected::dispatch($id, $this->validationService->getError());
+
                 return response()->json(['error' => $this->validationService->getError()], 422);
             }
 
-            if (! $this->documentService->processDocument($request->input('id'))) {
-                return response()->json(['error' => 'Невозможно обработать документ'], 500);
+            if (! $this->documentService->processDocument($id)) {
+                DocumentRejected::dispatch($id, __('kalkan::messages.unable_to_process_document'));
+
+                return response()->json(['error' => __('kalkan::messages.unable_to_process_document')], 500);
             }
+
+            DocumentSigned::dispatch($id, $document['content'], $signature);
         }
 
         return response()->json([]);
@@ -177,7 +192,7 @@ class DocumentsController extends \Illuminate\Routing\Controller
         $status = $this->documentService->checkDocument($id);
 
         if (is_null($status)) {
-            return response()->json(['error' => 'Документ не найден', 'status' => $status], 404);
+            return response()->json(['error' => __('kalkan::messages.document_not_found'), 'status' => $status], 404);
         }
 
         return response()->json(['status' => $status]);

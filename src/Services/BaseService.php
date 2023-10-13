@@ -1,6 +1,6 @@
 <?php
 
-namespace Mitwork\Kalkan\Contracts;
+namespace Mitwork\Kalkan\Services;
 
 class BaseService
 {

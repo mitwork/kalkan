@@ -8,6 +8,6 @@ class NcanodeUnavailableException extends InvalidArgumentException
 {
     public static function create(string $error): self
     {
-        return new static("Сервис NCANode недоступен: `{$error}`.");
+        return new static(__('kalkan::exceptions.ncanode_is_unavailable', ['error' => $error]));
     }
 }

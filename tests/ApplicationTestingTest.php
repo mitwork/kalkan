@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mitwork\Kalkan\Tests;
 
 use Illuminate\Support\Str;
-use Mitwork\Kalkan\Enums\CertificatePolicy;
 use Mitwork\Kalkan\Enums\ContentType;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -17,17 +16,13 @@ final class ApplicationTestingTest extends BaseTestCase
 
     public function testSingleCmsSigning(): void
     {
-        $this->loadCertificates();
+        $this->loadCertificates('sign');
 
         // $this->app['config']->set('kalkan.options.ttl', '1');
 
         $certificates = $this->certificates;
 
         foreach ($certificates as $certificate) {
-
-            if ($certificate['policy'] !== CertificatePolicy::SIGN->value) {
-                continue;
-            }
 
             $content = Str::random(64);
 
@@ -123,15 +118,11 @@ final class ApplicationTestingTest extends BaseTestCase
 
     public function testSingleXmlSigning(): void
     {
-        $this->loadCertificates();
+        $this->loadCertificates('sign');
 
         $certificates = $this->certificates;
 
         foreach ($certificates as $certificate) {
-
-            if ($certificate['policy'] !== CertificatePolicy::SIGN->value) {
-                continue;
-            }
 
             $content = Str::random(64);
 

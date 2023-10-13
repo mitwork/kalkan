@@ -16,9 +16,17 @@ class BaseTestCase extends TestCase
 
     /**
      * Загрузка сертификатов
+     *
+     * @param  string|null  $policy Политика применения
      */
-    public function loadCertificates(): void
+    public function loadCertificates(string $policy = null): void
     {
-        $this->certificates = Yaml::parseFile(__DIR__.'/certificates.yml')['certificates'];
+        $certificates = Yaml::parseFile(__DIR__.'/certificates.yml')['certificates'];
+
+        if ($policy) {
+            $certificates = collect($certificates)->where('policy', $policy)->all();
+        }
+
+        $this->certificates = $certificates;
     }
 }
