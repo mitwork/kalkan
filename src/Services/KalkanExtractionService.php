@@ -2,7 +2,6 @@
 
 namespace Mitwork\Kalkan\Services;
 
-use Mitwork\Kalkan\Contracts\BaseService;
 use Mitwork\Kalkan\Contracts\ExtractionService;
 use Mitwork\Kalkan\Traits\NcanodeHttpClient;
 

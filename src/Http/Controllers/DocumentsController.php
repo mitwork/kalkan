@@ -5,6 +5,9 @@ namespace Mitwork\Kalkan\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\URL;
 use Mitwork\Kalkan\Enums\ContentType;
+use Mitwork\Kalkan\Events\DocumentRejected;
+use Mitwork\Kalkan\Events\DocumentSaved;
+use Mitwork\Kalkan\Events\DocumentSigned;
 use Mitwork\Kalkan\Http\Requests\FetchDocumentRequest;
 use Mitwork\Kalkan\Http\Requests\ProcessDocumentRequest;
 use Mitwork\Kalkan\Http\Requests\StoreDocumentRequest;
@@ -41,6 +44,8 @@ class DocumentsController extends \Illuminate\Routing\Controller
                 'message' => 'Невозможно сохранить документ',
             ], 500);
         }
+
+        DocumentSaved::dispatch($id);
 
         $link = $this->generateSignedLink('generate-link', ['id' => $id]);
         $result = $this->qrCodeGenerationService->generate($link);
@@ -150,18 +155,26 @@ class DocumentsController extends \Illuminate\Routing\Controller
         foreach ($documents as $signedDocument) {
 
             if ($document['type'] === ContentType::XML->value) {
-                $result = $this->validationService->verifyXml($signedDocument['documentXml']);
+                $signature = $signedDocument['documentXml'];
+                $result = $this->validationService->verifyXml($signature);
             } else {
-                $result = $this->validationService->verifyCms($signedDocument['documentCms'], $document['content']);
+                $signature = $signedDocument['documentCms'];
+                $result = $this->validationService->verifyCms($signature, $document['content']);
             }
 
             if ($result !== true) {
+                DocumentRejected::dispatch($request->input('id'), $this->validationService->getError());
+
                 return response()->json(['error' => $this->validationService->getError()], 422);
             }
 
             if (! $this->documentService->processDocument($request->input('id'))) {
+                DocumentRejected::dispatch($request->input('id'), 'Невозможно обработать документ');
+
                 return response()->json(['error' => 'Невозможно обработать документ'], 500);
             }
+
+            DocumentSigned::dispatch($request->input('id'), $document['content'], $signature);
         }
 
         return response()->json([]);

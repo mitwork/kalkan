@@ -3,7 +3,6 @@
 namespace Mitwork\Kalkan\Services;
 
 use DOMDocument;
-use Mitwork\Kalkan\Contracts\BaseService;
 use Mitwork\Kalkan\Exceptions\IncorrectBase64DataException;
 use Mitwork\Kalkan\Exceptions\IncorrectJsonDataException;
 use Mitwork\Kalkan\Exceptions\IncorrectXmlDataException;

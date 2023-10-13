@@ -2,7 +2,6 @@
 
 namespace Mitwork\Kalkan\Services;
 
-use Mitwork\Kalkan\Contracts\BaseService;
 use Mitwork\Kalkan\Contracts\SignatureService;
 use Mitwork\Kalkan\Enums\TsaPolicy;
 use Mitwork\Kalkan\Traits\NcanodeHttpClient;

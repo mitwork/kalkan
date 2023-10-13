@@ -2,7 +2,6 @@
 
 namespace Mitwork\Kalkan\Services;
 
-use Mitwork\Kalkan\Contracts\BaseService;
 use Mitwork\Kalkan\Contracts\ValidationService;
 use Mitwork\Kalkan\Enums\RevocationCheck;
 use Mitwork\Kalkan\Traits\NcanodeHttpClient;

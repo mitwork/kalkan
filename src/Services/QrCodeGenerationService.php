@@ -9,11 +9,13 @@ use Endroid\QrCode\QrCode;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Writer\Result\ResultInterface;
-use Mitwork\Kalkan\Contracts\BaseService;
+use Endroid\QrCode\Writer\SvgWriter;
+use Endroid\QrCode\Writer\ValidatingWriterInterface;
+use Endroid\QrCode\Writer\WriterInterface;
 
 class QrCodeGenerationService extends BaseService
 {
-    protected PngWriter $writer;
+    protected WriterInterface $writer;
 
     protected string $link;
 
@@ -24,9 +26,10 @@ class QrCodeGenerationService extends BaseService
      * @param  int  $size Размер
      * @param  int  $margin Отступы
      * @param  string|null  $prefix Префикс ссылки
+     * @param  string  $format Формат - png, svg
      * @return ResultInterface Результаты генерации
      */
-    public function generate(string $link, int $size = 200, int $margin = 5, ?string $prefix = ''): ResultInterface
+    public function generate(string $link, int $size = 200, int $margin = 5, ?string $prefix = '', string $format = 'png'): ResultInterface
     {
         if ($prefix === '') {
             $prefix = config('kalkan.links.prefix', $prefix);
@@ -46,7 +49,15 @@ class QrCodeGenerationService extends BaseService
             ->setBackgroundColor(new Color(255, 255, 255));
 
         $this->link = $link;
-        $this->writer = new PngWriter();
+
+        switch ($format) {
+            case 'png':
+                $this->writer = new PngWriter();
+                break;
+            case 'svg':
+                $this->writer = new SvgWriter();
+                break;
+        }
 
         return $this->writer->write($qrCode);
     }
@@ -65,6 +76,10 @@ class QrCodeGenerationService extends BaseService
 
         if ($prefix) {
             $link = sprintf('%s%s', $prefix, $link);
+        }
+
+        if (! $this->writer instanceof ValidatingWriterInterface) {
+            return true;
         }
 
         try {
