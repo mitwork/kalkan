@@ -4,6 +4,7 @@ namespace Mitwork\Kalkan\Services;
 
 use Mitwork\Kalkan\Contracts\BaseService;
 use Mitwork\Kalkan\Contracts\ValidationService;
+use Mitwork\Kalkan\Enums\RevocationCheck;
 use Mitwork\Kalkan\Traits\NcanodeHttpClient;
 
 class KalkanValidationService extends BaseService implements ValidationService
@@ -21,11 +22,11 @@ class KalkanValidationService extends BaseService implements ValidationService
         ];
 
         if ($verifyOcsp) {
-            $template['revocationCheck'][] = 'OCSP';
+            $template['revocationCheck'][] = RevocationCheck::OCSP;
         }
 
         if ($verifyCrl) {
-            $template['revocationCheck'][] = 'CRL';
+            $template['revocationCheck'][] = RevocationCheck::CRL;
         }
 
         if (count($template['revocationCheck']) === 0) {
@@ -62,11 +63,11 @@ class KalkanValidationService extends BaseService implements ValidationService
         ];
 
         if ($verifyOcsp) {
-            $template['revocationCheck'][] = 'OCSP';
+            $template['revocationCheck'][] = RevocationCheck::OCSP;
         }
 
         if ($verifyCrl) {
-            $template['revocationCheck'][] = 'CRL';
+            $template['revocationCheck'][] = RevocationCheck::CRL;
         }
 
         if (count($template['revocationCheck']) === 0) {

@@ -24,11 +24,17 @@
     "laravel/pint": "^1.13",
     "orchestra/testbench": "^8.13",
     "phpstan/phpstan": "^1.10",
-    "phpunit/phpunit": "^10.4"
+    "phpunit/phpunit": "^10.4",
+    "symfony/yaml": "^6.3"
   },
   "autoload": {
     "psr-4": {
       "Mitwork\\Kalkan\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Mitwork\\Kalkan\\Tests\\": "tests/"
     }
   },
   "minimum-stability": "dev",

@@ -3,14 +3,16 @@
 namespace Mitwork\Kalkan\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
+use Mitwork\Kalkan\Enums\ContentType;
+use Mitwork\Kalkan\Http\Requests\FetchDocumentRequest;
+use Mitwork\Kalkan\Http\Requests\ProcessDocumentRequest;
+use Mitwork\Kalkan\Http\Requests\StoreDocumentRequest;
 use Mitwork\Kalkan\Services\DocumentService;
 use Mitwork\Kalkan\Services\KalkanValidationService;
 use Mitwork\Kalkan\Services\QrCodeGenerationService;
 
-class TestController extends \Illuminate\Routing\Controller
+class DocumentsController extends \Illuminate\Routing\Controller
 {
     public function __construct(
         public DocumentService $documentService,
@@ -25,32 +27,20 @@ class TestController extends \Illuminate\Routing\Controller
      *
      * В данном примере содержимое документа сохраняется
      * только в кэш, в реально жизни это может быть база
-     * данных или файлоовое хранилище.
+     * данных или файловое/облачное хранилище.
      *
      * Последующие запросы используют этот идентификатор
      * для запроса и работы с данными.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreDocumentRequest $request): JsonResponse
     {
-        $request->validate([
-            'name' => ['required'],
-            'content' => ['required'],
-            'type' => ['required'],
-        ]);
+        $id = $request->input('id', hrtime(true));
 
-        $id = $request->get('id');
-
-        if (! $request->has('id')) {
-            $id = hrtime(true);
+        if (! $this->documentService->saveDocument($id, $request->validated())) {
+            return response()->json([
+                'message' => 'Невозможно сохранить документ',
+            ], 500);
         }
-
-        Cache::add($id, [
-            'name' => $request->get('name'),
-            'content' => $request->get('content'),
-            'type' => $request->get('type'),
-        ],
-            config('kalkan.options.ttl')
-        );
 
         $link = $this->generateSignedLink('generate-link', ['id' => $id]);
         $result = $this->qrCodeGenerationService->generate($link);
@@ -79,13 +69,9 @@ class TestController extends \Illuminate\Routing\Controller
      * необходимо получить QR-код и ссылку для того
      * чтобы можно было отобразить ее в интерфейсе.
      */
-    public function generateQrCode(Request $request): JsonResponse
+    public function generateQrCode(FetchDocumentRequest $request): JsonResponse
     {
-        $request->validate([
-            'id' => ['required'],
-        ]);
-
-        $link = $this->generateSignedLink('generate-link', ['id' => $request->get('id')]);
+        $link = $this->generateSignedLink('generate-link', ['id' => $request->input('id')]);
         $result = $this->qrCodeGenerationService->generate($link);
 
         return response()->json([
@@ -101,12 +87,8 @@ class TestController extends \Illuminate\Routing\Controller
      * работы с подписанием через мобильное приложение
      * eGov Mobile или eGov business.
      */
-    public function generateCrossLink(Request $request): JsonResponse
+    public function generateCrossLink(FetchDocumentRequest $request): JsonResponse
     {
-        $request->validate([
-            'id' => ['required'],
-        ]);
-
         $link = $this->generateSignedLink('prepare-content', ['id' => $request->get('id')]);
 
         return response()->json([
@@ -118,13 +100,9 @@ class TestController extends \Illuminate\Routing\Controller
     /**
      * Шаг 2 - генерация сервисных данных
      */
-    public function generateLink(Request $request): JsonResponse
+    public function generateLink(FetchDocumentRequest $request): JsonResponse
     {
-        $request->validate([
-            'id' => ['required'],
-        ]);
-
-        $link = $this->generateSignedLink('prepare-content', ['id' => $request->get('id')]);
+        $link = $this->generateSignedLink('prepare-content', ['id' => $request->input('id')]);
         $data = $this->documentService->prepareServiceData($link);
 
         return response()->json($data);
@@ -132,53 +110,62 @@ class TestController extends \Illuminate\Routing\Controller
 
     /**
      * Шаг 3 - работа с контентом документа
+     *
+     * Возврат содержимого документов
      */
-    public function prepareContent(Request $request): JsonResponse
+    public function prepareContent(FetchDocumentRequest $request): JsonResponse
     {
-        $request->validate([
-            'id' => ['required'],
-        ]);
+        $document = $this->documentService->getDocument($request->input('id'));
 
-        $data = Cache::get($request->get('id'));
+        if (! $document) {
+            return response()->json([
+                'message' => 'Невозможно получить документ',
+            ], 500);
+        }
 
-        // Отправка исходных данных
+        if (! isset($document['meta'])) {
+            $document['meta'] = [];
+        }
 
-        if ($request->isMethod('GET')) {
+        if ($document['type'] === ContentType::XML->value) {
+            $this->documentService->addXmlDocument($request->input('id'), $document['name'], $document['content'], $document['meta']);
+            $response = $this->documentService->getXmlDocuments($request->input('id'));
 
-            if ($data['type'] === 'xml') {
-                $this->documentService->addXmlDocument($request->get('id'), $data['name'], $data['content']);
-
-                return response()->json($this->documentService->getXmlDocuments());
-            } else {
-                $this->documentService->addCmsDocument($request->get('id'), $data['name'], $data['content']);
-
-                return response()->json($this->documentService->getCmsDocuments());
-            }
+        } else {
+            $this->documentService->addCmsDocument($request->input('id'), $document['name'], $document['content'], $document['meta']);
+            $response = $this->documentService->getCmsDocuments($request->input('id'));
 
         }
 
-        // Обработка подписанных данных
+        return response()->json($response);
+    }
 
-        if (request()->isMethod('PUT')) {
+    /**
+     * Шаг 4 - получение и обработка подписанных данных
+     */
+    public function processContent(ProcessDocumentRequest $request): JsonResponse
+    {
+        $document = $this->documentService->getDocument($request->input('id'));
+        $documents = $request->input('documentsToSign');
 
-            $documents = $request->get('documentsToSign');
-            $type = $data['type'];
+        foreach ($documents as $signedDocument) {
 
-            foreach ($documents as $document) {
-                if ($type === 'xml') {
-                    $result = $this->validationService->verifyXml($document['documentXml']);
-                } else {
-                    $result = $this->validationService->verifyCms($document['documentCms'], $data['content']);
-                }
+            if ($document['type'] === ContentType::XML->value) {
+                $result = $this->validationService->verifyXml($signedDocument['documentXml']);
+            } else {
+                $result = $this->validationService->verifyCms($signedDocument['documentCms'], $document['content']);
+            }
 
-                if ($result !== true) {
-                    return response()->json([], 422);
-                }
+            if ($result !== true) {
+                return response()->json(['error' => $this->validationService->getError()], 422);
+            }
+
+            if (! $this->documentService->processDocument($request->input('id'))) {
+                return response()->json(['error' => 'Невозможно обработать документ'], 500);
             }
         }
 
         return response()->json([]);
-
     }
 
     /**

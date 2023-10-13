@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-use Orchestra\Testbench\Concerns\WithWorkbench;
-use Orchestra\Testbench\TestCase;
+namespace Mitwork\Kalkan\Tests;
+
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(\Mitwork\Kalkan\Services\KalkanValidationService::class)]
-final class KalkanValidationServiceTest extends TestCase
+final class KalkanValidationServiceTest extends BaseTestCase
 {
-    use WithWorkbench;
-
     public function testXmlValidationIsWorking(): void
     {
         $service = new \Mitwork\Kalkan\Services\KalkanValidationService();

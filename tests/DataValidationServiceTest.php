@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-use Orchestra\Testbench\TestCase;
+namespace Mitwork\Kalkan\Tests;
+
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(\Mitwork\Kalkan\Services\DataValidationService::class)]
-final class DataValidationServiceTest extends TestCase
+final class DataValidationServiceTest extends BaseTestCase
 {
     public function testXmlValidationIsWorking(): void
     {

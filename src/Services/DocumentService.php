@@ -2,6 +2,8 @@
 
 namespace Mitwork\Kalkan\Services;
 
+use Illuminate\Support\Facades\Cache;
+
 class DocumentService
 {
     protected array $meta = [];
@@ -138,22 +140,59 @@ class DocumentService
     /**
      * Получение списка XML-документов
      */
-    public function getXmlDocuments(): array
+    public function getXmlDocuments(string|int $key = null): array
     {
         return [
             'signMethod' => 'XML',
-            'documentsToSign' => array_values($this->documents['xml']),
+            'documentsToSign' => array_values($key ? [$this->documents['xml'][$key]] : $this->documents['xml']),
         ];
     }
 
     /**
      * Получение списка CMS-документов
      */
-    public function getCmsDocuments(): array
+    public function getCmsDocuments(string|int $key = null): array
     {
         return [
             'signMethod' => 'CMS',
-            'documentsToSign' => array_values($this->documents['cms']),
+            'documentsToSign' => array_values($key ? [$this->documents['cms'][$key]] : $this->documents['cms']),
         ];
+    }
+
+    /**
+     * Сохранение документа в кэш
+     *
+     * @param  string|int  $id Идентификатор
+     * @param  array  $content Содержимое
+     * @return bool Результат сохранения
+     */
+    public function saveDocument(string|int $id, array $content): bool
+    {
+        return Cache::add($id, $content, config('kalkan.options.ttl'));
+    }
+
+    /**
+     * Получение документа
+     *
+     * @param  string|int  $id Идентификатор
+     * @return array|null Содержимое
+     */
+    public function getDocument(string|int $id): ?array
+    {
+        return Cache::get($id);
+    }
+
+    /**
+     * Обработка документа
+     */
+    public function processDocument(string|int $id): bool
+    {
+        if (isset($this->documents['cms'][$id])) {
+            unset($this->documents['cms'][$id]);
+        } elseif (isset($this->documents['xml'][$id])) {
+            unset($this->documents['xml'][$id]);
+        }
+
+        return Cache::forget($id);
     }
 }

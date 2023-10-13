@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-use Orchestra\Testbench\Concerns\WithWorkbench;
-use Orchestra\Testbench\TestCase;
+namespace Mitwork\Kalkan\Tests;
+
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(\Mitwork\Kalkan\Services\QrCodeGenerationService::class)]
-final class QrCodeGenerationServiceTest extends TestCase
+final class QrCodeGenerationServiceTest extends BaseTestCase
 {
-    use WithWorkbench;
-
     public function testQrGenerationIsWorking(): void
     {
         $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService();
