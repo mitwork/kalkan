@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
+namespace Mitwork\Kalkan\Tests;
+
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
 
 #[CoversClass(\Mitwork\Kalkan\Services\KalkanExtractionService::class)]
-final class KalkanExtractionServiceTest extends TestCase
+final class KalkanExtractionServiceTest extends BaseTestCase
 {
     public function testCmsExtractionIsWorking(): void
     {

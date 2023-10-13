@@ -2,6 +2,7 @@
 
 namespace Mitwork\Kalkan;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Mitwork\Kalkan\Console\InstallCommand;
 
@@ -9,8 +10,6 @@ class KalkanServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
-     *
-     * @return void
      */
     public function register(): void
     {
@@ -24,12 +23,11 @@ class KalkanServiceProvider extends ServiceProvider
     {
         $this->configurePublishing();
         $this->configureCommands();
+        $this->configureRoutes();
     }
 
     /**
      * Configure publishing for the package.
-     *
-     * @return void
      */
     protected function configurePublishing(): void
     {
@@ -44,8 +42,6 @@ class KalkanServiceProvider extends ServiceProvider
 
     /**
      * Configure the commands offered by the application.
-     *
-     * @return void
      */
     protected function configureCommands(): void
     {
@@ -56,5 +52,23 @@ class KalkanServiceProvider extends ServiceProvider
         $this->commands([
             InstallCommand::class,
         ]);
+    }
+
+    /**
+     * Configure test routes
+     */
+    protected function configureRoutes(): void
+    {
+        if (! $this->app->runningInConsole()) {
+            return;
+        }
+
+        Route::group([
+            'namespace' => 'Mitwork\Kalkan\Http\Controllers',
+            'domain' => config('kalkan.domain', null),
+            'prefix' => config('kalkan.prefix', config('kalkan.path')),
+        ], function () {
+            $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+        });
     }
 }

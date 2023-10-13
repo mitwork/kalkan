@@ -69,7 +69,7 @@ trait NcanodeHttpClient
      */
     private function init(array $options = [], string $host = 'http://localhost:14579'): void
     {
-        $host = function_exists('config') ? config('kalkan.ncanode.host') : $host;
+        $host = config('kalkan.ncanode.host', $host);
 
         $defaults = [
             'base_uri' => $host,

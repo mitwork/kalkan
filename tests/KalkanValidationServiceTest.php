@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
+namespace Mitwork\Kalkan\Tests;
+
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
 
 #[CoversClass(\Mitwork\Kalkan\Services\KalkanValidationService::class)]
-final class KalkanValidationServiceTest extends TestCase
+final class KalkanValidationServiceTest extends BaseTestCase
 {
     public function testXmlValidationIsWorking(): void
     {

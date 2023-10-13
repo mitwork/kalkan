@@ -4,13 +4,12 @@ namespace Mitwork\Kalkan\Services;
 
 use Mitwork\Kalkan\Contracts\BaseService;
 use Mitwork\Kalkan\Contracts\SignatureService;
+use Mitwork\Kalkan\Enums\TsaPolicy;
 use Mitwork\Kalkan\Traits\NcanodeHttpClient;
 
 class KalkanSignatureService extends BaseService implements SignatureService
 {
     use NcanodeHttpClient;
-
-    const TSA_POLICY = 'TSA_GOST_POLICY';
 
     /**
      * {@inheritDoc}
@@ -49,7 +48,7 @@ class KalkanSignatureService extends BaseService implements SignatureService
     /**
      * {@inheritDoc}
      */
-    public function signCms(string $data, string $key, string $password, string $alias = null, bool $withTsp = true, string $tsaPolicy = self::TSA_POLICY, bool $detached = false, string $cms = null, bool $raw = false): string|array
+    public function signCms(string $data, string $key, string $password, string $alias = null, bool $withTsp = true, TsaPolicy $tsaPolicy = TsaPolicy::TSA_GOST_POLICY, bool $detached = false, string $cms = null, bool $raw = false): string|array
     {
         if (str_contains($key, PHP_EOL)) {
             $key = str_replace(PHP_EOL, '', $key);

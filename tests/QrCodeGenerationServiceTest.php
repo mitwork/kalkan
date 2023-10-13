@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
+namespace Mitwork\Kalkan\Tests;
+
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
 
 #[CoversClass(\Mitwork\Kalkan\Services\QrCodeGenerationService::class)]
-final class QrCodeGenerationServiceTest extends TestCase
+final class QrCodeGenerationServiceTest extends BaseTestCase
 {
     public function testQrGenerationIsWorking(): void
     {

@@ -151,5 +151,5 @@ class TestController extends Controller
 **Важно** - в тестах используются тестовые сертификаты из [SDK](https://pki.gov.kz/get-sdk/) НУЦ РК, для проверки необходимо запустить NCANode со следующими параметрами:
 
 ```shell
-NCANODE_DEBUG=true NCANODE_CRL_URL=http://test.pki.gov.kz/crl/nca_gost2022_test.crl NCANODE_CA_URL="http://test.pki.gov.kz/cert/nca_gost2022_test.cer http://test.pki.gov.kz/cert/root_test_gost_2022.cer" NCANODE_OCSP_URL=http://test.pki.gov.kz/ocsp/ NCANODE_TSP_URL=http://test.pki.gov.kz/tsp/ java -jar NCANode.jar
+NCANODE_DEBUG=true NCANODE_CRL_URL="http://test.pki.gov.kz/crl/nca_rsa_test.crl http://test.pki.gov.kz/crl/nca_gost_test.crl http://test.pki.gov.kz/crl/nca_gost_test_2022.crl" NCANODE_CRL_DELTA_URL="http://test.pki.gov.kz/crl/nca_d_rsa_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test_2022.crl" NCANODE_CA_URL="http://test.pki.gov.kz/cert/root_gost_test.cer http://test.pki.gov.kz/cert/root_rsa_test.cer http://test.pki.gov.kz/cert/root_test_gost_2022.cer http://test.pki.gov.kz/cert/nca_gost_test.cer http://test.pki.gov.kz/cert/nca_rsa_test.cer http://test.pki.gov.kz/cert/nca_gost2022_test.cer" NCANODE_OCSP_URL=http://test.pki.gov.kz/ocsp/ NCANODE_TSP_URL=http://test.pki.gov.kz/tsp/ java -jar NCANode-3.2.3.jar
 ```
