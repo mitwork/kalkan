@@ -59,7 +59,6 @@ class DocumentsController extends \Illuminate\Routing\Controller
                 ],
             ],
         ]);
-
     }
 
     /**
@@ -166,6 +165,22 @@ class DocumentsController extends \Illuminate\Routing\Controller
         }
 
         return response()->json([]);
+    }
+
+    /**
+     * Шаг 5 - Проверка статуса подписания документа
+     *
+     * @param  int|string  $id Идентификатор
+     */
+    public function check(int|string $id): JsonResponse
+    {
+        $status = $this->documentService->checkDocument($id);
+
+        if (is_null($status)) {
+            return response()->json(['error' => 'Документ не найден', 'status' => $status], 404);
+        }
+
+        return response()->json(['status' => $status]);
     }
 
     /**

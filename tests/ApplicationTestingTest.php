@@ -41,7 +41,9 @@ final class ApplicationTestingTest extends BaseTestCase
             ];
 
             $response = $this->prepareDocument($data, $certificate['title']);
+
             $message = $response['message'];
+            $id = $response['id'];
 
             $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
 
@@ -54,11 +56,19 @@ final class ApplicationTestingTest extends BaseTestCase
                 }
             }
 
-            // Send signed data
+            // Отправка подписанных данных
 
             $response = $this->put($response['link'], $message);
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
+
+            // Проверка статуса после подписания
+
+            $response = $this->get(route('check-document', $id));
+
+            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertTrue($response['status'], sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, $certificate['title'], $response->getContent()));
         }
     }
 
@@ -79,7 +89,9 @@ final class ApplicationTestingTest extends BaseTestCase
         ];
 
         $response = $this->prepareDocument($data, 'CMS Multi');
+
         $message = $response['message'];
+        $id = $response['id'];
 
         $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
 
@@ -94,11 +106,18 @@ final class ApplicationTestingTest extends BaseTestCase
             }
         }
 
-        // Send signed data
+        // Отправка подписанных данных
 
         $response = $this->put($response['link'], $message);
-
         $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', 'CMS Multi', $response->getContent()));
+
+        // Проверка статуса после подписания
+
+        $response = $this->get(route('check-document', $id));
+
+        $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, 'CMS Multi', $response->getContent()));
+        $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, 'CMS Multi', $response->getContent()));
+        $this->assertTrue($response['status'], sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, 'CMS Multi', $response->getContent()));
 
     }
 
@@ -126,7 +145,9 @@ final class ApplicationTestingTest extends BaseTestCase
             ];
 
             $response = $this->prepareDocument($data, $certificate['title']);
+
             $message = $response['message'];
+            $id = $response['id'];
 
             $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
 
@@ -139,11 +160,19 @@ final class ApplicationTestingTest extends BaseTestCase
                 }
             }
 
-            // Send signed data
+            // Отправка подписанных данных
 
             $response = $this->put($response['link'], $message);
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
+
+            // Проверка статуса после подписания
+
+            $response = $this->get(route('check-document', $id));
+
+            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertTrue($response['status'], sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, $certificate['title'], $response->getContent()));
         }
     }
 
@@ -162,6 +191,14 @@ final class ApplicationTestingTest extends BaseTestCase
         $this->assertArrayHasKey('id', $response, sprintf('[%s] Отсутствует идентификатор сохраненного документа', $prefix));
 
         $id = $response['id'];
+
+        // Проверка статуса после подписания
+
+        $response = $this->get(route('check-document', $id));
+
+        $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $prefix, $response->getContent()));
+        $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $prefix, $response->getContent()));
+        $this->assertFalse($response['status'], sprintf('[%s] Некорректный статус для неподписанного документа %s: %s', $id, $prefix, $response->getContent()));
 
         $response = $this->get(route('generate-cross-link', ['id' => $id]));
 
@@ -186,6 +223,7 @@ final class ApplicationTestingTest extends BaseTestCase
         $this->assertTrue($response->isOk(), sprintf('[%s] Отсутствует ссылка на документ', $prefix));
 
         return [
+            'id' => $id,
             'message' => (array) $response->original,
             'link' => $link,
         ];
