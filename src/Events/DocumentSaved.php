@@ -10,8 +10,11 @@ class DocumentSaved
 
     public int|string $id;
 
-    public function __construct($id)
+    public array $attributes;
+
+    public function __construct($id, $attributes)
     {
         $this->id = $id;
+        $this->attributes = $attributes;
     }
 }
