@@ -14,17 +14,18 @@
 - Подписание XML данных;
 - Подписание бинарных данных (CMS);
 - Проверка подписанных данных;
-- QR, cross-подписание.
+- QR, кросс-подписание.
 
 Внешние зависимости:
 
 - [NCALayer](https://ncl.pki.gov.kz/) - подписание данных на стороне клиента в браузере;
-- [NCANode](https://v3.ncanode.kz/) - проверка, валидация и извлечение подписанных данных.
+- [NCANode](https://v3.ncanode.kz/) - проверка, валидация и извлечение подписанных данных;
+- eGov mobile ([App Store](https://apps.apple.com/kz/app/egov-mobile/id1476128386), [PlayMarket](https://play.google.com/store/apps/details?id=kz.mobile.mgov&hl=ru)), eGov business ([App Store](https://apps.apple.com/kz/app/egov-business/id1597880144), [PlayMarket](https://play.google.com/store/apps/details?id=kz.mobile.mgov.business&hl=ru)) - QR и кросс-подписание.
 
-Для возможности QR и cross-подписания ваша информационная система должна быть подключена к услуге [Cервис QR подписания посредством приложения Egov Mobile](https://sb.egov.kz/smart-bridge/services/passport/NITEC-S-5096),
+Для возможности QR и cross-подписания ваша информационная система должна быть подключена к услуге [Сервис QR подписания посредством приложения Egov Mobile](https://sb.egov.kz/smart-bridge/services/passport/NITEC-S-5096),
 и внешний адрес (адреса) должны быть добавлены на стороне оператора услуги.
 
-На этапе тестирования может понадобиться установить тестовые сборки приложений egov Mobile, egov Business - напрямую для OS Android, 
+На этапе тестирования может понадобиться установить тестовые сборки приложений Egov Mobile, Egov Business - напрямую для OS Android, 
 либо с помощью [TestFlight](https://developer.apple.com/testflight/) по ссылке-приглашению оператора сервиса.
 
 ## Установка
@@ -55,11 +56,11 @@ return [
         'business' => 'https://egovbusiness.page.link/?link=%s&isi=1597880144&ibi=kz.mobile.mgov.business&apn=kz.mobile.mgov.business',
     ],
     'options' => [
-        'description' => 'Test',
+        'description' => 'Текст для пользователя',
         'organisation' => [
-            'nameRu' => 'АО "ТЕСТ"',
-            'nameKz' => '"ТЕСТ" ЖК',
-            'nameEn' => 'OP "TEST"',
+            'nameRu' => 'АО ТЕСТ',
+            'nameKz' => 'ТЕСТ АҚ',
+            'nameEn' => 'JS TEST',
             'bin' => '123456789012',
         ],
         'ttl' => 180,
@@ -184,7 +185,7 @@ class TestCmsController extends Controller
 
 ### QR-подписание
 
-Данный механизм позволяет подписывать данные с помощью смартфона с использованием приложений egov Mobile или egovBusiness, 
+Данный механизм позволяет подписывать данные с помощью смартфона с использованием приложений eGov mobile или eGov business, 
 когда проект открыт в браузере компьютера или планшета.
 
 Основные шаги:
@@ -222,4 +223,10 @@ class TestCmsController extends Controller
 
 ```shell
 NCANODE_DEBUG=true NCANODE_CRL_URL="http://test.pki.gov.kz/crl/nca_rsa_test.crl http://test.pki.gov.kz/crl/nca_gost_test.crl http://test.pki.gov.kz/crl/nca_gost_test_2022.crl" NCANODE_CRL_DELTA_URL="http://test.pki.gov.kz/crl/nca_d_rsa_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test_2022.crl" NCANODE_CA_URL="http://test.pki.gov.kz/cert/root_gost_test.cer http://test.pki.gov.kz/cert/root_rsa_test.cer http://test.pki.gov.kz/cert/root_test_gost_2022.cer http://test.pki.gov.kz/cert/nca_gost_test.cer http://test.pki.gov.kz/cert/nca_rsa_test.cer http://test.pki.gov.kz/cert/nca_gost2022_test.cer" NCANODE_OCSP_URL=http://test.pki.gov.kz/ocsp/ NCANODE_TSP_URL=http://test.pki.gov.kz/tsp/ java -jar NCANode-3.2.3.jar
+```
+
+Для работы с действительными сертификатами НУЦ РК, при тестировании приложение NCANode нужно запустить с параметрами по-умолчанию:
+
+```shell
+java -jar NCANode-3.2.3.jar
 ```
