@@ -9,7 +9,7 @@ use Mitwork\Kalkan\Enums\ContentType;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-#[CoversClass(\Mitwork\Kalkan\Services\DocumentService::class)]
+#[CoversClass(\Mitwork\Kalkan\Services\IntegrationService::class)]
 final class ApplicationTestingTest extends BaseTestCase
 {
     use WithWorkbench;

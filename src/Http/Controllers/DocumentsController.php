@@ -11,16 +11,18 @@ use Mitwork\Kalkan\Events\DocumentSigned;
 use Mitwork\Kalkan\Http\Requests\FetchDocumentRequest;
 use Mitwork\Kalkan\Http\Requests\ProcessDocumentRequest;
 use Mitwork\Kalkan\Http\Requests\StoreDocumentRequest;
-use Mitwork\Kalkan\Services\DocumentService;
+use Mitwork\Kalkan\Services\CacheDocumentService;
+use Mitwork\Kalkan\Services\IntegrationService;
 use Mitwork\Kalkan\Services\KalkanValidationService;
 use Mitwork\Kalkan\Services\QrCodeGenerationService;
 
 class DocumentsController extends \Illuminate\Routing\Controller
 {
     public function __construct(
-        public DocumentService $documentService,
+        public IntegrationService $integrationService,
         public QrCodeGenerationService $qrCodeGenerationService,
         public KalkanValidationService $validationService,
+        public CacheDocumentService $documentService,
     ) {
         //
     }
@@ -39,7 +41,7 @@ class DocumentsController extends \Illuminate\Routing\Controller
     {
         $id = $request->input('id', hrtime(true));
 
-        if (! $this->documentService->saveDocument($id, $request->validated())) {
+        if (! $this->documentService->addDocument($id, $request->validated())) {
             return response()->json([
                 'message' => __('kalkan::messages.unable_to_save_document'),
             ], 500);
@@ -107,7 +109,7 @@ class DocumentsController extends \Illuminate\Routing\Controller
     public function generateLink(FetchDocumentRequest $request): JsonResponse
     {
         $link = $this->generateSignedLink('prepare-content', ['id' => $request->input('id')]);
-        $data = $this->documentService->prepareServiceData($link);
+        $data = $this->integrationService->prepareServiceData($link);
 
         return response()->json($data);
     }
@@ -119,7 +121,9 @@ class DocumentsController extends \Illuminate\Routing\Controller
      */
     public function prepareContent(FetchDocumentRequest $request): JsonResponse
     {
-        $document = $this->documentService->getDocument($request->input('id'));
+        $id = $request->input('id');
+
+        $document = $this->documentService->getDocument($id);
 
         if (! $document) {
             return response()->json([
@@ -132,12 +136,12 @@ class DocumentsController extends \Illuminate\Routing\Controller
         }
 
         if ($document['type'] === ContentType::XML->value) {
-            $this->documentService->addXmlDocument($request->input('id'), $document['name'], $document['content'], $document['meta']);
-            $response = $this->documentService->getXmlDocuments($request->input('id'));
+            $this->integrationService->addXmlDocument($id, $document['name'], $document['content'], $document['meta']);
+            $response = $this->integrationService->getXmlDocuments($id);
 
         } else {
-            $this->documentService->addCmsDocument($request->input('id'), $document['name'], $document['content'], $document['meta']);
-            $response = $this->documentService->getCmsDocuments($request->input('id'));
+            $this->integrationService->addCmsDocument($id, $document['name'], $document['content'], $document['meta']);
+            $response = $this->integrationService->getCmsDocuments($id);
 
         }
 
