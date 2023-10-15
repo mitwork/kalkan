@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Mitwork\Kalkan\Tests;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Mitwork\Kalkan\Enums\AuthType;
 use Mitwork\Kalkan\Enums\ContentType;
+use Mitwork\Kalkan\Events\AuthRejected;
+use Mitwork\Kalkan\Events\DocumentSaved;
+use Mitwork\Kalkan\Events\DocumentSigned;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -37,8 +42,10 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $response = $this->prepareDocument($data, $certificate['title']);
 
-            $message = $response['message'];
             $id = $response['id'];
+
+            $headers = $response['headers'];
+            $message = $response['message'];
 
             $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
 
@@ -53,7 +60,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
             // Отправка подписанных данных
 
-            $response = $this->put($response['link'], $message);
+            $response = $this->put($response['link'], $message, $headers);
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
 
@@ -85,8 +92,10 @@ final class ApplicationTestingTest extends BaseTestCase
 
         $response = $this->prepareDocument($data, 'CMS Multi');
 
-        $message = $response['message'];
         $id = $response['id'];
+
+        $headers = $response['headers'];
+        $message = $response['message'];
 
         $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
 
@@ -103,7 +112,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
         // Отправка подписанных данных
 
-        $response = $this->put($response['link'], $message);
+        $response = $this->put($response['link'], $message, $headers);
         $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', 'CMS Multi', $response->getContent()));
 
         // Проверка статуса после подписания
@@ -137,8 +146,10 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $response = $this->prepareDocument($data, $certificate['title']);
 
-            $message = $response['message'];
             $id = $response['id'];
+
+            $headers = $response['headers'];
+            $message = $response['message'];
 
             $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
 
@@ -153,7 +164,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
             // Отправка подписанных данных
 
-            $response = $this->put($response['link'], $message);
+            $response = $this->put($response['link'], $message, $headers);
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
 
@@ -167,6 +178,172 @@ final class ApplicationTestingTest extends BaseTestCase
         }
     }
 
+    public function testUniqueBearerServiceLink(): void
+    {
+        $this->loadCertificates('sign');
+
+        $this->app['config']->set('kalkan.options.auth.type', AuthType::BEARER->value);
+
+        $certificates = $this->certificates;
+
+        foreach ($certificates as $certificate) {
+
+            $content = Str::random(64);
+
+            $data = [
+                'name' => 'hello bearer cms',
+                'content' => base64_encode($content),
+                'type' => ContentType::CMS->value,
+                'meta' => [
+                    'certificate' => $certificate['title'],
+                ],
+            ];
+
+            $response = $this->prepareDocument($data, $certificate['title']);
+
+            $id = $response['id'];
+
+            $headers = $response['headers'];
+            $message = $response['message'];
+
+            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+
+            foreach ($message['documentsToSign'] as &$document) {
+
+                $status = $signatureService->signCms($document['documentCms'], $certificate['content'], $certificate['password']);
+
+                if ($status) {
+                    $document['documentCms'] = $status;
+                }
+            }
+
+            // Отправка подписанных данных
+
+            $response = $this->put($response['link'], $message, $headers);
+
+            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
+
+            // Проверка статуса после подписания
+
+            $response = $this->get(route('check-document', $id));
+
+            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertTrue($response['status'], sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, $certificate['title'], $response->getContent()));
+        }
+    }
+
+    public function testHardcodedBearerServiceLink(): void
+    {
+        $this->loadCertificates('sign');
+
+        $this->app['config']->set('kalkan.options.auth.type', AuthType::BEARER->value);
+        $this->app['config']->set('kalkan.options.auth.token', 'some-hardcoded-token');
+
+        $certificates = $this->certificates;
+
+        foreach ($certificates as $certificate) {
+
+            $content = Str::random(64);
+
+            $data = [
+                'name' => 'hello bearer cms',
+                'content' => base64_encode($content),
+                'type' => ContentType::CMS->value,
+                'meta' => [
+                    'certificate' => $certificate['title'],
+                ],
+            ];
+
+            $response = $this->prepareDocument($data, $certificate['title']);
+
+            $id = $response['id'];
+
+            $headers = $response['headers'];
+            $message = $response['message'];
+
+            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+
+            foreach ($message['documentsToSign'] as &$document) {
+
+                $status = $signatureService->signCms($document['documentCms'], $certificate['content'], $certificate['password']);
+
+                if ($status) {
+                    $document['documentCms'] = $status;
+                }
+            }
+
+            // Отправка подписанных данных
+
+            Event::fake();
+
+            $response = $this->put($response['link'], $message, $headers);
+
+            Event::assertDispatched(DocumentSigned::class);
+
+            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
+
+            // Проверка статуса после подписания
+
+            $response = $this->get(route('check-document', $id));
+
+            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertTrue($response['status'], sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, $certificate['title'], $response->getContent()));
+        }
+    }
+
+    public function testWrongBearerServiceLink(): void
+    {
+        $this->loadCertificates('sign');
+
+        $this->app['config']->set('kalkan.options.auth.type', AuthType::BEARER->value);
+
+        $certificates = $this->certificates;
+
+        foreach ($certificates as $certificate) {
+
+            $content = Str::random(64);
+
+            $data = [
+                'name' => 'hello bearer cms',
+                'content' => base64_encode($content),
+                'type' => ContentType::CMS->value,
+                'meta' => [
+                    'certificate' => $certificate['title'],
+                ],
+            ];
+
+            $response = $this->prepareDocument($data, $certificate['title']);
+
+            $id = $response['id'];
+
+            $message = $response['message'];
+            $headers = $response['headers'];
+
+            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+
+            foreach ($message['documentsToSign'] as &$document) {
+
+                $status = $signatureService->signCms($document['documentCms'], $certificate['content'], $certificate['password']);
+
+                if ($status) {
+                    $document['documentCms'] = $status;
+                }
+            }
+
+            // Отправка подписанных данных
+
+            Event::fake();
+
+            $response = $this->put($response['link'], $message);
+
+            Event::assertDispatched(AuthRejected::class);
+
+            $this->assertTrue($response->status() === 401);
+        }
+    }
+
     /**
      * Подготовка документ для тестирования
      *
@@ -176,10 +353,14 @@ final class ApplicationTestingTest extends BaseTestCase
      */
     private function prepareDocument(array $data, string $prefix): array
     {
+        Event::fake();
+
         $response = $this->post(route('store-document'), $data);
 
         $this->assertTrue($response->isOk(), sprintf('[%s] Некорректный ответ статуса сохранения документа', $prefix));
         $this->assertArrayHasKey('id', $response, sprintf('[%s] Отсутствует идентификатор сохраненного документа', $prefix));
+
+        Event::assertDispatched(DocumentSaved::class);
 
         $id = $response['id'];
 
@@ -210,13 +391,21 @@ final class ApplicationTestingTest extends BaseTestCase
 
         $link = $response['document']['uri'];
 
-        $response = $this->get($link);
+        $headers = [];
+
+        if (isset($response['document']['auth_type']) && $response['document']['auth_type'] === AuthType::BEARER->value) {
+            $headers = ['Authorization' => sprintf('Bearer %s', $response['document']['auth_token'])];
+        }
+
+        $response = $this->get($link, $headers);
+
         $this->assertTrue($response->isOk(), sprintf('[%s] Отсутствует ссылка на документ', $prefix));
 
         return [
             'id' => $id,
-            'message' => (array) $response->original,
+            'headers' => $headers,
             'link' => $link,
+            'message' => (array) $response->original,
         ];
     }
 }

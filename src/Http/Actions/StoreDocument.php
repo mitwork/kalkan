@@ -5,6 +5,7 @@ namespace Mitwork\Kalkan\Http\Actions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use Mitwork\Kalkan\CacheDocument;
+use Mitwork\Kalkan\Enums\AuthType;
 use Mitwork\Kalkan\Events\DocumentSaved;
 use Mitwork\Kalkan\Http\Requests\StoreDocumentRequest;
 use Mitwork\Kalkan\Services\CacheDocumentService;
@@ -37,7 +38,31 @@ class StoreDocument extends BaseAction
     {
         $id = $request->input('id', Str::uuid());
 
-        $document = new CacheDocument($request->validated());
+        $attributes = $request->validated();
+
+        if (! isset($attributes['auth'])) {
+
+            if (config('kalkan.options.auth.type') === AuthType::BEARER->value) {
+
+                $token = config('kalkan.options.auth.token');
+
+                if ($token === '') {
+                    $token = Str::random(32);
+                }
+
+                $attributes['auth'] = [
+                    'type' => AuthType::BEARER->value,
+                    'token' => $token,
+                ];
+            } else {
+                $attributes['auth'] = [
+                    'type' => AuthType::NONE->value,
+                    'token' => '',
+                ];
+            }
+        }
+
+        $document = new CacheDocument($attributes);
 
         if (! $this->documentService->addDocument($id, $document->attributes())) {
             return response()->json([
@@ -47,7 +72,7 @@ class StoreDocument extends BaseAction
 
         DocumentSaved::dispatch($id, $document->attributes());
 
-        $link = $this->generateSignedLink('generate-link', ['id' => $id]);
+        $link = $this->generateSignedLink(config('kalkan.actions.generate-service-link'), ['id' => $id]);
         $result = $this->qrCodeGenerationService->generate($link);
 
         return response()->json([

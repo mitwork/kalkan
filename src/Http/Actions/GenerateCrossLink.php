@@ -16,7 +16,8 @@ class GenerateCrossLink extends BaseAction
      */
     public function generate(FetchDocumentRequest $request): JsonResponse
     {
-        $link = $this->generateSignedLink('prepare-content', ['id' => $request->get('id')]);
+        $id = $request->input('id');
+        $link = $this->generateSignedLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
 
         return response()->json([
             'person' => sprintf(config('kalkan.links.mobile'), urlencode($link)),

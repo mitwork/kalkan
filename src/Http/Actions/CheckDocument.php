@@ -10,6 +10,7 @@ class CheckDocument extends BaseAction
     public function __construct(
         public CacheDocumentService $documentService
     ) {
+
     }
 
     /**
@@ -22,7 +23,10 @@ class CheckDocument extends BaseAction
         $status = $this->documentService->checkDocument($id);
 
         if (is_null($status)) {
-            return response()->json(['error' => __('kalkan::messages.document_not_found'), 'status' => $status], 404);
+            return response()->json([
+                'error' => __('kalkan::messages.document_not_found'),
+                'status' => $status,
+            ], 404);
         }
 
         return response()->json(['status' => $status]);

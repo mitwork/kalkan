@@ -22,7 +22,8 @@ class GenerateQrCode extends BaseAction
      */
     public function generate(FetchDocumentRequest $request): JsonResponse
     {
-        $link = $this->generateSignedLink('generate-link', ['id' => $request->input('id')]);
+        $id = $request->input('id');
+        $link = $this->generateSignedLink(config('kalkan.actions.generate-service-link'), ['id' => $id]);
         $result = $this->qrCodeGenerationService->generate($link);
 
         return response()->json([

@@ -3,7 +3,9 @@
 namespace Mitwork\Kalkan\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
+use Mitwork\Kalkan\Enums\AuthType;
 use Mitwork\Kalkan\Enums\ContentType;
+use Mitwork\Kalkan\Events\AuthRejected;
 use Mitwork\Kalkan\Events\DocumentRejected;
 use Mitwork\Kalkan\Events\DocumentSigned;
 use Mitwork\Kalkan\Http\Requests\ProcessDocumentRequest;
@@ -26,6 +28,36 @@ class ProcessContent extends BaseAction
         $id = $request->input('id');
 
         $document = $this->documentService->getDocument($id);
+
+        if (! $document) {
+            return response()->json([
+                'message' => __('kalkan::messages.unable_to_get_document'),
+            ], 500);
+        }
+
+        if (isset($document['auth']['type']) && $document['auth']['type'] === AuthType::BEARER->value) {
+
+            $token = request()->bearerToken();
+
+            if (! $token) {
+
+                AuthRejected::dispatch($id);
+
+                return response()->json([
+                    'message' => __('kalkan::messages.empty_bearer_token'),
+                ], 401);
+            }
+
+            if ($token !== $document['auth']['token']) {
+
+                AuthRejected::dispatch($id);
+
+                return response()->json([
+                    'message' => __('kalkan::messages.wrong_bearer_token'),
+                ], 403);
+            }
+        }
+
         $documents = $request->input('documentsToSign');
 
         foreach ($documents as $signedDocument) {

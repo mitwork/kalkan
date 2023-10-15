@@ -12,7 +12,7 @@ Route::get('/documents/generate-qr-code', [\Mitwork\Kalkan\Http\Actions\Generate
 Route::get('/documents/generate-cross-link', [\Mitwork\Kalkan\Http\Actions\GenerateCrossLink::class, 'generate'])->name('generate-cross-link');
 
 // Щаг 2 - Генерация сервисных данных
-Route::get('/documents/generate-link', [\Mitwork\Kalkan\Http\Actions\GenerateServiceLink::class, 'generate'])->name('generate-link');
+Route::get('/documents/generate-link', [\Mitwork\Kalkan\Http\Actions\GenerateServiceLink::class, 'generate'])->name('generate-service-link');
 
 // Шаг 3 - Работа с данными - отдача
 Route::get('/documents/content', [\Mitwork\Kalkan\Http\Actions\PrepareContent::class, 'prepare'])->name('prepare-content');

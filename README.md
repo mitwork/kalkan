@@ -1,4 +1,4 @@
-# MITWORK Kalkan Laravel Package
+# Kalkan Laravel Package
 
 ---
 
@@ -52,6 +52,8 @@ php artisan vendor:publish --tag kalkan-config
 Параметры задаются и/или переопределяются в файле `config/kalkan.php`:
 
 ```php
+<?php
+
 return [
     'ncanode' => [
         'host' => env('NCANODE_HOST', 'http://localhost:14579'),
@@ -60,6 +62,15 @@ return [
         'prefix' => 'mobileSign:',
         'mobile' => 'https://mgovsign.page.link/?link=%s&isi=1476128386&ibi=kz.egov.mobile&apn=kz.mobile.mgov',
         'business' => 'https://egovbusiness.page.link/?link=%s&isi=1597880144&ibi=kz.mobile.mgov.business&apn=kz.mobile.mgov.business',
+    ],
+    'actions' => [
+        'store-document' => 'store-document',
+        'generate-qr-code' => 'generate-qr-code',
+        'generate-cross-link' => 'generate-cross-link',
+        'generate-service-link' => 'generate-service-link',
+        'prepare-content' => 'prepare-content',
+        'process-content' => 'process-content',
+        'check-document' => 'check-document',
     ],
     'options' => [
         'description' => 'Текст для пользователя',
@@ -70,6 +81,10 @@ return [
             'bin' => '123456789012',
         ],
         'ttl' => 180,
+        'auth' => [
+            'type' => 'None', // Bearer
+            'token' => '',
+        ],
     ],
 ];
 ```
@@ -78,17 +93,24 @@ return [
 
 - `ncanode.host` - адрес и порт для подключения к NCANode;
 - `links.prefix` - префикс для формирования ссылки в QR-code;
-- `links.mobile` - шаблон для формирования кросс-ссылки при подписании в приложении Egov Mobile;
-- `links.business` - шаблон для формирования кросс-ссылки при подписании в приложении Egov Business;
+- `links.mobile` - шаблон для формирования кросс-ссылки при подписании в приложении _eGov mobile_;
+- `links.business` - шаблон для формирования кросс-ссылки при подписании в приложении _eGov business_;
+- `actions` - именованные роуты для взаимодействия с приложениями при QR-подписании;
 - `options.description` - название информационной системы;
 - `options.organisation` - сведения об организации;
-- `options.ttl` - время жизни одноразовых ссылок (в секундах).
+- `options.ttl` - время жизни одноразовых ссылок (в секундах);
+- `auth.type` - тип авторизации при формировании сервисных ссылок для QR-подписания, допустимые значения - `None`, `Bearer`;
+- `auth.token` - токен авторизации, в случае если он не задан для документа будет сформирован уникальный единоразовый токен.
 
 ## Использование
 
 ### Подписание и проверка XML данных
 
 ```php
+<?php
+
+namespace App\Controllers;
+
 use \Mitwork\Kalkan\Services\KalkanSignatureService;
 use \Mitwork\Kalkan\Services\KalkanValidationService;
 
@@ -133,6 +155,10 @@ class TestXmlController extends Controller
 ### Подписание, проверка и извлечение CMS данных
 
 ```php
+<?php
+
+namespace App\Controllers;
+
 use \Mitwork\Kalkan\Services\KalkanSignatureService;
 use \Mitwork\Kalkan\Services\KalkanValidationService;
 use \Mitwork\Kalkan\Services\KalkanExtractionService;

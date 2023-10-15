@@ -2,6 +2,8 @@
 
 namespace Mitwork\Kalkan\Services;
 
+use Mitwork\Kalkan\Enums\ContentType;
+
 class IntegrationService
 {
     protected array $meta = [];
@@ -18,26 +20,24 @@ class IntegrationService
      * Подготовка данных для сервиса
      *
      * @param  string  $url Ссылка
-     * @param  array  $params Параметры
+     * @param  string  $authType Тип аутентификации
+     * @param  string  $authToken Токен аутентификации
      * @return array Данные для сервиса
      */
-    public function prepareServiceData(string $url, array $params = []): array
+    public function prepareServiceData(string $url, string $authType = 'None', string $authToken = ''): array
     {
         $options = config('kalkan.options');
 
-        $service = [
+        return [
             'description' => $options['description'],
             'expiry_date' => date('c', time() + $options['ttl']),
             'organisation' => $options['organisation'],
             'document' => [
                 'uri' => $url,
-                'auth_type' => 'None',
-                'auth_token' => '',
+                'auth_type' => $authType,
+                'auth_token' => $authToken,
             ],
-        ] + $params;
-
-        return $service;
-
+        ];
     }
 
     /**
@@ -141,7 +141,7 @@ class IntegrationService
     public function getXmlDocuments(string|int $key = null): array
     {
         return [
-            'signMethod' => 'XML',
+            'signMethod' => ContentType::XML->value,
             'documentsToSign' => array_values($key ? [$this->documents['xml'][$key]] : $this->documents['xml']),
         ];
     }
@@ -152,7 +152,7 @@ class IntegrationService
     public function getCmsDocuments(string|int $key = null): array
     {
         return [
-            'signMethod' => 'CMS',
+            'signMethod' => ContentType::CMS->value,
             'documentsToSign' => array_values($key ? [$this->documents['cms'][$key]] : $this->documents['cms']),
         ];
     }
