@@ -82,8 +82,6 @@ class IntegrationService
      */
     public function addXmlDocument(int|string $id, string $name, string $content, array $meta = []): array
     {
-        $mime = '';
-
         if (count($meta) > 0) {
             foreach ($meta as $key => $value) {
 
@@ -93,8 +91,6 @@ class IntegrationService
                     $metaValue = $value[key($value)];
 
                     if ($metaKey === 'mime') {
-                        $mime = $metaValue;
-
                         continue;
                     }
 
@@ -106,13 +102,17 @@ class IntegrationService
         }
 
         $document = [
-            'id' => $id,
+            'id' => is_numeric($id) ? (int) $id : $id,
             'nameRu' => $name,
             'nameKz' => $name,
             'nameEn' => $name,
             'meta' => $this->getMetaAttributes($id),
             'documentXml' => $content,
         ];
+
+        if (count($document['meta']) === 0) {
+            unset($document['meta']);
+        }
 
         $this->documents['xml'][$id] = $document;
 
@@ -152,9 +152,6 @@ class IntegrationService
                 }
             }
         }
-
-        // @todo provide real mime or file extensions
-        // @see debug results
 
         $document = [
             'id' => is_numeric($id) ? (int) $id : $id,
