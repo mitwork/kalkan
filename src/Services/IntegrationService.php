@@ -118,11 +118,20 @@ class IntegrationService
      */
     public function addCmsDocument(int|string $id, string $name, string $content, array $meta = []): array
     {
+        $mime = '';
 
         if (count($meta) > 0) {
             foreach ($meta as $key => $value) {
                 if (is_array($value)) {
-                    $this->addMetaAttribute(key($value), $value[key($value)], $id);
+
+                    $metaKey = key($value);
+                    $metaValue = $value[key($value)];
+
+                    if ($metaKey === 'mime') {
+                        $mime = $metaValue;
+                    }
+
+                    $this->addMetaAttribute($metaKey, $metaValue, $id);
                 } else {
                     $this->addMetaAttribute($key, $value, $id);
                 }
@@ -135,7 +144,12 @@ class IntegrationService
             'nameKz' => $name,
             'nameEn' => $name,
             'meta' => $this->getMetaAttributes($id),
-            'documentCms' => $content,
+            'document' => [
+                'file' => [
+                    'mime' => $mime,
+                    'data' => $content
+                ]
+            ],
         ];
 
         $this->documents['cms'][$id] = $document;
@@ -149,7 +163,7 @@ class IntegrationService
     public function getXmlDocuments(string|int $key = null): array
     {
         return [
-            'signMethod' => strtoupper(ContentType::XML->value),
+            'signMethod' => 'XML',
             'documentsToSign' => array_values($key ? [$this->documents['xml'][$key]] : $this->documents['xml']),
         ];
     }
@@ -160,7 +174,7 @@ class IntegrationService
     public function getCmsDocuments(string|int $key = null): array
     {
         return [
-            'signMethod' => strtoupper(ContentType::CMS->value),
+            'signMethod' => 'CMS_WITH_DATA',
             'documentsToSign' => array_values($key ? [$this->documents['cms'][$key]] : $this->documents['cms']),
         ];
     }
