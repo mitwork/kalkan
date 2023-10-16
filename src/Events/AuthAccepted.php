@@ -4,17 +4,17 @@ namespace Mitwork\Kalkan\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 
-class DocumentSaved
+class AuthAccepted
 {
     use Dispatchable;
 
     public int|string $id;
 
-    public array $attributes;
+    public string $token;
 
-    public function __construct($id, $attributes)
+    public function __construct($id, $token)
     {
         $this->id = $id;
-        $this->attributes = $attributes;
+        $this->token = $token;
     }
 }

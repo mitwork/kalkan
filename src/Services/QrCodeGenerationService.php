@@ -11,7 +11,9 @@ use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Writer\Result\ResultInterface;
 use Endroid\QrCode\Writer\SvgWriter;
 use Endroid\QrCode\Writer\ValidatingWriterInterface;
+use Endroid\QrCode\Writer\WebPWriter;
 use Endroid\QrCode\Writer\WriterInterface;
+use Mitwork\Kalkan\Enums\QrCodeFormat;
 
 class QrCodeGenerationService extends BaseService
 {
@@ -26,10 +28,10 @@ class QrCodeGenerationService extends BaseService
      * @param  int  $size Размер
      * @param  int  $margin Отступы
      * @param  string|null  $prefix Префикс ссылки
-     * @param  string  $format Формат - png, svg
+     * @param  QrCodeFormat  $format Формат - png, svg
      * @return ResultInterface Результаты генерации
      */
-    public function generate(string $link, int $size = 200, int $margin = 5, ?string $prefix = '', string $format = 'png'): ResultInterface
+    public function generate(string $link, int $size = 200, int $margin = 5, ?string $prefix = '', QrCodeFormat $format = QrCodeFormat::PNG): ResultInterface
     {
         if ($prefix === '') {
             $prefix = config('kalkan.links.prefix', $prefix);
@@ -51,11 +53,14 @@ class QrCodeGenerationService extends BaseService
         $this->link = $link;
 
         switch ($format) {
-            case 'png':
+            case QrCodeFormat::PNG:
                 $this->writer = new PngWriter();
                 break;
-            case 'svg':
+            case QrCodeFormat::SVG:
                 $this->writer = new SvgWriter();
+                break;
+            case QrCodeFormat::WEBP:
+                $this->writer = new WebPWriter();
                 break;
         }
 

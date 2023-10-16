@@ -2,9 +2,9 @@
 
 namespace Mitwork\Kalkan\Services;
 
-use Illuminate\Support\Facades\Cache;
+use Mitwork\Kalkan\Enums\ContentType;
 
-class DocumentService
+class IntegrationService
 {
     protected array $meta = [];
 
@@ -20,26 +20,24 @@ class DocumentService
      * Подготовка данных для сервиса
      *
      * @param  string  $url Ссылка
-     * @param  array  $params Параметры
+     * @param  string  $authType Тип аутентификации
+     * @param  string  $authToken Токен аутентификации
      * @return array Данные для сервиса
      */
-    public function prepareServiceData(string $url, array $params = []): array
+    public function prepareServiceData(string $url, string $authType = 'None', string $authToken = ''): array
     {
         $options = config('kalkan.options');
 
-        $service = [
+        return [
             'description' => $options['description'],
             'expiry_date' => date('c', time() + $options['ttl']),
             'organisation' => $options['organisation'],
             'document' => [
                 'uri' => $url,
-                'auth_type' => 'None',
-                'auth_token' => '',
+                'auth_type' => $authType,
+                'auth_token' => $authToken,
             ],
-        ] + $params;
-
-        return $service;
-
+        ];
     }
 
     /**
@@ -52,7 +50,7 @@ class DocumentService
     public function addMetaAttribute(string $name, mixed $value, int|string $key = null): void
     {
         if ($key) {
-            $this->meta[$key] = ['name' => $name, 'value' => $value];
+            $this->meta[$key][] = ['name' => $name, 'value' => $value];
         } else {
             $this->meta[] = ['name' => $name, 'value' => $value];
         }
@@ -143,7 +141,7 @@ class DocumentService
     public function getXmlDocuments(string|int $key = null): array
     {
         return [
-            'signMethod' => 'XML',
+            'signMethod' => ContentType::XML->value,
             'documentsToSign' => array_values($key ? [$this->documents['xml'][$key]] : $this->documents['xml']),
         ];
     }
@@ -154,73 +152,8 @@ class DocumentService
     public function getCmsDocuments(string|int $key = null): array
     {
         return [
-            'signMethod' => 'CMS',
+            'signMethod' => ContentType::CMS->value,
             'documentsToSign' => array_values($key ? [$this->documents['cms'][$key]] : $this->documents['cms']),
         ];
-    }
-
-    /**
-     * Сохранение документа в кэш
-     *
-     * @param  string|int  $id Идентификатор
-     * @param  array  $content Содержимое
-     * @return bool Результат сохранения
-     */
-    public function saveDocument(string|int $id, array $content): bool
-    {
-        return Cache::add($id, $content, config('kalkan.options.ttl'));
-    }
-
-    /**
-     * Получение документа
-     *
-     * @param  string|int  $id Идентификатор
-     * @return array|null Содержимое
-     */
-    public function getDocument(string|int $id): ?array
-    {
-        return Cache::get($id);
-    }
-
-    /**
-     * Проверка статус подписания документа
-     *
-     * @param  string|int  $id Идентификатор
-     * @return bool|null Результат
-     */
-    public function checkDocument(string|int $id): ?bool
-    {
-        $document = Cache::get($id);
-
-        if (! $document) {
-            return null;
-        }
-
-        return isset($document['status']) && $document['status'] === true;
-    }
-
-    /**
-     * Обработка документа
-     *
-     * @param  string|int  $id Идентификатор
-     * @return bool Статус обработки
-     */
-    public function processDocument(string|int $id): bool
-    {
-        if (isset($this->documents['cms'][$id])) {
-            unset($this->documents['cms'][$id]);
-        } elseif (isset($this->documents['xml'][$id])) {
-            unset($this->documents['xml'][$id]);
-        }
-
-        $document = Cache::get($id);
-
-        if (! $document) {
-            return false;
-        }
-
-        $document['status'] = true;
-
-        return Cache::put($id, $document);
     }
 }

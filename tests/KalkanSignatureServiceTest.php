@@ -96,7 +96,7 @@ XML;
 
     public function testSingingExceptionsIsWorking(): void
     {
-        $this->loadCertificates('revoked');
+        $this->loadCertificates(['active' => false]);
 
         $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
         $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService();

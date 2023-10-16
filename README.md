@@ -1,4 +1,4 @@
-# MITWORK Kalkan Laravel Package
+# Kalkan Laravel Package
 
 ---
 
@@ -14,18 +14,24 @@
 - Подписание XML данных;
 - Подписание бинарных данных (CMS);
 - Проверка подписанных данных;
-- QR, cross-подписание.
+- QR, кросс-подписание.
 
 Внешние зависимости:
 
 - [NCALayer](https://ncl.pki.gov.kz/) - подписание данных на стороне клиента в браузере;
-- [NCANode](https://v3.ncanode.kz/) - проверка, валидация и извлечение подписанных данных.
+- [NCANode](https://v3.ncanode.kz/) - проверка, валидация и извлечение подписанных данных;
+- eGov mobile ([App Store](https://apps.apple.com/kz/app/egov-mobile/id1476128386), [PlayMarket](https://play.google.com/store/apps/details?id=kz.mobile.mgov&hl=ru)), eGov business ([App Store](https://apps.apple.com/kz/app/egov-business/id1597880144), [PlayMarket](https://play.google.com/store/apps/details?id=kz.mobile.mgov.business&hl=ru)) - QR и кросс-подписание.
 
-Для возможности QR и cross-подписания ваша информационная система должна быть подключена к услуге [Cервис QR подписания посредством приложения Egov Mobile](https://sb.egov.kz/smart-bridge/services/passport/NITEC-S-5096),
+Для возможности QR и cross-подписания ваша информационная система должна быть подключена к услуге [Сервис QR подписания посредством приложения Egov Mobile](https://sb.egov.kz/smart-bridge/services/passport/NITEC-S-5096),
 и внешний адрес (адреса) должны быть добавлены на стороне оператора услуги.
 
-На этапе тестирования может понадобиться установить тестовые сборки приложений egov Mobile, egov Business - напрямую для OS Android, 
+На этапе тестирования может понадобиться установить тестовые сборки приложений Egov Mobile, Egov Business - напрямую для OS Android, 
 либо с помощью [TestFlight](https://developer.apple.com/testflight/) по ссылке-приглашению оператора сервиса.
+
+## Поддерживаемые версии
+
+- PHP - 8.1, 8.2, 8.3;
+- Laravel - 10.
 
 ## Установка
 
@@ -35,16 +41,19 @@
 composer require mitwork/kalkan
 ```
 
-## Поддерживаемые версии
-
-- PHP - 8.1, 8.2, 8.3;
-- Laravel - 10.
-
 ## Настройка
+
+Для возможности внесения изменений необходимо опубликовать конфигурацию в проект командой:
+
+```shell
+php artisan vendor:publish --tag kalkan-config
+```
 
 Параметры задаются и/или переопределяются в файле `config/kalkan.php`:
 
 ```php
+<?php
+
 return [
     'ncanode' => [
         'host' => env('NCANODE_HOST', 'http://localhost:14579'),
@@ -54,15 +63,28 @@ return [
         'mobile' => 'https://mgovsign.page.link/?link=%s&isi=1476128386&ibi=kz.egov.mobile&apn=kz.mobile.mgov',
         'business' => 'https://egovbusiness.page.link/?link=%s&isi=1597880144&ibi=kz.mobile.mgov.business&apn=kz.mobile.mgov.business',
     ],
+    'actions' => [
+        'store-document' => 'store-document',
+        'generate-qr-code' => 'generate-qr-code',
+        'generate-cross-link' => 'generate-cross-link',
+        'generate-service-link' => 'generate-service-link',
+        'prepare-content' => 'prepare-content',
+        'process-content' => 'process-content',
+        'check-document' => 'check-document',
+    ],
     'options' => [
-        'description' => 'Test',
+        'description' => 'Текст для пользователя',
         'organisation' => [
-            'nameRu' => 'АО "ТЕСТ"',
-            'nameKz' => '"ТЕСТ" ЖК',
-            'nameEn' => 'OP "TEST"',
+            'nameRu' => 'АО ТЕСТ',
+            'nameKz' => 'ТЕСТ АҚ',
+            'nameEn' => 'JS TEST',
             'bin' => '123456789012',
         ],
         'ttl' => 180,
+        'auth' => [
+            'type' => 'None', // Bearer
+            'token' => '',
+        ],
     ],
 ];
 ```
@@ -71,17 +93,24 @@ return [
 
 - `ncanode.host` - адрес и порт для подключения к NCANode;
 - `links.prefix` - префикс для формирования ссылки в QR-code;
-- `links.mobile` - шаблон для формирования кросс-ссылки при подписании в приложении Egov Mobile;
-- `links.business` - шаблон для формирования кросс-ссылки при подписании в приложении Egov Business;
+- `links.mobile` - шаблон для формирования кросс-ссылки при подписании в приложении _eGov mobile_;
+- `links.business` - шаблон для формирования кросс-ссылки при подписании в приложении _eGov business_;
+- `actions` - именованные роуты для взаимодействия с приложениями при QR-подписании;
 - `options.description` - название информационной системы;
 - `options.organisation` - сведения об организации;
-- `options.ttl` - время жизни одноразовых ссылок (в секундах).
+- `options.ttl` - время жизни одноразовых ссылок (в секундах);
+- `auth.type` - тип авторизации при формировании сервисных ссылок для QR-подписания, допустимые значения - `None`, `Bearer`;
+- `auth.token` - токен авторизации, в случае если он не задан для документа будет сформирован уникальный единоразовый токен.
 
 ## Использование
 
 ### Подписание и проверка XML данных
 
 ```php
+<?php
+
+namespace App\Controllers;
+
 use \Mitwork\Kalkan\Services\KalkanSignatureService;
 use \Mitwork\Kalkan\Services\KalkanValidationService;
 
@@ -126,6 +155,10 @@ class TestXmlController extends Controller
 ### Подписание, проверка и извлечение CMS данных
 
 ```php
+<?php
+
+namespace App\Controllers;
+
 use \Mitwork\Kalkan\Services\KalkanSignatureService;
 use \Mitwork\Kalkan\Services\KalkanValidationService;
 use \Mitwork\Kalkan\Services\KalkanExtractionService;
@@ -182,33 +215,41 @@ class TestCmsController extends Controller
 }
 ```
 
-### QR-подписание
+### QR, кросс-подписания
 
-Данный механизм позволяет подписывать данные с помощью смартфона с использованием приложений egov Mobile или egovBusiness, 
+Поскольку взаимодействие происходит по протоколу HTTP, данный пакет кроме сервисов содержит так же и готовые `Http\Actions` для выполнения всех требуемых шагов.
+
+#### QR-подписание
+
+Данный механизм позволяет подписывать данные с помощью смартфона с использованием приложений eGov mobile или eGov business, 
 когда проект открыт в браузере компьютера или планшета.
 
-Основные шаги:
+**Основные шаги:**
 
-1) Подготовка документа - документ может быть считан из файловой системы, облачного хранилища или базы данных. В случае работы с бинарными (CMS) данными, файл необходимо преобразовать в текст с помощью функции `base64_encode`;
-2) Формирование QR-кода;
-3) Считывание QR-кода, подписание и возврат подписанных данных;
-4) Обработка подписанных данных.
+1) [Подготовка документа](docs/STEP_10_STORE_DOCUMENT.md);
+2) [Формирование QR-кода](docs/STEP_11_GENERATE_QR_CODE.md);
+3) Считывание QR-кода мобильным приложением;
+4) [Генерация сервисных данных](docs/STEP_20_GENERATE_SERVICE_LINK.md);
+5) [Получение подписываемых данных](docs/STEP_30_PREPARE_CONTENT.md) мобильным приложением;
+6) Подписание данных;
+7) [Обработка подписанных данных](docs/STEP_40_PROCESS_CONTENT.md);
+8) [Проверка статуса подписания документа](docs/STEP_50_CHECK_DOCUMENT.md).
 
-Пример реализации и использования можно посмотреть в [файле](tests/ApplicationTestingTest.php) теста.
+#### Кросс-подписание
 
-### Кросс-подписание
-
-Данный механизм позволяет подписывать данные с помощью смартфона с использованием приложений egov Mobile или egovBusiness,
+Данный механизм позволяет подписывать данные с помощью смартфона с использованием приложений eGov Mobile или eGov Business,
 когда проект (сайт) открыт на самом смартфоне.
 
-Основные шаги:
+**Основные шаги:**
 
-1) Подготовка документа - документ может быть считан из файловой системы, облачного хранилища или базы данных. В случае работы с бинарными (CMS) данными, файл необходимо преобразовать в текст с помощью функции `base64_encode`;
-2) Формирование кросс-ссылок для клиента;
-3) Переход по кросс-ссылки, подписание и возврат подписанных данных;
-4) Обработка подписанных данных.
-
-Пример реализации и использования можно посмотреть в [файле](tests/ApplicationTestingTest.php) теста.
+1) [Подготовка документа](docs/STEP_10_STORE_DOCUMENT.md);
+2) [Формирование кросс-ссылок](docs/STEP_12_GENERATE_CROSS_LINKS.md);
+3) Переход по кросс-ссылке в мобильное приложение;
+4) [Генерация сервисных данных](docs/STEP_20_GENERATE_SERVICE_LINK.md);
+5) [Получение подписываемых данных](docs/STEP_30_PREPARE_CONTENT.md) мобильным приложением;
+6) Подписание данных;
+7) [Обработка подписанных данных](docs/STEP_40_PROCESS_CONTENT.md);
+8) [Проверка статуса подписания документа](docs/STEP_50_CHECK_DOCUMENT.md).
 
 ## Тестирование
 
@@ -222,4 +263,10 @@ class TestCmsController extends Controller
 
 ```shell
 NCANODE_DEBUG=true NCANODE_CRL_URL="http://test.pki.gov.kz/crl/nca_rsa_test.crl http://test.pki.gov.kz/crl/nca_gost_test.crl http://test.pki.gov.kz/crl/nca_gost_test_2022.crl" NCANODE_CRL_DELTA_URL="http://test.pki.gov.kz/crl/nca_d_rsa_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test_2022.crl" NCANODE_CA_URL="http://test.pki.gov.kz/cert/root_gost_test.cer http://test.pki.gov.kz/cert/root_rsa_test.cer http://test.pki.gov.kz/cert/root_test_gost_2022.cer http://test.pki.gov.kz/cert/nca_gost_test.cer http://test.pki.gov.kz/cert/nca_rsa_test.cer http://test.pki.gov.kz/cert/nca_gost2022_test.cer" NCANODE_OCSP_URL=http://test.pki.gov.kz/ocsp/ NCANODE_TSP_URL=http://test.pki.gov.kz/tsp/ java -jar NCANode-3.2.3.jar
+```
+
+Для работы с действительными сертификатами НУЦ РК, при тестировании приложение NCANode нужно запустить с параметрами по-умолчанию:
+
+```shell
+java -jar NCANode-3.2.3.jar
 ```

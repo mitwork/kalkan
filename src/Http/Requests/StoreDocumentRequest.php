@@ -22,11 +22,12 @@ class StoreDocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'number',
+            'id' => 'number|string',
             'name' => 'required|string',
-            'content' => 'string|required|max:200000',
+            'content' => 'string|required',
             'type' => [new Enum(ContentType::class)],
             'meta' => 'array',
+            'auth' => 'array',
         ];
     }
 }

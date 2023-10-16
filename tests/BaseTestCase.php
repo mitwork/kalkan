@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mitwork\Kalkan\Tests;
 
+use Illuminate\Support\Collection;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase;
 use Symfony\Component\Yaml\Yaml;
@@ -12,21 +13,25 @@ class BaseTestCase extends TestCase
 {
     use WithWorkbench;
 
-    protected array $certificates = [];
+    protected Collection $certificates;
 
     /**
      * Загрузка сертификатов
      *
-     * @param  string|null  $policy Политика применения
+     * @param  array  $filters Фильтры
      */
-    public function loadCertificates(string $policy = null): void
+    public function loadCertificates(array $filters = ['active' => true, 'policy' => 'sign']): void
     {
         $certificates = Yaml::parseFile(__DIR__.'/certificates.yml')['certificates'];
 
-        if ($policy) {
-            $certificates = collect($certificates)->where('policy', $policy)->all();
-        }
+        $this->certificates = collect($certificates)->filter(function ($item) use ($filters) {
+            foreach ($filters as $key => $value) {
+                if ($item[$key] !== $value) {
+                    return false;
+                }
+            }
 
-        $this->certificates = $certificates;
+            return true;
+        });
     }
 }
