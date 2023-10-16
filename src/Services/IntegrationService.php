@@ -170,6 +170,10 @@ class IntegrationService
             ],
         ];
 
+        if (count($document['meta']) === 0) {
+            unset($document['meta']);
+        }
+
         $this->documents['cms'][$id] = $document;
 
         return $document;
