@@ -16,7 +16,7 @@ class CacheDocumentService implements DocumentService
      */
     public function addDocument(string|int $id, array $content): bool
     {
-        return Cache::add($id, $content, config('kalkan.options.ttl'));
+        return Cache::add($id, $content, config('kalkan.ttl'));
     }
 
     /**

@@ -11,7 +11,7 @@ Route::get('/documents/generate-qr-code', [\Mitwork\Kalkan\Http\Actions\Generate
 // Щаг 1.2 - Генерация кросс-ссылок
 Route::get('/documents/generate-cross-links', [\Mitwork\Kalkan\Http\Actions\GenerateCrossLink::class, 'generate'])->name(config('kalkan.actions.generate-cross-links'));
 
-// Щаг 2 - Генерация сервисных данных
+// Щаг 2 - Генерация сервисной ссылки
 Route::get('/documents/generate-service-link', [\Mitwork\Kalkan\Http\Actions\GenerateServiceLink::class, 'generate'])->name(config('kalkan.actions.generate-service-link'));
 
 // Шаг 3 - Работа с данными - отдача

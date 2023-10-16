@@ -2,7 +2,7 @@
 
 namespace Mitwork\Kalkan\Services;
 
-use Mitwork\Kalkan\Enums\ContentType;
+use Mitwork\Kalkan\Enums\SignatureType;
 
 class IntegrationService
 {
@@ -82,11 +82,23 @@ class IntegrationService
      */
     public function addXmlDocument(int|string $id, string $name, string $content, array $meta = []): array
     {
+        $mime = '';
 
         if (count($meta) > 0) {
             foreach ($meta as $key => $value) {
+
                 if (is_array($value)) {
-                    $this->addMetaAttribute(key($value), $value[key($value)], $id);
+
+                    $metaKey = key($value);
+                    $metaValue = $value[key($value)];
+
+                    if ($metaKey === 'mime') {
+                        $mime = $metaValue;
+
+                        continue;
+                    }
+
+                    $this->addMetaAttribute($metaKey, $metaValue, $id);
                 } else {
                     $this->addMetaAttribute($key, $value, $id);
                 }
@@ -122,6 +134,7 @@ class IntegrationService
 
         if (count($meta) > 0) {
             foreach ($meta as $key => $value) {
+
                 if (is_array($value)) {
 
                     $metaKey = key($value);
@@ -129,6 +142,8 @@ class IntegrationService
 
                     if ($metaKey === 'mime') {
                         $mime = $metaValue;
+
+                        continue;
                     }
 
                     $this->addMetaAttribute($metaKey, $metaValue, $id);
@@ -147,8 +162,8 @@ class IntegrationService
             'document' => [
                 'file' => [
                     'mime' => $mime,
-                    'data' => $content
-                ]
+                    'data' => $content,
+                ],
             ],
         ];
 
@@ -163,7 +178,7 @@ class IntegrationService
     public function getXmlDocuments(string|int $key = null): array
     {
         return [
-            'signMethod' => 'XML',
+            'signMethod' => SignatureType::XML->value,
             'documentsToSign' => array_values($key ? [$this->documents['xml'][$key]] : $this->documents['xml']),
         ];
     }
@@ -174,7 +189,7 @@ class IntegrationService
     public function getCmsDocuments(string|int $key = null): array
     {
         return [
-            'signMethod' => 'CMS_WITH_DATA',
+            'signMethod' => SignatureType::CMS_WITH_DATA->value,
             'documentsToSign' => array_values($key ? [$this->documents['cms'][$key]] : $this->documents['cms']),
         ];
     }

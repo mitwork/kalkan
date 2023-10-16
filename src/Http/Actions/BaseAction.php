@@ -16,6 +16,6 @@ class BaseAction
      */
     public function generateSignedLink(string $route, array $params = [], int $ttl = 30): string
     {
-        return URL::temporarySignedRoute($route, $ttl ?: config('kalkan.options.ttl'), $params);
+        return URL::temporarySignedRoute($route, $ttl ?: config('kalkan.ttl'), $params);
     }
 }

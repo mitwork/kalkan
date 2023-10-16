@@ -26,10 +26,11 @@ return [
             'nameEn' => 'JS TEST',
             'bin' => '123456789012',
         ],
-        'ttl' => 180,
         'auth' => [
             'type' => 'None', // Bearer
             'token' => '',
         ],
     ],
+    'ttl' => 180,
+    'uid' => 'hrtime'
 ];

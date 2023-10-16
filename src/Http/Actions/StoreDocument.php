@@ -36,7 +36,15 @@ class StoreDocument extends BaseAction
      */
     public function store(StoreDocumentRequest $request): JsonResponse
     {
-        $id = $request->input('id', Str::uuid()->toString());
+        $uniqueId = null;
+
+        if (config('kalkan.uid') === 'uuid') {
+            $uniqueId = Str::uuid()->toString();
+        } elseif (config('kalkan.uid') === 'hrtime') {
+            $uniqueId = hrtime(true);
+        }
+
+        $id = $request->input('id', $uniqueId);
 
         $attributes = $request->validated();
 
