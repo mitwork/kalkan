@@ -7,6 +7,7 @@ use Mitwork\Kalkan\Enums\AuthType;
 use Mitwork\Kalkan\Enums\ContentType;
 use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
+use Mitwork\Kalkan\Events\DocumentRequested;
 use Mitwork\Kalkan\Http\Requests\FetchDocumentRequest;
 use Mitwork\Kalkan\Services\CacheDocumentService;
 use Mitwork\Kalkan\Services\IntegrationService;
@@ -75,6 +76,8 @@ class PrepareContent extends BaseAction
 
         }
 
-        return response()->json($response);
+        DocumentRequested::dispatch($id);
+
+        return response()->json($response, options: JSON_UNESCAPED_UNICODE);
     }
 }

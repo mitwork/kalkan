@@ -153,6 +153,9 @@ class IntegrationService
             }
         }
 
+        // @todo provide real mime or file extensions
+        // @see debug results
+
         $document = [
             'id' => $id,
             'nameRu' => $name,
@@ -161,7 +164,7 @@ class IntegrationService
             'meta' => $this->getMetaAttributes($id),
             'document' => [
                 'file' => [
-                    'mime' => $mime,
+                    'mime' => '@file/pdf',
                     'data' => $content,
                 ],
             ],
