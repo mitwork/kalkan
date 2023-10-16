@@ -158,9 +158,9 @@ class IntegrationService
 
         $document = [
             'id' => is_numeric($id) ? (int) $id : $id,
-            'nameRu' => 'Test',
-            'nameKz' => 'Test',
-            'nameEn' => 'Test',
+            'nameRu' => $name,
+            'nameKz' => $name,
+            'nameEn' => $name,
             'meta' => $this->getMetaAttributes($id),
             'document' => [
                 'file' => [
