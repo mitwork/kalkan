@@ -85,7 +85,11 @@ class IntegrationService
 
         if (count($meta) > 0) {
             foreach ($meta as $key => $value) {
-                $this->addMetaAttribute($key, $value, $id);
+                if (is_array($value)) {
+                    $this->addMetaAttribute(key($value), $value[key($value)], $id);
+                } else {
+                    $this->addMetaAttribute($key, $value, $id);
+                }
             }
         }
 
@@ -117,7 +121,11 @@ class IntegrationService
 
         if (count($meta) > 0) {
             foreach ($meta as $key => $value) {
-                $this->addMetaAttribute($key, $value, $id);
+                if (is_array($value)) {
+                    $this->addMetaAttribute(key($value), $value[key($value)], $id);
+                } else {
+                    $this->addMetaAttribute($key, $value, $id);
+                }
             }
         }
 
