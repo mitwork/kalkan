@@ -36,4 +36,12 @@ interface DocumentService
      * @return bool Результат обработки
      */
     public function processDocument(string|int $id): bool;
+
+    /**
+     * Отклонение документа
+     *
+     * @param  string|int  $id Уникальный идентификатор
+     * @param  string|null  $message Сообщение или ошибка
+     */
+    public function rejectDocument(string|int $id, string $message = null): bool;
 }

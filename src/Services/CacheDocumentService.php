@@ -74,6 +74,28 @@ class CacheDocumentService implements DocumentService
 
         $document['status'] = true;
         $document['result'] = $result;
+        $document['message'] = null;
+
+        return Cache::put($id, $document);
+    }
+
+    /**
+     * Отклонение документа
+     *
+     * @param  int|string  $id Идентификатор
+     * @return bool Статус отклонения
+     */
+    public function rejectDocument(int|string $id, string $message = null): bool
+    {
+        $document = Cache::get($id);
+
+        if (! $document) {
+            return false;
+        }
+
+        $document['status'] = false;
+        $document['result'] = null;
+        $document['message'] = $message;
 
         return Cache::put($id, $document);
     }

@@ -83,13 +83,22 @@ class ProcessContent extends BaseAction
 
                 DocumentRejected::dispatch($id, $message, $result);
 
-                return response()->json(['error' => $message], 422);
+                if ($this->documentService->rejectDocument($id, $message)) {
+                    return response()->json(['error' => $message], 422);
+                }
+
+                return response()->json(['error' => $message], 500);
             }
 
             if (! $this->documentService->processDocument($id, $result)) {
-                DocumentRejected::dispatch($id, __('kalkan::messages.unable_to_process_document'), $result);
 
-                return response()->json(['error' => __('kalkan::messages.unable_to_process_document')], 500);
+                $message = __('kalkan::messages.unable_to_process_document');
+
+                $this->documentService->rejectDocument($id, $message);
+
+                DocumentRejected::dispatch($id, $message, $result);
+
+                return response()->json(['error' => $message], 500);
             }
 
             DocumentSigned::dispatch($id, $document['content'], $signature, $result);
