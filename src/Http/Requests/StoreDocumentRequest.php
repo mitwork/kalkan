@@ -22,7 +22,7 @@ class StoreDocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'numeric|string',
+            'id' => 'alpha_num:ascii',
             'name' => 'required|string',
             'content' => 'string|required',
             'type' => [new Enum(ContentType::class)],
