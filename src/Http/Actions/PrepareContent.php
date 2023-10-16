@@ -78,6 +78,6 @@ class PrepareContent extends BaseAction
 
         DocumentRequested::dispatch($id);
 
-        return response()->json($response, options: JSON_UNESCAPED_UNICODE);
+        return response()->json($response);
     }
 }

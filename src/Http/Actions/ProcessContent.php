@@ -69,7 +69,7 @@ class ProcessContent extends BaseAction
                 $signature = $signedDocument['documentXml'];
                 $result = $this->validationService->verifyXml($signature, raw: true);
             } else {
-                $signature = $signedDocument['documentCms'];
+                $signature = $signedDocument['document']['file']['data'];
                 $result = $this->validationService->verifyCms($signature, $document['content'], raw: true);
             }
 
