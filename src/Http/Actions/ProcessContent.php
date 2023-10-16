@@ -5,6 +5,7 @@ namespace Mitwork\Kalkan\Http\Actions;
 use Illuminate\Http\JsonResponse;
 use Mitwork\Kalkan\Enums\AuthType;
 use Mitwork\Kalkan\Enums\ContentType;
+use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
 use Mitwork\Kalkan\Events\DocumentRejected;
 use Mitwork\Kalkan\Events\DocumentSigned;
@@ -56,6 +57,8 @@ class ProcessContent extends BaseAction
                     'message' => __('kalkan::messages.wrong_bearer_token'),
                 ], 403);
             }
+
+            AuthAccepted::dispatch($id, $token);
         }
 
         $documents = $request->input('documentsToSign');
@@ -64,25 +67,32 @@ class ProcessContent extends BaseAction
 
             if ($document['type'] === ContentType::XML->value) {
                 $signature = $signedDocument['documentXml'];
-                $result = $this->validationService->verifyXml($signature);
+                $result = $this->validationService->verifyXml($signature, raw: true);
             } else {
                 $signature = $signedDocument['documentCms'];
-                $result = $this->validationService->verifyCms($signature, $document['content']);
+                $result = $this->validationService->verifyCms($signature, $document['content'], raw: true);
             }
 
-            if ($result !== true) {
-                DocumentRejected::dispatch($id, $this->validationService->getError());
+            if (! isset($result['valid']) || $result['valid'] !== true) {
 
-                return response()->json(['error' => $this->validationService->getError()], 422);
+                $message = $this->validationService->getError();
+
+                if (! $message) {
+                    $message = __('kalkan::messages.unable_to_process_document');
+                }
+
+                DocumentRejected::dispatch($id, $message, $result);
+
+                return response()->json(['error' => $message], 422);
             }
 
-            if (! $this->documentService->processDocument($id)) {
-                DocumentRejected::dispatch($id, __('kalkan::messages.unable_to_process_document'));
+            if (! $this->documentService->processDocument($id, $result)) {
+                DocumentRejected::dispatch($id, __('kalkan::messages.unable_to_process_document'), $result);
 
                 return response()->json(['error' => __('kalkan::messages.unable_to_process_document')], 500);
             }
 
-            DocumentSigned::dispatch($id, $document['content'], $signature);
+            DocumentSigned::dispatch($id, $document['content'], $signature, $result);
         }
 
         return response()->json([]);

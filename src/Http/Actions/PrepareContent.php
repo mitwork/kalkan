@@ -5,6 +5,7 @@ namespace Mitwork\Kalkan\Http\Actions;
 use Illuminate\Http\JsonResponse;
 use Mitwork\Kalkan\Enums\AuthType;
 use Mitwork\Kalkan\Enums\ContentType;
+use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
 use Mitwork\Kalkan\Http\Requests\FetchDocumentRequest;
 use Mitwork\Kalkan\Services\CacheDocumentService;
@@ -56,6 +57,8 @@ class PrepareContent extends BaseAction
                     'message' => __('kalkan::messages.wrong_bearer_token'),
                 ], 403);
             }
+
+            AuthAccepted::dispatch($id, $token);
         }
 
         if (! isset($document['meta'])) {

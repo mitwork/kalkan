@@ -29,6 +29,10 @@ class CheckDocument extends BaseAction
             ], 404);
         }
 
-        return response()->json(['status' => $status]);
+        if ($status === false) {
+            return response()->json(['status' => false]);
+        }
+
+        return response()->json($status);
     }
 }

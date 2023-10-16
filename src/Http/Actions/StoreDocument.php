@@ -36,7 +36,7 @@ class StoreDocument extends BaseAction
      */
     public function store(StoreDocumentRequest $request): JsonResponse
     {
-        $id = $request->input('id', Str::uuid());
+        $id = $request->input('id', Str::uuid()->toString());
 
         $attributes = $request->validated();
 

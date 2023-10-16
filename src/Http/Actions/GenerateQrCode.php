@@ -27,8 +27,8 @@ class GenerateQrCode extends BaseAction
         $result = $this->qrCodeGenerationService->generate($link);
 
         return response()->json([
-            'image' => $result->getDataUri(),
-            'link' => $link,
+            'uri' => $result->getDataUri(),
+            'raw' => base64_encode($result->getString()),
         ]);
     }
 }

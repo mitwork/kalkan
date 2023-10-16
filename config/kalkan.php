@@ -12,7 +12,7 @@ return [
     'actions' => [
         'store-document' => 'store-document',
         'generate-qr-code' => 'generate-qr-code',
-        'generate-cross-link' => 'generate-cross-link',
+        'generate-cross-links' => 'generate-cross-links',
         'generate-service-link' => 'generate-service-link',
         'prepare-content' => 'prepare-content',
         'process-content' => 'process-content',
@@ -22,8 +22,8 @@ return [
         'description' => 'Test',
         'organisation' => [
             'nameRu' => 'АО "ТЕСТ"',
-            'nameKz' => '"ТЕСТ" ЖК',
-            'nameEn' => 'OP "TEST"',
+            'nameKz' => 'ТЕСТ АҚ',
+            'nameEn' => 'JS TEST',
             'bin' => '123456789012',
         ],
         'ttl' => 180,

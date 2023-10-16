@@ -34,9 +34,9 @@ class CacheDocumentService implements DocumentService
      * Проверка статус подписания документа
      *
      * @param  string|int  $id Идентификатор
-     * @return bool|null Результат
+     * @return array|bool|null Результат
      */
-    public function checkDocument(string|int $id): ?bool
+    public function checkDocument(string|int $id): array|bool|null
     {
         $document = Cache::get($id);
 
@@ -44,16 +44,21 @@ class CacheDocumentService implements DocumentService
             return null;
         }
 
-        return isset($document['status']) && $document['status'] === true;
+        if (! isset($document['status'])) {
+            return false;
+        }
+
+        return collect($document)->only(['status', 'result'])->all();
     }
 
     /**
      * Обработка документа
      *
      * @param  string|int  $id Идентификатор
+     * @param  array  $result Результат проверки
      * @return bool Статус обработки
      */
-    public function processDocument(string|int $id): bool
+    public function processDocument(string|int $id, array $result = []): bool
     {
         if (isset($this->documents['cms'][$id])) {
             unset($this->documents['cms'][$id]);
@@ -68,6 +73,7 @@ class CacheDocumentService implements DocumentService
         }
 
         $document['status'] = true;
+        $document['result'] = $result;
 
         return Cache::put($id, $document);
     }

@@ -50,7 +50,7 @@ class IntegrationService
     public function addMetaAttribute(string $name, mixed $value, int|string $key = null): void
     {
         if ($key) {
-            $this->meta[$key] = ['name' => $name, 'value' => $value];
+            $this->meta[$key][] = ['name' => $name, 'value' => $value];
         } else {
             $this->meta[] = ['name' => $name, 'value' => $value];
         }

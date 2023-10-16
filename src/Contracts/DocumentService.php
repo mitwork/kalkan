@@ -25,9 +25,9 @@ interface DocumentService
      * Проверка статуса подписания документа
      *
      * @param  string|int  $id Уникальный идентификатор
-     * @return bool|null Результат проверки
+     * @return array|bool|null Результат проверки
      */
-    public function checkDocument(string|int $id): ?bool;
+    public function checkDocument(string|int $id): array|bool|null;
 
     /**
      * Обработка подписанного документа

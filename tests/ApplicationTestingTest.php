@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Mitwork\Kalkan\Enums\AuthType;
 use Mitwork\Kalkan\Enums\ContentType;
+use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
 use Mitwork\Kalkan\Events\DocumentSaved;
 use Mitwork\Kalkan\Events\DocumentSigned;
@@ -21,9 +22,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
     public function testSingleCmsSigning(): void
     {
-        $this->loadCertificates('sign');
-
-        // $this->app['config']->set('kalkan.options.ttl', '1');
+        $this->loadCertificates();
 
         $certificates = $this->certificates;
 
@@ -66,7 +65,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
             // Проверка статуса после подписания
 
-            $response = $this->get(route('check-document', $id));
+            $response = $this->get(route(config('kalkan.actions.check-document'), $id));
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
             $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
@@ -117,7 +116,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
         // Проверка статуса после подписания
 
-        $response = $this->get(route('check-document', $id));
+        $response = $this->get(route(config('kalkan.actions.check-document'), $id));
 
         $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, 'CMS Multi', $response->getContent()));
         $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, 'CMS Multi', $response->getContent()));
@@ -127,7 +126,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
     public function testSingleXmlSigning(): void
     {
-        $this->loadCertificates('sign');
+        $this->loadCertificates();
 
         $certificates = $this->certificates;
 
@@ -170,7 +169,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
             // Проверка статуса после подписания
 
-            $response = $this->get(route('check-document', $id));
+            $response = $this->get(route(config('kalkan.actions.check-document'), $id));
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
             $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
@@ -180,7 +179,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
     public function testUniqueBearerServiceLink(): void
     {
-        $this->loadCertificates('sign');
+        $this->loadCertificates();
 
         $this->app['config']->set('kalkan.options.auth.type', AuthType::BEARER->value);
 
@@ -219,13 +218,17 @@ final class ApplicationTestingTest extends BaseTestCase
 
             // Отправка подписанных данных
 
+            Event::fake();
+
             $response = $this->put($response['link'], $message, $headers);
+
+            Event::assertDispatched(AuthAccepted::class);
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
 
             // Проверка статуса после подписания
 
-            $response = $this->get(route('check-document', $id));
+            $response = $this->get(route(config('kalkan.actions.check-document'), $id));
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
             $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
@@ -235,7 +238,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
     public function testHardcodedBearerServiceLink(): void
     {
-        $this->loadCertificates('sign');
+        $this->loadCertificates();
 
         $this->app['config']->set('kalkan.options.auth.type', AuthType::BEARER->value);
         $this->app['config']->set('kalkan.options.auth.token', 'some-hardcoded-token');
@@ -285,7 +288,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
             // Проверка статуса после подписания
 
-            $response = $this->get(route('check-document', $id));
+            $response = $this->get(route(config('kalkan.actions.check-document'), $id));
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
             $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
@@ -295,7 +298,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
     public function testWrongBearerServiceLink(): void
     {
-        $this->loadCertificates('sign');
+        $this->loadCertificates();
 
         $this->app['config']->set('kalkan.options.auth.type', AuthType::BEARER->value);
 
@@ -316,10 +319,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $response = $this->prepareDocument($data, $certificate['title']);
 
-            $id = $response['id'];
-
             $message = $response['message'];
-            $headers = $response['headers'];
 
             $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
 
@@ -355,7 +355,7 @@ final class ApplicationTestingTest extends BaseTestCase
     {
         Event::fake();
 
-        $response = $this->post(route('store-document'), $data);
+        $response = $this->post(route(config('kalkan.actions.store-document')), $data);
 
         $this->assertTrue($response->isOk(), sprintf('[%s] Некорректный ответ статуса сохранения документа', $prefix));
         $this->assertArrayHasKey('id', $response, sprintf('[%s] Отсутствует идентификатор сохраненного документа', $prefix));
@@ -363,31 +363,30 @@ final class ApplicationTestingTest extends BaseTestCase
         Event::assertDispatched(DocumentSaved::class);
 
         $id = $response['id'];
+        $link = $response['url'];
 
-        // Проверка статуса после подписания
+        // Проверка статуса до подписания
 
-        $response = $this->get(route('check-document', $id));
+        $response = $this->get(route(config('kalkan.actions.check-document'), $id));
 
         $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $prefix, $response->getContent()));
         $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $prefix, $response->getContent()));
         $this->assertFalse($response['status'], sprintf('[%s] Некорректный статус для неподписанного документа %s: %s', $id, $prefix, $response->getContent()));
 
-        $response = $this->get(route('generate-cross-link', ['id' => $id]));
+        $response = $this->get(route(config('kalkan.actions.generate-cross-links'), ['id' => $id]));
 
         $this->assertTrue($response->isOk(), sprintf('[%s] Некорректный ответ при формировании cross-ссылок', $prefix));
 
-        $response = $this->get(route('generate-qr-code', ['id' => $id]));
+        $response = $this->get(route(config('kalkan.actions.generate-qr-code'), ['id' => $id]));
 
         $this->assertTrue($response->isOk(), sprintf('[%s] Некорректный ответ при запросе QR-кода', $prefix));
 
-        $this->assertArrayHasKey('image', $response, 'Отсутствует изображение');
-        $this->assertArrayHasKey('link', $response, 'Отсутствует ссылка');
-
-        $link = $response['link'];
+        $this->assertArrayHasKey('uri', $response, sprintf('[%s] Отсутствует изображение', $prefix));
+        $this->assertArrayHasKey('raw', $response, sprintf('[%s] Отсутствует ссылка', $prefix));
 
         $response = $this->get($link);
 
-        $this->assertTrue($response->isOk(), sprintf('[%s] Отсутствуют метаданные', $prefix));
+        $this->assertTrue($response->isOk(), sprintf('[%s] Отсутствуют сервисные данные', $prefix));
 
         $link = $response['document']['uri'];
 

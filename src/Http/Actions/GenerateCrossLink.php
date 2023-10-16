@@ -20,8 +20,8 @@ class GenerateCrossLink extends BaseAction
         $link = $this->generateSignedLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
 
         return response()->json([
-            'person' => sprintf(config('kalkan.links.mobile'), urlencode($link)),
-            'legal' => sprintf(config('kalkan.links.business'), urlencode($link))]
+            'mobile' => sprintf(config('kalkan.links.mobile'), urlencode($link)),
+            'business' => sprintf(config('kalkan.links.business'), urlencode($link))]
         );
     }
 }

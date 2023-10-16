@@ -2,7 +2,7 @@ certificates:
 
   - title: Юридическое лицо (GOST2015)
     password: Qwerty12
-    type: gost2015
+    active: true
     policy: sign
     content: |
       MIIHRwIBAzCCBwEGCSqGSIb3DQEHAaCCBvIEggbuMIAwgAYJKoZIhvcNAQcBoIAEggFAMIIBPDCCATgGCyqGSIb3DQEMCgECoIGfMIGcMCgGCiqGSIb3DQEM
@@ -29,7 +29,7 @@ certificates:
 
   - title: Юридическое лицо (GOST2004)
     password: Qwerty12
-    type: gost2004
+    active: true
     policy: sign
     content: |
       MIIGlwIBAzCCBlEGCSqGSIb3DQEHAaCCBkIEggY+MIAwgAYJKoZIhvcNAQcBoIAEggEoMIIBJDCCASAGCyqGSIb3DQEMCgECoIGHMIGEMCgGCiqGSIb3DQEM
@@ -54,7 +54,7 @@ certificates:
 
   - title: Юридическое лицо (RSA)
     password: Qwerty12
-    type: rsa
+    active: true
     policy: auth
     content: |
       MIINgwIBAzCCDT0GCSqGSIb3DQEHAaCCDS4Egg0qMIAwgAYJKoZIhvcNAQcBoIAEggWcMIIFmDCCBZQGCyqGSIb3DQEMCgECoIIE+jCCBPYwKAYKKoZIhvcN
@@ -99,7 +99,7 @@ certificates:
 
   - title: Физическое лицо (GOST2015)
     password: Qwerty12
-    type: gost2015
+    active: true
     policy: sign
     content: |
       MIIHDwIBAzCCBskGCSqGSIb3DQEHAaCCBroEgga2MIAwgAYJKoZIhvcNAQcBoIAEggFAMIIBPDCCATgGCyqGSIb3DQEMCgECoIGfMIGcMCgGCiqGSIb3DQEMA
@@ -125,7 +125,7 @@ certificates:
 
   - title: Физическое лицо (RSA AUTH)
     password: Qwerty12
-    type: rsa
+    active: true
     policy: auth
     content: |
       MIINQwIBAzCCDP0GCSqGSIb3DQEHAaCCDO4EggzqMIAwgAYJKoZIhvcNAQcBoIAEggWcMIIFmDCCBZQGCyqGSIb3DQEMCgECoIIE+jCCBPYwKAYKKoZIhvcN
@@ -169,7 +169,7 @@ certificates:
 
   - title: Физическое лицо (RSA SIGN)
     password: Qwerty12
-    type: rsa
+    active: true
     policy: sign
     content: |
       MIINQwIBAzCCDP0GCSqGSIb3DQEHAaCCDO4EggzqMIAwgAYJKoZIhvcNAQcBoIAEggWcMIIFmDCCBZQGCyqGSIb3DQEMCgECoIIE+jCCBPYwKAYKKoZIhvcN
@@ -213,8 +213,8 @@ certificates:
 
   - title: Физическое лицо (GOST2015 REVOKED)
     password: Qwerty12
-    type: gost2015
-    policy: revoked
+    active: false
+    policy: sign
     content: |
       MIIHDwIBAzCCBskGCSqGSIb3DQEHAaCCBroEgga2MIAwgAYJKoZIhvcNAQcBoIAEggFAMIIBPDCCATgGCyqGSIb3DQEMCgECoIGfMIGcMCgGCiqGSIb3DQEMA
       QMwGgQUyklzBABXYeKGdSt+hoS3u8cweuQCAgQABHANPwLWlKcTZcSvy5L+uIUPoNWKe3wme+2WRw8yjvZh55xsHaKSIBlR0cHgtIupsaPDurI4kBkQxEOthI
