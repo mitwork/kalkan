@@ -157,10 +157,10 @@ class IntegrationService
         // @see debug results
 
         $document = [
-            'id' => $id,
-            'nameRu' => $name,
-            'nameKz' => $name,
-            'nameEn' => $name,
+            'id' => is_numeric($id) ? (int) $id : $id,
+            'nameRu' => 'Test',
+            'nameKz' => 'Test',
+            'nameEn' => 'Test',
             'meta' => $this->getMetaAttributes($id),
             'document' => [
                 'file' => [
