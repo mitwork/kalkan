@@ -164,7 +164,7 @@ class IntegrationService
             'meta' => $this->getMetaAttributes($id),
             'document' => [
                 'file' => [
-                    'mime' => '@file/pdf',
+                    'mime' => $mime,
                     'data' => $content,
                 ],
             ],
