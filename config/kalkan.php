@@ -21,7 +21,7 @@ return [
     'options' => [
         'description' => 'Test',
         'organisation' => [
-            'nameRu' => 'АО "ТЕСТ"',
+            'nameRu' => 'АО ТЕСТ',
             'nameKz' => 'ТЕСТ АҚ',
             'nameEn' => 'JS TEST',
             'bin' => '123456789012',

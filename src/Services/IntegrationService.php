@@ -141,7 +141,7 @@ class IntegrationService
     public function getXmlDocuments(string|int $key = null): array
     {
         return [
-            'signMethod' => ContentType::XML->value,
+            'signMethod' => strtoupper(ContentType::XML->value),
             'documentsToSign' => array_values($key ? [$this->documents['xml'][$key]] : $this->documents['xml']),
         ];
     }
@@ -152,7 +152,7 @@ class IntegrationService
     public function getCmsDocuments(string|int $key = null): array
     {
         return [
-            'signMethod' => ContentType::CMS->value,
+            'signMethod' => strtoupper(ContentType::CMS->value),
             'documentsToSign' => array_values($key ? [$this->documents['cms'][$key]] : $this->documents['cms']),
         ];
     }
