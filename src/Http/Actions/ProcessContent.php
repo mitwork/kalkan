@@ -89,10 +89,10 @@ class ProcessContent extends BaseAction
                 DocumentRejected::dispatch($id, $message, $result);
 
                 if ($this->documentService->rejectDocument($id, $message)) {
-                    return response()->json(['error' => $message], 422);
+                    return response()->json(['error' => $message, 'result' => $result], 422);
                 }
 
-                return response()->json(['error' => $message], 500);
+                return response()->json(['error' => $message, 'result' => $result], 500);
             }
 
             if (! $this->documentService->processDocument($id, $result)) {
