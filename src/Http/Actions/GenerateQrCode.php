@@ -3,7 +3,7 @@
 namespace Mitwork\Kalkan\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Mitwork\Kalkan\Http\Requests\FetchDocumentRequest;
+use Mitwork\Kalkan\Http\Requests\FetchRequestRequest;
 use Mitwork\Kalkan\Services\QrCodeGenerationService;
 
 class GenerateQrCode extends BaseAction
@@ -20,15 +20,17 @@ class GenerateQrCode extends BaseAction
      * необходимо получить QR-код и ссылку для того
      * чтобы можно было отобразить ее в интерфейсе.
      */
-    public function generate(FetchDocumentRequest $request): JsonResponse
+    public function generate(FetchRequestRequest $request): JsonResponse
     {
         $id = $request->input('id');
-        $link = $this->generateSignedLink(config('kalkan.actions.generate-service-link'), ['id' => $id]);
-        $result = $this->qrCodeGenerationService->generate($link);
+
+        $link = $this->generateSignedLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
+
+        $data = $this->qrCodeGenerationService->generate($link);
 
         return response()->json([
-            'uri' => $result->getDataUri(),
-            'raw' => base64_encode($result->getString()),
+            'uri' => $data->getDataUri(),
+            'raw' => base64_encode($data->getString()),
         ]);
     }
 }

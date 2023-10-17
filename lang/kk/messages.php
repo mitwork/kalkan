@@ -7,4 +7,5 @@ return [
     'document_not_found' => 'Құжат табылмады.',
     'empty_bearer_token' => 'Рұқсат беру белгісі жоқ.',
     'wrong_bearer_token' => 'Рұқсат ету белгісі жарамсыз.',
+    'cache_not_found' => 'Кэш табылмады.',
 ];

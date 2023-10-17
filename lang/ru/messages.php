@@ -7,4 +7,5 @@ return [
     'document_not_found' => 'Документ не найден.',
     'empty_bearer_token' => 'Отсутствует токен авторизации.',
     'wrong_bearer_token' => 'Некорректный токен авторизации.',
+    'cache_not_found' => 'Кэш не найден.',
 ];

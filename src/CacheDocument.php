@@ -8,34 +8,26 @@ class CacheDocument implements AbstractDocument
 {
     public string $name;
 
-    public string $content;
+    public string $data;
 
-    public string|null $description = null;
+    public ?string $description = null;
 
     public array $meta;
-
-    public array $auth;
 
     private array $attributes;
 
     public function __construct(array $attributes)
     {
-        $this->attributes = $attributes;
-
         $this->name = $attributes['name'];
-        $this->content = $attributes['content'];
+        $this->data = $attributes['data'];
 
-        if (!empty($attributes['description'])) {
+        if (! empty($attributes['description'])) {
             $this->description = $attributes['description'];
         }
 
         $this->meta = $attributes['meta'];
 
-        if (! isset($attributes['auth'])) {
-            $attributes['auth'] = [];
-        }
-
-        $this->auth = $attributes['auth'];
+        $this->attributes = $attributes;
     }
 
     public function attributes(): array

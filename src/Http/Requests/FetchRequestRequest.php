@@ -3,8 +3,9 @@
 namespace Mitwork\Kalkan\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Mitwork\Kalkan\Rules\CacheValueExists;
 
-class StoreDocumentRequest extends FormRequest
+class FetchRequestRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,11 +21,7 @@ class StoreDocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'alpha_num:ascii|nullable',
-            'name' => 'required|string',
-            'data' => 'string|required',
-            'size' => 'numeric',
-            'meta' => 'array',
+            'id' => ['required', new CacheValueExists],
         ];
     }
 }

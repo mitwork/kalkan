@@ -4,13 +4,14 @@ namespace Mitwork\Kalkan\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
 use Mitwork\Kalkan\Enums\AuthType;
-use Mitwork\Kalkan\Enums\ContentType;
 use Mitwork\Kalkan\Enums\DocumentStatus;
 use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
 use Mitwork\Kalkan\Events\DocumentRequested;
+use Mitwork\Kalkan\Events\RequestRequested;
 use Mitwork\Kalkan\Http\Requests\FetchDocumentRequest;
 use Mitwork\Kalkan\Services\CacheDocumentService;
+use Mitwork\Kalkan\Services\CacheRequestService;
 use Mitwork\Kalkan\Services\IntegrationService;
 
 class PrepareContent extends BaseAction
@@ -18,6 +19,7 @@ class PrepareContent extends BaseAction
     public function __construct(
         public CacheDocumentService $documentService,
         public IntegrationService $integrationService,
+        public CacheRequestService $requestService
     ) {
     }
 
@@ -30,11 +32,11 @@ class PrepareContent extends BaseAction
     {
         $id = $request->input('id');
 
-        $document = $this->documentService->getDocument($id);
+        $document = $this->requestService->get($id);
 
         if (! $document) {
             return response()->json([
-                'message' => __('kalkan::messages.unable_to_get_document'),
+                'message' => __('kalkan::messages.unable_to_get_request'),
             ], 500);
         }
 
@@ -67,23 +69,41 @@ class PrepareContent extends BaseAction
             AuthAccepted::dispatch($id, $token);
         }
 
-        if (! isset($document['meta'])) {
-            $document['meta'] = [];
+        $files = $document['files'];
+
+        $response = [
+            'signMethod' => '',
+            'documentsToSign' => [],
+        ];
+
+        foreach ($files as $file) {
+
+            if (! isset($file['meta'])) {
+                $file['meta'] = [];
+            }
+
+            $attributes = collect($file['meta']);
+            $mimeType = $attributes->get('mime');
+
+            if ($mimeType === 'text/xml') {
+                $this->integrationService->addXmlDocument($id, $file['id'], $file['name'], $file['data'], $file['meta']);
+                $document = $this->integrationService->getXmlDocuments($id);
+
+            } else {
+                $this->integrationService->addCmsDocument($id, $file['id'], $file['name'], $file['data'], $file['meta']);
+                $document = $this->integrationService->getCmsDocuments($id);
+
+            }
+
+            $response['signMethod'] = $document['signMethod'];
+            $response['documentsToSign'][] = $document['documentsToSign'][0];
+
+            $this->documentService->update($id, DocumentStatus::REQUESTED);
+
+            DocumentRequested::dispatch($id, $request->all(), $document);
         }
 
-        if ($document['type'] === ContentType::XML->value) {
-            $this->integrationService->addXmlDocument($id, $document['name'], $document['content'], $document['meta']);
-            $response = $this->integrationService->getXmlDocuments($id);
-
-        } else {
-            $this->integrationService->addCmsDocument($id, $document['name'], $document['content'], $document['meta']);
-            $response = $this->integrationService->getCmsDocuments($id);
-
-        }
-
-        $this->documentService->changeStatus($id, DocumentStatus::REQUESTED);
-
-        DocumentRequested::dispatch($id, $request->all(), $response);
+        RequestRequested::dispatch($id, $request->all(), $response);
 
         return response()->json($response);
     }

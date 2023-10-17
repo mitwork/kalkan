@@ -27,12 +27,10 @@ class IntegrationService
      */
     public function prepareServiceData(string $uri, string $authType = 'None', string $authToken = '', string $description = null): array
     {
-        $options = config('kalkan.options');
-
         return [
-            'description' => $description ?: $options['description'],
-            'expiry_date' => date('c', time() + $options['ttl']),
-            'organisation' => $options['organisation'],
+            'description' => $description ?: config('kalkan.options.description'),
+            'expiry_date' => date('c', time() + config('kalkan.ttl')),
+            'organisation' => config('kalkan.options.organisation'),
             'document' => [
                 'uri' => $uri,
                 'auth_type' => $authType,
@@ -81,7 +79,7 @@ class IntegrationService
      * @param  array  $meta Метаданные
      * @return array Данные документа
      */
-    public function addXmlDocument(int|string $id, string $name, string $content, array $meta = []): array
+    public function addXmlDocument(int|string $requestId, int|string $id, string $name, string $content, array $meta = []): array
     {
         if (count($meta) > 0) {
             foreach ($meta as $key => $value) {
@@ -120,7 +118,7 @@ class IntegrationService
             unset($document['meta']);
         }
 
-        $this->documents['xml'][$id] = $document;
+        $this->documents['xml'][$requestId] = $document;
 
         return $document;
     }
@@ -134,7 +132,7 @@ class IntegrationService
      * @param  array  $meta Метаданные
      * @return array Данные документа
      */
-    public function addCmsDocument(int|string $id, string $name, string $content, array $meta = []): array
+    public function addCmsDocument(int|string $requestId, int|string $id, string $name, string $content, array $meta = []): array
     {
         $mime = '';
 
@@ -182,7 +180,7 @@ class IntegrationService
             unset($document['meta']);
         }
 
-        $this->documents['cms'][$id] = $document;
+        $this->documents['cms'][$requestId] = $document;
 
         return $document;
     }

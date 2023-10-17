@@ -3,32 +3,27 @@
 namespace Mitwork\Kalkan\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Mitwork\Kalkan\Http\Requests\FetchDocumentRequest;
-use Mitwork\Kalkan\Services\CacheDocumentService;
+use Mitwork\Kalkan\Http\Requests\FetchRequestRequest;
+use Mitwork\Kalkan\Services\CacheRequestService;
 use Mitwork\Kalkan\Services\IntegrationService;
 
 class GenerateServiceLink extends BaseAction
 {
     public function __construct(
         public IntegrationService $integrationService,
-        public CacheDocumentService $documentService,
+        public CacheRequestService $requestService,
     ) {
     }
 
     /**
      * Шаг 2 - генерация сервисных данных
      */
-    public function generate(FetchDocumentRequest $request): JsonResponse
+    public function generate(FetchRequestRequest $request): JsonResponse
     {
         $id = $request->input('id');
-        $document = $this->documentService->getDocument($id);
+        $document = $this->requestService->get($id);
 
         $auth = $document['auth'];
-        $description = null;
-
-        if (isset($document['description'])) {
-            $description = $document['description'];
-        }
 
         $link = $this->generateSignedLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
 
@@ -36,7 +31,7 @@ class GenerateServiceLink extends BaseAction
             $link,
             $auth['type'],
             $auth['token'],
-            $description,
+            $document['description'] ?? null,
         );
 
         return response()->json($data);

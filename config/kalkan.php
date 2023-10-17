@@ -11,12 +11,14 @@ return [
     ],
     'actions' => [
         'store-document' => 'store-document',
+        'store-request' => 'store-request',
         'generate-qr-code' => 'generate-qr-code',
         'generate-cross-links' => 'generate-cross-links',
         'generate-service-link' => 'generate-service-link',
         'prepare-content' => 'prepare-content',
         'process-content' => 'process-content',
         'check-document' => 'check-document',
+        'check-request' => 'check-request',
     ],
     'options' => [
         'description' => 'Test',

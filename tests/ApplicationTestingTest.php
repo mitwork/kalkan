@@ -7,7 +7,8 @@ namespace Mitwork\Kalkan\Tests;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Mitwork\Kalkan\Enums\AuthType;
-use Mitwork\Kalkan\Enums\ContentType;
+use Mitwork\Kalkan\Enums\DocumentStatus;
+use Mitwork\Kalkan\Enums\RequestStatus;
 use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
 use Mitwork\Kalkan\Events\DocumentRejected;
@@ -33,14 +34,14 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $data = [
                 'name' => 'hello cms',
-                'content' => base64_encode($content),
-                'type' => ContentType::CMS->value,
+                'data' => base64_encode($content),
                 'meta' => [
+                    'mime' => 'text/plain',
                     'certificate' => $certificate['title'],
                 ],
             ];
 
-            $response = $this->prepareDocument($data, $certificate['title']);
+            $response = $this->prepareRequest([$data], $certificate['title']);
 
             $id = $response['id'];
 
@@ -49,13 +50,17 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
 
+            $ids = [];
+
             foreach ($message['documentsToSign'] as &$document) {
 
-                $status = $signatureService->signCms($document['documentCms'], $certificate['content'], $certificate['password']);
+                $status = $signatureService->signCms($document['document']['file']['data'], $certificate['content'], $certificate['password']);
 
                 if ($status) {
-                    $document['documentCms'] = $status;
+                    $document['document']['file']['data'] = $status;
                 }
+
+                $ids[] = $document['id'];
             }
 
             // Отправка подписанных данных
@@ -64,13 +69,24 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
 
-            // Проверка статуса после подписания
+            // Проверка статуса заявки после подписания
 
-            $response = $this->get(route(config('kalkan.actions.check-document'), $id));
+            $response = $this->get(route(config('kalkan.actions.check-request'), $id));
 
-            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
-            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
-            $this->assertTrue($response['status'], sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса запроса %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус заявки %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertTrue($response['status'] === RequestStatus::PROCESSED->value, sprintf('[%s] Некорректный статус для обработанной заявки %s: %s', $id, $certificate['title'], $response->getContent()));
+
+            // Проверка статуса документов после подписания
+
+            foreach ($ids as $id) {
+
+                $response = $this->get(route(config('kalkan.actions.check-document'), $id));
+
+                $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
+                $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
+                $this->assertTrue($response['status'] === DocumentStatus::SIGNED->value, sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            }
         }
     }
 
@@ -81,16 +97,25 @@ final class ApplicationTestingTest extends BaseTestCase
         $content = Str::random(64);
         $certificates = [$this->certificates[0], $this->certificates[1]];
 
-        $data = [
-            'name' => 'hello multi cms',
-            'content' => base64_encode($content),
-            'type' => ContentType::CMS->value,
+        $file1 = [
+            'name' => 'hello multi cms 1',
+            'data' => base64_encode($content),
+            'mime' => 'text/plain',
             'meta' => [
                 'certificate' => collect($certificates)->map(fn ($item) => $item['title']),
             ],
         ];
 
-        $response = $this->prepareDocument($data, 'CMS Multi');
+        $file2 = [
+            'name' => 'hello multi cms 2',
+            'data' => base64_encode(strrev($content)),
+            'mime' => 'text/plain',
+            'meta' => [
+                'certificate' => collect($certificates)->map(fn ($item) => $item['title']),
+            ],
+        ];
+
+        $response = $this->prepareRequest([$file1, $file2], 'CMS Multi');
 
         $id = $response['id'];
 
@@ -99,30 +124,38 @@ final class ApplicationTestingTest extends BaseTestCase
 
         $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
 
+        $ids = [];
+
         foreach ($message['documentsToSign'] as &$document) {
 
             foreach ($certificates as $certificate) {
-                $status = $signatureService->signCms($document['documentCms'], $certificate['content'], $certificate['password']);
+                $status = $signatureService->signCms($document['document']['file']['data'], $certificate['content'], $certificate['password']);
 
                 if ($status) {
-                    $document['documentCms'] = $status;
+                    $document['document']['file']['data'] = $status;
                 }
+
+                $ids[] = $document['id'];
             }
         }
 
         // Отправка подписанных данных
 
         $response = $this->put($response['link'], $message, $headers);
+
         $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', 'CMS Multi', $response->getContent()));
 
         // Проверка статуса после подписания
 
-        $response = $this->get(route(config('kalkan.actions.check-document'), $id));
+        foreach ($ids as $id) {
 
-        $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, 'CMS Multi', $response->getContent()));
-        $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, 'CMS Multi', $response->getContent()));
-        $this->assertTrue($response['status'], sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, 'CMS Multi', $response->getContent()));
+            $response = $this->get(route(config('kalkan.actions.check-document'), $id));
 
+            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, 'CMS Multi', $response->getContent()));
+            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, 'CMS Multi', $response->getContent()));
+            $this->assertTrue($response['status'] === DocumentStatus::SIGNED->value, sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, 'CMS Multi', $response->getContent()));
+
+        }
     }
 
     public function testSingleXmlSigning(): void
@@ -137,14 +170,14 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $data = [
                 'name' => 'hello xml',
-                'content' => sprintf('<test>%s</test>', $content),
-                'type' => ContentType::XML->value,
+                'data' => sprintf('<test>%s</test>', $content),
                 'meta' => [
+                    'mime' => 'text/xml',
                     'certificate' => $certificate['title'],
                 ],
             ];
 
-            $response = $this->prepareDocument($data, $certificate['title']);
+            $response = $this->prepareRequest([$data], $certificate['title']);
 
             $id = $response['id'];
 
@@ -168,21 +201,13 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
 
-            // Проверка статуса после подписания
-
-            $response = $this->get(route(config('kalkan.actions.check-document'), $id));
-
-            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
-            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
-            $this->assertTrue($response['status'], sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->checkRequestStatus($id, $certificate['title']);
         }
     }
 
-    public function testUniqueBearerServiceLink(): void
+    public function testMultiXmlSigning(): void
     {
         $this->loadCertificates();
-
-        $this->app['config']->set('kalkan.options.auth.type', AuthType::BEARER->value);
 
         $certificates = $this->certificates;
 
@@ -190,16 +215,25 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $content = Str::random(64);
 
-            $data = [
-                'name' => 'hello bearer cms',
-                'content' => base64_encode($content),
-                'type' => ContentType::CMS->value,
+            $file1 = [
+                'name' => 'hello xml 1',
+                'data' => sprintf('<test>%s</test>', $content),
                 'meta' => [
+                    'mime' => 'text/xml',
                     'certificate' => $certificate['title'],
                 ],
             ];
 
-            $response = $this->prepareDocument($data, $certificate['title']);
+            $file2 = [
+                'name' => 'hello xml 1',
+                'data' => sprintf('<test>%s</test>', strrev($content)),
+                'meta' => [
+                    'mime' => 'text/xml',
+                    'certificate' => $certificate['title'],
+                ],
+            ];
+
+            $response = $this->prepareRequest([$file1, $file2], $certificate['title']);
 
             $id = $response['id'];
 
@@ -210,10 +244,74 @@ final class ApplicationTestingTest extends BaseTestCase
 
             foreach ($message['documentsToSign'] as &$document) {
 
-                $status = $signatureService->signCms($document['documentCms'], $certificate['content'], $certificate['password']);
+                $status = $signatureService->signXml($document['documentXml'], $certificate['content'], $certificate['password']);
 
                 if ($status) {
-                    $document['documentCms'] = $status;
+                    $document['documentXml'] = $status;
+                }
+            }
+
+            // Отправка подписанных данных
+
+            $response = $this->put($response['link'], $message, $headers);
+
+            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
+
+            $this->checkRequestStatus($id, $certificate['title']);
+        }
+    }
+
+    private function checkRequestStatus($id, $prefix = ''): void
+    {
+        // Проверка статуса после подписания
+
+        $response = $this->get(route(config('kalkan.actions.check-request'), $id));
+
+        $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса запроса %s: %s', $id, $prefix, $response->getContent()));
+        $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус запроса %s: %s', $id, $prefix, $response->getContent()));
+        $this->assertTrue($response['status'] === RequestStatus::PROCESSED->value, sprintf('[%s] Некорректный статус для обработанного запроса %s: %s', $id, $prefix, $response->getContent()));
+
+    }
+
+    public function testUniqueBearerServiceLink(): void
+    {
+        $this->loadCertificates();
+
+        $certificates = $this->certificates;
+
+        foreach ($certificates as $certificate) {
+
+            $content = Str::random(64);
+
+            $data = [
+                'name' => 'hello bearer cms',
+                'data' => base64_encode($content),
+                'meta' => [
+                    'mime' => 'text/plain',
+                    'certificate' => $certificate['title'],
+                ],
+            ];
+
+            $auth = [
+                'type' => AuthType::BEARER->value,
+                'token' => 'some-token-here',
+            ];
+
+            $response = $this->prepareRequest([$data], $certificate['title'], $auth);
+
+            $id = $response['id'];
+
+            $headers = $response['headers'];
+            $message = $response['message'];
+
+            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+
+            foreach ($message['documentsToSign'] as &$document) {
+
+                $status = $signatureService->signCms($document['document']['file']['data'], $certificate['content'], $certificate['password']);
+
+                if ($status) {
+                    $document['document']['file']['data'] = $status;
                 }
             }
 
@@ -227,13 +325,7 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
 
-            // Проверка статуса после подписания
-
-            $response = $this->get(route(config('kalkan.actions.check-document'), $id));
-
-            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
-            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
-            $this->assertTrue($response['status'], sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->checkRequestStatus($id, $certificate['title']);
         }
     }
 
@@ -241,25 +333,27 @@ final class ApplicationTestingTest extends BaseTestCase
     {
         $this->loadCertificates();
 
-        $this->app['config']->set('kalkan.options.auth.type', AuthType::BEARER->value);
-        $this->app['config']->set('kalkan.options.auth.token', 'some-hardcoded-token');
-
         $certificates = $this->certificates;
 
         foreach ($certificates as $certificate) {
 
             $content = Str::random(64);
 
+            $auth = [
+                'type' => 'Bearer',
+                'token' => 'some-hardcoded-token',
+            ];
+
             $data = [
                 'name' => 'hello bearer cms',
-                'content' => base64_encode($content),
-                'type' => ContentType::CMS->value,
+                'data' => base64_encode($content),
                 'meta' => [
+                    'mime' => 'text/plain',
                     'certificate' => $certificate['title'],
                 ],
             ];
 
-            $response = $this->prepareDocument($data, $certificate['title']);
+            $response = $this->prepareRequest([$data], $certificate['title'], $auth);
 
             $id = $response['id'];
 
@@ -270,10 +364,10 @@ final class ApplicationTestingTest extends BaseTestCase
 
             foreach ($message['documentsToSign'] as &$document) {
 
-                $status = $signatureService->signCms($document['documentCms'], $certificate['content'], $certificate['password']);
+                $status = $signatureService->signCms($document['document']['file']['data'], $certificate['content'], $certificate['password']);
 
                 if ($status) {
-                    $document['documentCms'] = $status;
+                    $document['document']['file']['data'] = $status;
                 }
             }
 
@@ -286,22 +380,12 @@ final class ApplicationTestingTest extends BaseTestCase
             Event::assertDispatched(DocumentSigned::class);
 
             $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $certificate['title'], $response->getContent()));
-
-            // Проверка статуса после подписания
-
-            $response = $this->get(route(config('kalkan.actions.check-document'), $id));
-
-            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
-            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
-            $this->assertTrue($response['status'], sprintf('[%s] Некорректный статус для подписанного документа %s: %s', $id, $certificate['title'], $response->getContent()));
         }
     }
 
     public function testWrongBearerServiceLink(): void
     {
         $this->loadCertificates();
-
-        $this->app['config']->set('kalkan.options.auth.type', AuthType::BEARER->value);
 
         $certificates = $this->certificates;
 
@@ -311,14 +395,18 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $data = [
                 'name' => 'hello bearer cms',
-                'content' => base64_encode($content),
-                'type' => ContentType::CMS->value,
+                'data' => $content,
                 'meta' => [
                     'certificate' => $certificate['title'],
                 ],
             ];
 
-            $response = $this->prepareDocument($data, $certificate['title']);
+            $auth = [
+                'type' => AuthType::BEARER->value,
+                'token' => Str::random(),
+            ];
+
+            $response = $this->prepareRequest([$data], $certificate['title'], $auth);
 
             $message = $response['message'];
 
@@ -326,10 +414,10 @@ final class ApplicationTestingTest extends BaseTestCase
 
             foreach ($message['documentsToSign'] as &$document) {
 
-                $status = $signatureService->signCms($document['documentCms'], $certificate['content'], $certificate['password']);
+                $status = $signatureService->signCms($document['document']['file']['data'], $certificate['content'], $certificate['password']);
 
                 if ($status) {
-                    $document['documentCms'] = $status;
+                    $document['document']['file']['data'] = $status;
                 }
             }
 
@@ -357,14 +445,13 @@ final class ApplicationTestingTest extends BaseTestCase
 
             $data = [
                 'name' => 'hello expired cms',
-                'content' => base64_encode($content),
-                'type' => ContentType::CMS->value,
+                'data' => base64_encode($content),
                 'meta' => [
                     'certificate' => $certificate['title'],
                 ],
             ];
 
-            $response = $this->prepareDocument($data, $certificate['title']);
+            $response = $this->prepareRequest([$data], $certificate['title']);
 
             $id = $response['id'];
             $message = $response['message'];
@@ -373,10 +460,10 @@ final class ApplicationTestingTest extends BaseTestCase
 
             foreach ($message['documentsToSign'] as &$document) {
 
-                $status = $signatureService->signCms($document['documentCms'], $certificate['content'], $certificate['password']);
+                $status = $signatureService->signCms($document['document']['file']['data'], $certificate['content'], $certificate['password']);
 
                 if ($status) {
-                    $document['documentCms'] = $status;
+                    $document['document']['file']['data'] = $status;
                 }
             }
 
@@ -392,53 +479,66 @@ final class ApplicationTestingTest extends BaseTestCase
 
             // Проверка статуса после подписания
 
-            $response = $this->get(route(config('kalkan.actions.check-document'), $id));
+            $response = $this->get(route(config('kalkan.actions.check-request'), $id));
 
-            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $certificate['title'], $response->getContent()));
-            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $certificate['title'], $response->getContent()));
-            $this->assertFalse($response['status'], sprintf('[%s] Некорректный статус для ошибочного документа %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса запроса %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус запроса %s: %s', $id, $certificate['title'], $response->getContent()));
+            $this->assertTrue($response['status'] === RequestStatus::REJECTED->value, sprintf('[%s] Некорректный статус для ошибочного запроса %s: %s', $id, $certificate['title'], $response->getContent()));
         }
     }
 
     /**
      * Подготовка документ для тестирования
      *
-     * @param  array  $data Данные документа
+     * @param  array  $files Данные документа
      * @param  string  $prefix Префикс теста
      * @return array Результаты
      */
-    private function prepareDocument(array $data, string $prefix): array
+    private function prepareRequest(array $files, string $prefix, array $auth = []): array
     {
-        Event::fake();
+        foreach ($files as &$file) {
 
-        $response = $this->post(route(config('kalkan.actions.store-document')), $data);
+            Event::fake();
 
-        $this->assertTrue($response->isOk(), sprintf('[%s] Некорректный ответ статуса сохранения документа', $prefix));
-        $this->assertArrayHasKey('id', $response, sprintf('[%s] Отсутствует идентификатор сохраненного документа', $prefix));
+            $response = $this->post(route(config('kalkan.actions.store-document')), $file);
 
-        Event::assertDispatched(DocumentSaved::class);
+            $this->assertTrue($response->isOk(), sprintf('[%s] Некорректный ответ статуса сохранения документа', $prefix));
+            $this->assertArrayHasKey('id', $response, sprintf('[%s] Отсутствует идентификатор сохраненного документа', $prefix));
+
+            $file['id'] = $response['id'];
+
+            $id = $response['id'];
+
+            // Проверка статуса до подписания
+
+            $response = $this->get(route(config('kalkan.actions.check-document'), $id));
+
+            $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $prefix, $response->getContent()));
+            $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $prefix, $response->getContent()));
+            $this->assertTrue($response['status'] === DocumentStatus::CREATED->value, sprintf('[%s] Некорректный статус для неподписанного документа %s: %s', $id, $prefix, $response->getContent()));
+
+            Event::assertDispatched(DocumentSaved::class);
+        }
+
+        $data = [
+            'description' => $prefix,
+            'files' => $files,
+            'auth' => $auth,
+        ];
+
+        $response = $this->post(route(config('kalkan.actions.store-request')), $data);
+
+        $this->assertTrue($response->isOk(), sprintf('[%s] Некорректный ответ при сохранении запроса', $prefix));
 
         $id = $response['id'];
         $link = $response['url'];
-
-        // Проверка статуса до подписания
-
-        $response = $this->get(route(config('kalkan.actions.check-document'), $id));
-
-        $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка получения статуса документа %s: %s', $id, $prefix, $response->getContent()));
-        $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $prefix, $response->getContent()));
-        $this->assertFalse($response['status'], sprintf('[%s] Некорректный статус для неподписанного документа %s: %s', $id, $prefix, $response->getContent()));
-
-        $response = $this->get(route(config('kalkan.actions.generate-cross-links'), ['id' => $id]));
-
-        $this->assertTrue($response->isOk(), sprintf('[%s] Некорректный ответ при формировании cross-ссылок', $prefix));
 
         $response = $this->get(route(config('kalkan.actions.generate-qr-code'), ['id' => $id]));
 
         $this->assertTrue($response->isOk(), sprintf('[%s] Некорректный ответ при запросе QR-кода', $prefix));
 
-        $this->assertArrayHasKey('uri', $response, sprintf('[%s] Отсутствует изображение', $prefix));
-        $this->assertArrayHasKey('raw', $response, sprintf('[%s] Отсутствует ссылка', $prefix));
+        $this->assertArrayHasKey('uri', $response, sprintf('[%s] Отсутствует встраиваемое изображение', $prefix));
+        $this->assertArrayHasKey('raw', $response, sprintf('[%s] Отсутствует исходное изображение', $prefix));
 
         $response = $this->get($link);
 

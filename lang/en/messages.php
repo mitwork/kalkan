@@ -7,4 +7,5 @@ return [
     'document_not_found' => 'Document not found.',
     'empty_bearer_token' => 'Empty bearer token.',
     'wrong_bearer_token' => 'Wrong bearer token.',
+    'cache_not_found' => 'Cache not found',
 ];

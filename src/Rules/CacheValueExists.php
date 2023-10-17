@@ -11,7 +11,7 @@ class CacheValueExists implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (! Cache::has($value)) {
-            $fail('Значение не найдено');
+            $fail(__('kalkan::messages.cache_not_found'));
         }
     }
 }

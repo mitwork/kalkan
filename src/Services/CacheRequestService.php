@@ -3,10 +3,10 @@
 namespace Mitwork\Kalkan\Services;
 
 use Illuminate\Support\Facades\Cache;
-use Mitwork\Kalkan\Contracts\DocumentService;
-use Mitwork\Kalkan\Enums\DocumentStatus;
+use Mitwork\Kalkan\Contracts\RequestService;
+use Mitwork\Kalkan\Enums\RequestStatus;
 
-class CacheDocumentService implements DocumentService
+class CacheRequestService implements RequestService
 {
     /**
      * Добавление документа в кэш
@@ -15,7 +15,7 @@ class CacheDocumentService implements DocumentService
      * @param  array  $attributes Содержимое
      * @return bool Результат сохранения
      */
-    public function add(string|int $id, array $attributes, DocumentStatus $status = DocumentStatus::CREATED): bool
+    public function add(string|int $id, array $attributes, RequestStatus $status = RequestStatus::CREATED): bool
     {
         $attributes['status'] = $status;
 
@@ -51,7 +51,7 @@ class CacheDocumentService implements DocumentService
     /**
      * {@inheritDoc}
      */
-    public function update($id, DocumentStatus $status): void
+    public function update($id, RequestStatus $status): void
     {
         $document = Cache::get($id);
 
@@ -67,14 +67,8 @@ class CacheDocumentService implements DocumentService
     /**
      * {@inheritDoc}
      */
-    public function process(string|int $id, array $result = [], DocumentStatus $status = DocumentStatus::SIGNED): bool
+    public function process(string|int $id, array $result = [], RequestStatus $status = RequestStatus::PROCESSED): bool
     {
-        if (isset($this->documents['cms'][$id])) {
-            unset($this->documents['cms'][$id]);
-        } elseif (isset($this->documents['xml'][$id])) {
-            unset($this->documents['xml'][$id]);
-        }
-
         $document = Cache::get($id);
 
         if (! $document) {
@@ -99,7 +93,7 @@ class CacheDocumentService implements DocumentService
             return false;
         }
 
-        $document['status'] = DocumentStatus::REJECTED;
+        $document['status'] = RequestStatus::REJECTED;
         $document['result'] = null;
         $document['message'] = $message;
 
