@@ -96,6 +96,7 @@ class StoreDocument extends BaseAction
                     'business' => sprintf(config('kalkan.links.business'), urlencode($link)),
                 ],
             ],
+            'expire' => config('kalkan.ttl'),
         ]);
     }
 }

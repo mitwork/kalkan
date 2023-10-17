@@ -14,7 +14,7 @@ class BaseAction
      * @param  int  $ttl Время жизни
      * @return string Ссылка
      */
-    public function generateSignedLink(string $route, array $params = [], int $ttl = 30): string
+    public function generateSignedLink(string $route, array $params = [], int $ttl = 180): string
     {
         return URL::temporarySignedRoute($route, $ttl ?: config('kalkan.ttl'), $params);
     }

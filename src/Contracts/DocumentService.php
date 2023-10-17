@@ -2,6 +2,8 @@
 
 namespace Mitwork\Kalkan\Contracts;
 
+use Mitwork\Kalkan\Enums\DocumentStatus;
+
 interface DocumentService
 {
     /**
@@ -11,7 +13,7 @@ interface DocumentService
      * @param  array  $content Содержимое и метаданные документа
      * @return bool Результат добавления
      */
-    public function addDocument(string|int $id, array $content): bool;
+    public function addDocument(string|int $id, array $content, DocumentStatus $status = DocumentStatus::CREATED): bool;
 
     /**
      * Получение документа
@@ -30,12 +32,17 @@ interface DocumentService
     public function checkDocument(string|int $id): array|bool|null;
 
     /**
+     * Изменение статуса документа
+     */
+    public function changeStatus(string|int $id, DocumentStatus $status): void;
+
+    /**
      * Обработка подписанного документа
      *
      * @param  string|int  $id Уникальный идентификатор
      * @return bool Результат обработки
      */
-    public function processDocument(string|int $id): bool;
+    public function processDocument(string|int $id, array $result, DocumentStatus $status = DocumentStatus::SIGNED): bool;
 
     /**
      * Отклонение документа

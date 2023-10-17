@@ -11,8 +11,7 @@ enum SignatureType: string
 
     public function getSignatureMethod(): string
     {
-        return match($this)
-        {
+        return match ($this) {
             self::XML => 'XML',
             self::CMS_WITH_DATA => 'CMS_WITH_DATA',
             self::CMS_SIGN_ONLY => 'CMS_SIGN_ONLY',

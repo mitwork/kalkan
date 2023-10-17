@@ -11,8 +11,14 @@ class DocumentRequested
 
     public int|string $id;
 
-    public function __construct($id)
+    public array $request;
+
+    public array $response;
+
+    public function __construct($id, $request, $response)
     {
         $this->id = $id;
+        $this->request = $request;
+        $this->response = $response;
     }
 }

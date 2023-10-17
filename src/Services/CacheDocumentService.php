@@ -4,6 +4,7 @@ namespace Mitwork\Kalkan\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Mitwork\Kalkan\Contracts\DocumentService;
+use Mitwork\Kalkan\Enums\DocumentStatus;
 
 class CacheDocumentService implements DocumentService
 {
@@ -14,16 +15,15 @@ class CacheDocumentService implements DocumentService
      * @param  array  $content Содержимое
      * @return bool Результат сохранения
      */
-    public function addDocument(string|int $id, array $content): bool
+    public function addDocument(string|int $id, array $content, DocumentStatus $status = DocumentStatus::CREATED): bool
     {
+        $content['status'] = $status;
+
         return Cache::add($id, $content, config('kalkan.ttl'));
     }
 
     /**
-     * Получение документа
-     *
-     * @param  string|int  $id Идентификатор
-     * @return array|null Содержимое
+     * {@inheritDoc}
      */
     public function getDocument(string|int $id): ?array
     {
@@ -31,10 +31,7 @@ class CacheDocumentService implements DocumentService
     }
 
     /**
-     * Проверка статус подписания документа
-     *
-     * @param  string|int  $id Идентификатор
-     * @return array|bool|null Результат
+     * {@inheritDoc}
      */
     public function checkDocument(string|int $id): array|bool|null
     {
@@ -52,13 +49,25 @@ class CacheDocumentService implements DocumentService
     }
 
     /**
-     * Обработка документа
-     *
-     * @param  string|int  $id Идентификатор
-     * @param  array  $result Результат проверки
-     * @return bool Статус обработки
+     * {@inheritDoc}
      */
-    public function processDocument(string|int $id, array $result = []): bool
+    public function changeStatus($id, DocumentStatus $status): void
+    {
+        $document = Cache::get($id);
+
+        if (! $document) {
+            return;
+        }
+
+        $document['status'] = $status;
+
+        Cache::put($id, $document);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function processDocument(string|int $id, array $result = [], DocumentStatus $status = DocumentStatus::SIGNED): bool
     {
         if (isset($this->documents['cms'][$id])) {
             unset($this->documents['cms'][$id]);
@@ -72,7 +81,7 @@ class CacheDocumentService implements DocumentService
             return false;
         }
 
-        $document['status'] = true;
+        $document['status'] = $status;
         $document['result'] = $result;
         $document['message'] = null;
 
@@ -80,10 +89,7 @@ class CacheDocumentService implements DocumentService
     }
 
     /**
-     * Отклонение документа
-     *
-     * @param  int|string  $id Идентификатор
-     * @return bool Статус отклонения
+     * {@inheritDoc}
      */
     public function rejectDocument(int|string $id, string $message = null): bool
     {
@@ -93,7 +99,7 @@ class CacheDocumentService implements DocumentService
             return false;
         }
 
-        $document['status'] = false;
+        $document['status'] = DocumentStatus::REJECTED;
         $document['result'] = null;
         $document['message'] = $message;
 

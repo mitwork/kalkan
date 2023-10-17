@@ -5,6 +5,7 @@ namespace Mitwork\Kalkan\Http\Actions;
 use Illuminate\Http\JsonResponse;
 use Mitwork\Kalkan\Enums\AuthType;
 use Mitwork\Kalkan\Enums\ContentType;
+use Mitwork\Kalkan\Enums\DocumentStatus;
 use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
 use Mitwork\Kalkan\Events\DocumentRejected;
@@ -42,16 +43,20 @@ class ProcessContent extends BaseAction
 
             if (! $token) {
 
-                AuthRejected::dispatch($id);
+                $message = __('kalkan::messages.empty_bearer_token');
+
+                AuthRejected::dispatch($id, $message);
 
                 return response()->json([
-                    'message' => __('kalkan::messages.empty_bearer_token'),
+                    'message' => $message,
                 ], 401);
             }
 
             if ($token !== $document['auth']['token']) {
 
-                AuthRejected::dispatch($id);
+                $message = __('kalkan::messages.wrong_bearer_token');
+
+                AuthRejected::dispatch($id, $message);
 
                 return response()->json([
                     'message' => __('kalkan::messages.wrong_bearer_token'),
@@ -100,6 +105,8 @@ class ProcessContent extends BaseAction
 
                 return response()->json(['error' => $message], 500);
             }
+
+            $this->documentService->changeStatus($id, DocumentStatus::SIGNED);
 
             DocumentSigned::dispatch($id, $document['content'], $signature, $result);
         }
