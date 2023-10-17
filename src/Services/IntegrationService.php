@@ -19,21 +19,22 @@ class IntegrationService
     /**
      * Подготовка данных для сервиса
      *
-     * @param  string  $url Ссылка
+     * @param  string  $uri Ссылка
      * @param  string  $authType Тип аутентификации
      * @param  string  $authToken Токен аутентификации
+     * @param  string|null  $description  Описание
      * @return array Данные для сервиса
      */
-    public function prepareServiceData(string $url, string $authType = 'None', string $authToken = ''): array
+    public function prepareServiceData(string $uri, string $authType = 'None', string $authToken = '', string $description = null): array
     {
         $options = config('kalkan.options');
 
         return [
-            'description' => $options['description'],
+            'description' => $description ?: $options['description'],
             'expiry_date' => date('c', time() + $options['ttl']),
             'organisation' => $options['organisation'],
             'document' => [
-                'uri' => $url,
+                'uri' => $uri,
                 'auth_type' => $authType,
                 'auth_token' => $authToken,
             ],
