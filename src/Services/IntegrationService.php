@@ -99,9 +99,9 @@ class IntegrationService
                         continue;
                     }
 
-                    $this->addMetaAttribute($metaKey, $metaValue, $id);
+                    $this->addMetaAttribute((string) $metaKey, (string) $metaValue, $id);
                 } else {
-                    $this->addMetaAttribute($key, $value, $id);
+                    $this->addMetaAttribute((string) $key, (string) $value, $id);
                 }
             }
         }
@@ -156,9 +156,9 @@ class IntegrationService
                         continue;
                     }
 
-                    $this->addMetaAttribute($metaKey, $metaValue, $id);
+                    $this->addMetaAttribute((string) $metaKey, (string) $metaValue, $id);
                 } else {
-                    $this->addMetaAttribute($key, $value, $id);
+                    $this->addMetaAttribute((string) $key, (string) $value, $id);
                 }
             }
         }
