@@ -87,8 +87,13 @@ class IntegrationService
 
                 if (is_array($value)) {
 
-                    $metaKey = key($value);
-                    $metaValue = $value[key($value)];
+                    if (isset($value['name']) && isset($value['value'])) {
+                        $metaKey = $value['name'];
+                        $metaValue = $value['value'];
+                    } else {
+                        $metaKey = key($value);
+                        $metaValue = $value[key($value)];
+                    }
 
                     if ($metaKey === 'mime') {
                         continue;
@@ -137,8 +142,13 @@ class IntegrationService
 
                 if (is_array($value)) {
 
-                    $metaKey = key($value);
-                    $metaValue = $value[key($value)];
+                    if (isset($value['name']) && isset($value['value'])) {
+                        $metaKey = $value['name'];
+                        $metaValue = $value['value'];
+                    } else {
+                        $metaKey = key($value);
+                        $metaValue = $value[key($value)];
+                    }
 
                     if ($metaKey === 'mime') {
                         $mime = $metaValue;
