@@ -25,6 +25,7 @@ class StoreDocumentRequest extends FormRequest
             'id' => 'alpha_num:ascii',
             'name' => 'required|string',
             'content' => 'string|required',
+            'description' => 'string|nullable',
             'type' => [new Enum(ContentType::class)],
             'meta' => 'array',
             'auth' => 'array',

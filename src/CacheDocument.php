@@ -10,6 +10,8 @@ class CacheDocument implements AbstractDocument
 
     public string $content;
 
+    public string|null $description = null;
+
     public array $meta;
 
     public array $auth;
@@ -22,6 +24,11 @@ class CacheDocument implements AbstractDocument
 
         $this->name = $attributes['name'];
         $this->content = $attributes['content'];
+
+        if (!empty($attributes['description'])) {
+            $this->description = $attributes['description'];
+        }
+
         $this->meta = $attributes['meta'];
 
         if (! isset($attributes['auth'])) {
