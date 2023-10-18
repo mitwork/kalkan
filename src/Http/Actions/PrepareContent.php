@@ -99,9 +99,9 @@ class PrepareContent extends BaseAction
             $response['signMethod'] = $document['signMethod'];
             $response['documentsToSign'] = array_merge($response['documentsToSign'], $document['documentsToSign']);
 
-            $this->documentService->update($id, DocumentStatus::REQUESTED);
+            $this->documentService->update($file['id'], DocumentStatus::REQUESTED);
 
-            DocumentRequested::dispatch($id, $request->all(), $document);
+            DocumentRequested::dispatch($file['id'], $request->all(), $file);
         }
 
         RequestRequested::dispatch($id, $request->all(), $response);
