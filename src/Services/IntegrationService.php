@@ -29,7 +29,7 @@ class IntegrationService
         return [
             'description' => $request['description'] ?? config('kalkan.options.description'),
             'expiry_date' => date('c', time() + ($request['ttl'] ?? config('kalkan.ttl'))),
-            'organisation' => $request['description'] ?? config('kalkan.options.organisation'),
+            'organisation' => $request['organisation'] ?? config('kalkan.options.organisation'),
             'document' => [
                 'uri' => $uri,
                 'auth_type' => $request['auth']['type'] ?? 'None',
