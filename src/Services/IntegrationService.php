@@ -61,8 +61,9 @@ class IntegrationService
      * @param  int|string  $key Ключ документа
      * @return array Метаданные
      */
-    public function getMetaAttributes(int|string $key): array
+    public function getMetaAttributes(int|string $key, array $meta = []): array
     {
+
         if (isset($this->meta[$key])) {
             return $this->meta[$key];
         }
@@ -71,15 +72,12 @@ class IntegrationService
     }
 
     /**
-     * Добавление XML-документа
+     * Добавление метаданных
      *
-     * @param  int|string  $id Уникальный идентификатор
-     * @param  string  $name Наименование
-     * @param  string  $data Содержание
-     * @param  array  $meta Метаданные
-     * @return array Данные документа
+     * @param  string|int  $id Идентификатор документа
+     * @param  array  $meta Атрибуты
      */
-    public function addXmlDocument(int|string $requestId, int|string $id, string $name, string $data, array $meta = []): array
+    public function addMetaAttributes(string|int $id, array $meta): void
     {
         if (count($meta) > 0) {
             foreach ($meta as $key => $value) {
@@ -100,9 +98,23 @@ class IntegrationService
                 }
             }
         }
+    }
+
+    /**
+     * Добавление XML-документа
+     *
+     * @param  int|string  $id Уникальный идентификатор
+     * @param  string  $name Наименование
+     * @param  string  $data Содержание
+     * @param  array  $meta Метаданные
+     * @return array Данные документа
+     */
+    public function addXmlDocument(int|string $requestId, int|string $id, string $name, string $data, array $meta = []): array
+    {
+        $this->addMetaAttributes($id, $meta);
 
         $document = [
-            'id' => is_numeric($id) ? (int) $id : $id,
+            'id' => (string) $id,
             'nameRu' => $name,
             'nameKz' => $name,
             'nameEn' => $name,
@@ -131,28 +143,10 @@ class IntegrationService
      */
     public function addCmsDocument(int|string $requestId, int|string $id, string $name, string $data, array $meta = [], string $mime = '@file/pdf'): array
     {
-        if (count($meta) > 0) {
-            foreach ($meta as $key => $value) {
-
-                if (is_array($value)) {
-
-                    if (isset($value['name']) && isset($value['value'])) {
-                        $metaKey = $value['name'];
-                        $metaValue = $value['value'];
-                    } else {
-                        $metaKey = key($value);
-                        $metaValue = $value[key($value)];
-                    }
-
-                    $this->addMetaAttribute((string) $metaKey, (string) $metaValue, $id);
-                } else {
-                    $this->addMetaAttribute((string) $key, (string) $value, $id);
-                }
-            }
-        }
+        $this->addMetaAttributes($id, $meta);
 
         $document = [
-            'id' => is_numeric($id) ? (int) $id : $id,
+            'id' => (string) $id,
             'nameRu' => $name,
             'nameKz' => $name,
             'nameEn' => $name,
