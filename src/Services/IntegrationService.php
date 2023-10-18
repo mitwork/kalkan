@@ -114,7 +114,7 @@ class IntegrationService
         $this->addMetaAttributes($id, $meta);
 
         $document = [
-            'id' => (string) $id,
+            'id' => is_numeric($id) ? (int) $id : $id,
             'nameRu' => $name,
             'nameKz' => $name,
             'nameEn' => $name,
@@ -146,7 +146,7 @@ class IntegrationService
         $this->addMetaAttributes($id, $meta);
 
         $document = [
-            'id' => (string) $id,
+            'id' => is_numeric($id) ? (int) $id : $id,
             'nameRu' => $name,
             'nameKz' => $name,
             'nameEn' => $name,
