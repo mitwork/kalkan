@@ -61,7 +61,7 @@ trait NcanodeHttpClient
         }
 
         if ($throw) {
-            throw NcanodeStatusException::create($request->getStatusCode(), $message);
+            throw NcanodeStatusException::create($request->getStatusCode(), $response);
         }
 
         return $message;
