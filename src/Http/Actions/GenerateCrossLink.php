@@ -17,7 +17,7 @@ class GenerateCrossLink extends BaseAction
     public function generate(FetchRequestRequest $request): JsonResponse
     {
         $id = $request->input('id');
-        $link = $this->generateTemporaryLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
+        $link = $this->generateTemporaryLink(config('kalkan.actions.generate-service-link'), ['id' => $id]);
 
         return response()->json([
             'mobile' => sprintf(config('kalkan.links.mobile'), $link),
