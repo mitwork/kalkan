@@ -24,7 +24,7 @@ class GenerateQrCode extends BaseAction
     {
         $id = $request->input('id');
 
-        $link = $this->generateSignedLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
+        $link = $this->generateTemporaryLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
 
         $data = $this->qrCodeGenerationService->generate($link);
 

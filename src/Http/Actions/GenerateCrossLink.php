@@ -17,11 +17,12 @@ class GenerateCrossLink extends BaseAction
     public function generate(FetchRequestRequest $request): JsonResponse
     {
         $id = $request->input('id');
-        $link = $this->generateSignedLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
+        $link = $this->generateTemporaryLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
 
         return response()->json([
-            'mobile' => sprintf(config('kalkan.links.mobile'), urlencode($link)),
-            'business' => sprintf(config('kalkan.links.business'), urlencode($link))]
+            'mobile' => sprintf(config('kalkan.links.mobile'), $link),
+            'business' => sprintf(config('kalkan.links.business'), $link),
+        ]
         );
     }
 }

@@ -25,7 +25,7 @@ class GenerateServiceLink extends BaseAction
 
         $auth = $document['auth'];
 
-        $link = $this->generateSignedLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
+        $link = $this->generateTemporaryLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
 
         $data = $this->integrationService->prepareServiceData(
             $link,
