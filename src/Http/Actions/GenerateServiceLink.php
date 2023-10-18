@@ -23,16 +23,9 @@ class GenerateServiceLink extends BaseAction
         $id = $request->input('id');
         $document = $this->requestService->get($id);
 
-        $auth = $document['auth'];
-
         $link = $this->generateTemporaryLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
 
-        $data = $this->integrationService->prepareServiceData(
-            $link,
-            $auth['type'],
-            $auth['token'],
-            $document['description'] ?? null,
-        );
+        $data = $this->integrationService->prepareServiceData($link, $document);
 
         return response()->json($data);
     }

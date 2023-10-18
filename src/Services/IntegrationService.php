@@ -21,21 +21,19 @@ class IntegrationService
      * Подготовка данных для сервиса
      *
      * @param  string  $uri Ссылка
-     * @param  string  $authType Тип аутентификации
-     * @param  string  $authToken Токен аутентификации
-     * @param  string|null  $description  Описание
+     * @param  array  $request Запрос
      * @return array Данные для сервиса
      */
-    public function prepareServiceData(string $uri, string $authType = 'None', string $authToken = '', string $description = null): array
+    public function prepareServiceData(string $uri, array $request): array
     {
         return [
-            'description' => $description ?: config('kalkan.options.description'),
-            'expiry_date' => date('c', time() + config('kalkan.ttl')),
-            'organisation' => config('kalkan.options.organisation'),
+            'description' => $request['description'] ?? config('kalkan.options.description'),
+            'expiry_date' => date('c', time() + ($request['ttl'] ?? config('kalkan.ttl'))),
+            'organisation' => $request['description'] ?? config('kalkan.options.organisation'),
             'document' => [
                 'uri' => $uri,
-                'auth_type' => $authType,
-                'auth_token' => $authToken,
+                'auth_type' => $request['auth']['type'] ?? 'None',
+                'auth_token' => $request['auth']['token'] ?? '',
             ],
         ];
     }
@@ -154,7 +152,7 @@ class IntegrationService
             'meta' => $this->getMetaAttributes($id),
             'document' => [
                 'file' => [
-                    'mime' => $mime === ContentType::PDF->value ? '@file/pdf': '',
+                    'mime' => $mime === ContentType::PDF->value ? '@file/pdf' : '',
                     'data' => $data,
                 ],
             ],

@@ -78,6 +78,22 @@ class StoreRequest extends BaseAction
             ];
         }
 
+        if (! isset($attributes['organisation']) || empty(array_filter($attributes['organisation']))) {
+            $attributes['organisation'] = [
+                'nameRu' => config('kalkan.options.organisation.nameRu'),
+                'nameKz' => config('kalkan.options.organisation.nameKz'),
+                'nameEn' => config('kalkan.options.organisation.nameEn'),
+                'bin' => config('kalkan.options.organisation.bin'),
+            ];
+        } else {
+
+            $attributes['organisation']['nameRu'] = $attributes['organisation']['name'];
+            $attributes['organisation']['nameKz'] = $attributes['organisation']['name'];
+            $attributes['organisation']['nameEn'] = $attributes['organisation']['name'];
+
+            unset($attributes['organisation']['name']);
+        }
+
         $serviceRequest = new CacheRequest(...$attributes);
 
         $files = $serviceRequest->files;

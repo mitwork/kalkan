@@ -9,6 +9,7 @@ use Mitwork\Kalkan\Contracts\AbstractRequest;
 /**
  * @property array $files
  * @property array $auth
+ * @property array $organisation
  * @property string|null $description
  */
 class CacheRequest implements AbstractRequest
@@ -17,12 +18,15 @@ class CacheRequest implements AbstractRequest
 
     public array $auth;
 
+    public array $organisation;
+
     public ?string $description = null;
 
-    public function __construct(array $files, array $auth = [], string $description = null)
+    public function __construct(array $files, array $auth = [], array $organisation = [], string $description = null)
     {
         $this->files = $files;
         $this->auth = $auth;
+        $this->organisation = $organisation;
         $this->description = $description;
     }
 
@@ -36,6 +40,7 @@ class CacheRequest implements AbstractRequest
         return [
             'files' => 'array|required',
             'auth' => 'array',
+            'organisation' => 'array|nullable',
             'description' => 'string|nullable',
         ];
     }
@@ -82,6 +87,7 @@ class CacheRequest implements AbstractRequest
         return [
             'files' => $this->files,
             'auth' => $this->auth,
+            'organisation' => $this->organisation,
             'description' => $this->description,
         ];
     }

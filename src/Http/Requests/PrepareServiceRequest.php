@@ -3,8 +3,6 @@
 namespace Mitwork\Kalkan\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
-use Mitwork\Kalkan\Enums\ContentType;
 
 class PrepareServiceRequest extends FormRequest
 {
@@ -25,7 +23,7 @@ class PrepareServiceRequest extends FormRequest
             'auth' => 'array|nullable',
             'description' => 'string|nullable',
             'files' => 'array|required',
-            'type' => [new Enum(ContentType::class)],
+            'organisation' => 'array|nullable',
             'ttl' => 'numeric|nullable',
         ];
     }
