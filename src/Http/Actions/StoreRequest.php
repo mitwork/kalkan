@@ -71,6 +71,11 @@ class StoreRequest extends BaseAction
                 'type' => AuthType::BEARER->value,
                 'token' => Str::random(32),
             ];
+        } elseif ($attributes['auth']['type'] === AuthType::NONE->value) {
+            $attributes['auth'] = [
+                'type' => AuthType::NONE->value,
+                'token' => '',
+            ];
         }
 
         $serviceRequest = new CacheRequest(...$attributes);
