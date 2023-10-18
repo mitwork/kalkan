@@ -34,5 +34,4 @@ return [
         ],
     ],
     'ttl' => 180,
-    'uid' => 'hrtime',
 ];

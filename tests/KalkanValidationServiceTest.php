@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Mitwork\Kalkan\Tests;
 
+use Illuminate\Support\Str;
+use Mitwork\Kalkan\Exceptions\KalkanValidationException;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(\Mitwork\Kalkan\Services\KalkanValidationService::class)]
 final class KalkanValidationServiceTest extends BaseTestCase
 {
-    public function testXmlValidationIsWorking(): void
+    public function testXmlValidation(): void
     {
         $service = new \Mitwork\Kalkan\Services\KalkanValidationService();
 
@@ -75,7 +77,7 @@ XML;
         $this->assertTrue($result, 'Проверка подлинности XML не работает');
     }
 
-    public function testCmsValidationIsWorking(): void
+    public function testCmsValidation(): void
     {
         $service = new \Mitwork\Kalkan\Services\KalkanValidationService();
 
@@ -126,5 +128,17 @@ DATA;
         $this->assertEquals(200, $response['status'], 'Получен некорректный ответ сервиса');
 
         $this->assertTrue($result, 'Проверка подлинности CMS не работает');
+    }
+
+    public function testValidationExceptions(): void
+    {
+        $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService();
+
+        $data = Str::random(64);
+
+        $this->assertThrows(
+            fn () => $validationService->verifyCms($data, 'hello', throw: true),
+            KalkanValidationException::class
+        );
     }
 }

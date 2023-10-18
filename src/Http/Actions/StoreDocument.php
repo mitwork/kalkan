@@ -17,7 +17,7 @@ class StoreDocument extends BaseAction
     }
 
     /**
-     * Шаг 1 - отправка документа для последующей работы
+     * Шаг 1 - отправка файла для последующей работы
      *
      * В данном примере содержимое документа сохраняется
      * только в кэш, в реально жизни это может быть база
@@ -32,15 +32,16 @@ class StoreDocument extends BaseAction
 
         $attributes = $request->validated();
 
-        $document = new CacheDocument($attributes);
+        $document = new CacheDocument(...$attributes);
 
-        if (! $this->documentService->add($id, $document->attributes())) {
+        if (! $this->documentService->add($id, $document->toArray())) {
+
             return response()->json([
                 'message' => __('kalkan::messages.unable_to_save_document'),
             ], 500);
         }
 
-        DocumentSaved::dispatch($id, $document->attributes());
+        DocumentSaved::dispatch($id, $document->toArray());
 
         return response()->json([
             'id' => $id,

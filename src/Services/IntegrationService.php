@@ -75,11 +75,11 @@ class IntegrationService
      *
      * @param  int|string  $id Уникальный идентификатор
      * @param  string  $name Наименование
-     * @param  string  $content Содержание
+     * @param  string  $data Содержание
      * @param  array  $meta Метаданные
      * @return array Данные документа
      */
-    public function addXmlDocument(int|string $requestId, int|string $id, string $name, string $content, array $meta = []): array
+    public function addXmlDocument(int|string $requestId, int|string $id, string $name, string $data, array $meta = []): array
     {
         if (count($meta) > 0) {
             foreach ($meta as $key => $value) {
@@ -92,10 +92,6 @@ class IntegrationService
                     } else {
                         $metaKey = key($value);
                         $metaValue = $value[key($value)];
-                    }
-
-                    if ($metaKey === 'mime') {
-                        continue;
                     }
 
                     $this->addMetaAttribute((string) $metaKey, (string) $metaValue, $id);
@@ -111,7 +107,7 @@ class IntegrationService
             'nameKz' => $name,
             'nameEn' => $name,
             'meta' => $this->getMetaAttributes($id),
-            'documentXml' => $content,
+            'documentXml' => trim($data),
         ];
 
         if (count($document['meta']) === 0) {
@@ -128,14 +124,13 @@ class IntegrationService
      *
      * @param  int|string  $id Уникальный идентификатор
      * @param  string  $name Наименование
-     * @param  string  $content Содержание
+     * @param  string  $data Содержание
      * @param  array  $meta Метаданные
+     * @param  string  $mime Тип файла
      * @return array Данные документа
      */
-    public function addCmsDocument(int|string $requestId, int|string $id, string $name, string $content, array $meta = []): array
+    public function addCmsDocument(int|string $requestId, int|string $id, string $name, string $data, array $meta = [], string $mime = '@file/pdf'): array
     {
-        $mime = '';
-
         if (count($meta) > 0) {
             foreach ($meta as $key => $value) {
 
@@ -147,12 +142,6 @@ class IntegrationService
                     } else {
                         $metaKey = key($value);
                         $metaValue = $value[key($value)];
-                    }
-
-                    if ($metaKey === 'mime') {
-                        $mime = $metaValue;
-
-                        continue;
                     }
 
                     $this->addMetaAttribute((string) $metaKey, (string) $metaValue, $id);
@@ -171,7 +160,7 @@ class IntegrationService
             'document' => [
                 'file' => [
                     'mime' => $mime,
-                    'data' => $content,
+                    'data' => $data,
                 ],
             ],
         ];

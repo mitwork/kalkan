@@ -4,6 +4,7 @@ namespace Mitwork\Kalkan\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
 use Mitwork\Kalkan\Enums\AuthType;
+use Mitwork\Kalkan\Enums\ContentType;
 use Mitwork\Kalkan\Enums\DocumentStatus;
 use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
@@ -76,27 +77,27 @@ class PrepareContent extends BaseAction
             'documentsToSign' => [],
         ];
 
+        $type = ContentType::CMS;
+        $mimes = collect($files)->groupBy('mime')->keys();
+
+        if (count($mimes) === 1 && $mimes[0] === ContentType::TEXT_XML->value) {
+            $type = ContentType::XML;
+        }
+
         foreach ($files as $file) {
 
-            if (! isset($file['meta'])) {
-                $file['meta'] = [];
-            }
-
-            $attributes = collect($file['meta']);
-            $mimeType = $attributes->get('mime');
-
-            if ($mimeType === 'text/xml') {
+            if ($type === ContentType::XML) {
                 $this->integrationService->addXmlDocument($id, $file['id'], $file['name'], $file['data'], $file['meta']);
                 $document = $this->integrationService->getXmlDocuments($id);
 
             } else {
-                $this->integrationService->addCmsDocument($id, $file['id'], $file['name'], $file['data'], $file['meta']);
+                $this->integrationService->addCmsDocument($id, $file['id'], $file['name'], $file['data'], $file['meta'], $file['mime']);
                 $document = $this->integrationService->getCmsDocuments($id);
 
             }
 
             $response['signMethod'] = $document['signMethod'];
-            $response['documentsToSign'][] = $document['documentsToSign'][0];
+            $response['documentsToSign'] = array_merge($response['documentsToSign'], $document['documentsToSign']);
 
             $this->documentService->update($id, DocumentStatus::REQUESTED);
 

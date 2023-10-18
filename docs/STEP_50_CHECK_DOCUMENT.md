@@ -1,18 +1,18 @@
 ## Шаг 5 - Проверка статуса подписания документа
 
-На данном шаге можно получить статус подписания документа по его уникальному идентификатору из [Шаг 1 - подготовка документа](STEP_10_STORE_DOCUMENT.md).
+На данном шаге можно получить статус подписания документа по его уникальному идентификатору из [Шага 1 - Загрузка документов](STEP_10_STORE_DOCUMENT.md).
 
 Данный шаг необходим для изменения состояния приложения (редиректа) для пользователя, работающего с документом.
 
 ### Пример запроса
 
-`GET` /documents/check?id=acba8198-92d9-4297-905f-eb55ea69f9c4
+`GET` /documents/check?id=134372667717125
 
 ### Пример ответа
 
 ```json
 {
-    "status": true,
+    "status": "signed",
     "result": {
         "status": 200,
         "message": "OK",
@@ -81,6 +81,23 @@
 
 - `status` - статус обработки документа;
 - `result` - результат проверки подлинности.
+
+Допустимые статусы отражены в файле [Mitwork\Kalkan\Enums\DocumentStatus.php](../src/Enums/DocumentStatus.php):
+
+```php
+<?php
+
+namespace Mitwork\Kalkan\Enums;
+
+enum DocumentStatus: string
+{
+    case CREATED = 'created';
+    case REQUESTED = 'requested';
+    case REJECTED = 'rejected';
+    case SIGNED = 'signed';
+    case PROCESSED = 'processed';
+}
+```
 
 ### Реализация
 

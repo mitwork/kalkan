@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(\Mitwork\Kalkan\Services\DataValidationService::class)]
 final class DataValidationServiceTest extends BaseTestCase
 {
-    public function testXmlValidationIsWorking(): void
+    public function testXmlValidation(): void
     {
         $service = new \Mitwork\Kalkan\Services\DataValidationService();
 
@@ -32,7 +32,7 @@ XML;
         $this->assertFalse($result, 'Валидация некорректной XML-строки не работает');
     }
 
-    public function testJsonValidationIsWorking(): void
+    public function testJsonValidation(): void
     {
         $service = new \Mitwork\Kalkan\Services\DataValidationService();
 
@@ -54,7 +54,7 @@ JSON;
         $this->assertFalse($result, 'Валидация некорректной JSON-строки не работает');
     }
 
-    public function testBase64ValidationIsWorking(): void
+    public function testBase64Validation(): void
     {
         $service = new \Mitwork\Kalkan\Services\DataValidationService();
 

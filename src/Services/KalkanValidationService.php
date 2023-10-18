@@ -35,7 +35,7 @@ class KalkanValidationService extends BaseService implements ValidationService
 
         $message = json_encode($template);
 
-        $response = $this->request('/xml/verify', $message);
+        $response = $this->request('/xml/verify', $message, throw: ! $throw);
 
         $this->setResponse($response);
 
@@ -82,7 +82,7 @@ class KalkanValidationService extends BaseService implements ValidationService
 
         $message = json_encode($template);
 
-        $response = $this->request('/cms/verify', $message);
+        $response = $this->request('/cms/verify', $message, throw: ! $throw);
 
         $this->setResponse($response);
 

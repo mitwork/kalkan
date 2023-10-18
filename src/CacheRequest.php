@@ -2,29 +2,87 @@
 
 namespace Mitwork\Kalkan;
 
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Mitwork\Kalkan\Contracts\AbstractRequest;
 
+/**
+ * @property array $files
+ * @property array $auth
+ * @property string|null $description
+ */
 class CacheRequest implements AbstractRequest
 {
-    public string $description;
-
     public array $files;
 
     public array $auth;
 
-    private array $attributes;
+    public ?string $description = null;
 
-    public function __construct(array $attributes)
+    public function __construct(array $files, array $auth = [], string $description = null)
     {
-        $this->attributes = $attributes;
-
-        $this->auth = $attributes['auth'];
-        $this->description = $attributes['description'];
-        $this->files = $attributes['files'];
+        $this->files = $files;
+        $this->auth = $auth;
+        $this->description = $description;
     }
 
-    public function attributes(): array
+    /**
+     * Правила валидации
+     *
+     * @return string[]
+     */
+    public function rules(): array
     {
-        return $this->attributes;
+        return [
+            'files' => 'array|required',
+            'auth' => 'array',
+            'description' => 'string|nullable',
+        ];
+    }
+
+    /**
+     * Валидация данных
+     *
+     * @throws ValidationException
+     */
+    public function validate(string|array $fields = null, array $data = [], bool $throw = false): bool
+    {
+        $attributes = $this->toArray();
+
+        if ($fields) {
+            $attributes = collect($attributes)->only($fields);
+        }
+
+        if (count($data) > 0) {
+            $self = new self(...$data);
+            $attributes = $self->toArray();
+        }
+
+        $validator = Validator::make($attributes, $this->rules());
+
+        try {
+            $validator->validate();
+        } catch (ValidationException $exception) {
+
+            if ($throw) {
+                throw $exception;
+            }
+
+            return false;
+        }
+
+        return ! $validator->fails();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function toArray(): array
+    {
+        return [
+            'files' => $this->files,
+            'auth' => $this->auth,
+            'description' => $this->description,
+        ];
     }
 }

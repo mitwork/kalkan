@@ -23,6 +23,7 @@ class StoreDocumentRequest extends FormRequest
             'id' => 'alpha_num:ascii|nullable',
             'name' => 'required|string',
             'data' => 'string|required',
+            'mime' => 'string|required',
             'size' => 'numeric',
             'meta' => 'array',
         ];

@@ -29,7 +29,7 @@ trait NcanodeHttpClient
      * @param  array  $options Параметры
      * @return array Результат
      */
-    public function request(string $url, string|array $body = null, array $options = []): array
+    public function request(string $url, string|array $body = null, array $options = [], bool $throw = true): array
     {
 
         $this->init($options);
@@ -46,19 +46,26 @@ trait NcanodeHttpClient
             throw NcanodeUnavailableException::create($ex->getMessage());
         }
 
+        $response = $request->getBody()->getContents();
+        $message = json_decode($response, true);
+
         if ($request->getStatusCode() === 200) {
 
-            $response = $request->getBody()->getContents();
-            $message = json_decode($response, true);
-
-            if (! $message || ! isset($message['status']) || $message['status'] !== 200) {
-                throw NcanodeStatusException::create($request->getStatusCode(), $response);
+            if ($throw) {
+                if (! $message || ! isset($message['status']) || $message['status'] !== 200) {
+                    throw NcanodeStatusException::create($request->getStatusCode(), $response);
+                }
             }
 
             return $message;
         }
 
-        throw NcanodeStatusException::create($request->getStatusCode(), $request->getBody()->getContents());
+        if ($throw) {
+            throw NcanodeStatusException::create($request->getStatusCode(), $message);
+        }
+
+        return $message;
+
     }
 
     /**

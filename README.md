@@ -65,12 +65,14 @@ return [
     ],
     'actions' => [
         'store-document' => 'store-document',
+        'store-request' => 'store-request',
         'generate-qr-code' => 'generate-qr-code',
         'generate-cross-link' => 'generate-cross-link',
         'generate-service-link' => 'generate-service-link',
         'prepare-content' => 'prepare-content',
         'process-content' => 'process-content',
         'check-document' => 'check-document',
+        'check-request' => 'check-request',
     ],
     'options' => [
         'description' => 'Текст для пользователя',
@@ -80,12 +82,12 @@ return [
             'nameEn' => 'JS TEST',
             'bin' => '123456789012',
         ],
-        'ttl' => 180,
         'auth' => [
             'type' => 'None', // Bearer
             'token' => '',
         ],
     ],
+    'ttl' => 180,
 ];
 ```
 
@@ -98,9 +100,9 @@ return [
 - `actions` - именованные роуты для взаимодействия с приложениями при QR-подписании;
 - `options.description` - название информационной системы;
 - `options.organisation` - сведения об организации;
-- `options.ttl` - время жизни одноразовых ссылок (в секундах);
 - `auth.type` - тип авторизации при формировании сервисных ссылок для QR-подписания, допустимые значения - `None`, `Bearer`;
-- `auth.token` - токен авторизации, в случае если он не задан для документа будет сформирован уникальный единоразовый токен.
+- `auth.token` - токен авторизации, в случае если он не задан для документа будет сформирован уникальный единоразовый токен;
+- `ttl` - время жизни одноразовых ссылок (в секундах);
 
 ## Использование
 
@@ -226,10 +228,10 @@ class TestCmsController extends Controller
 
 **Основные шаги:**
 
-1) [Подготовка документа](docs/STEP_10_STORE_DOCUMENT.md);
-2) [Формирование QR-кода](docs/STEP_11_GENERATE_QR_CODE.md);
-3) Считывание QR-кода мобильным приложением;
-4) [Генерация сервисных данных](docs/STEP_20_GENERATE_SERVICE_LINK.md);
+1) [Загрузка документов](docs/STEP_10_STORE_DOCUMENT.md) - данный шаг опционален, документы можно отправить на шаге 2;
+2) [Формирование запроса](docs/STEP_20_STORE_REQUEST.md) и [генерация сервисной ссылки](docs/STEP_21_GENERATE_SERVICE_LINK.md);
+3) [Формирование QR-кода](docs/STEP_11_GENERATE_QR_CODE.md);
+4) Считывание QR-кода мобильным приложением;
 5) [Получение подписываемых данных](docs/STEP_30_PREPARE_CONTENT.md) мобильным приложением;
 6) Подписание данных;
 7) [Обработка подписанных данных](docs/STEP_40_PROCESS_CONTENT.md);
@@ -242,14 +244,15 @@ class TestCmsController extends Controller
 
 **Основные шаги:**
 
-1) [Подготовка документа](docs/STEP_10_STORE_DOCUMENT.md);
-2) [Формирование кросс-ссылок](docs/STEP_12_GENERATE_CROSS_LINKS.md);
-3) Переход по кросс-ссылке в мобильное приложение;
-4) [Генерация сервисных данных](docs/STEP_20_GENERATE_SERVICE_LINK.md);
-5) [Получение подписываемых данных](docs/STEP_30_PREPARE_CONTENT.md) мобильным приложением;
-6) Подписание данных;
-7) [Обработка подписанных данных](docs/STEP_40_PROCESS_CONTENT.md);
-8) [Проверка статуса подписания документа](docs/STEP_50_CHECK_DOCUMENT.md).
+1) [Отправка документа](docs/STEP_10_STORE_DOCUMENT.md) - данный шаг опционален, документы можно отправить на шаге 2;
+2) [Формирование запроса](docs/STEP_20_STORE_REQUEST.md) и [генерация сервисной ссылки](docs/STEP_21_GENERATE_SERVICE_LINK.md);
+3) [Генерация сервисных данных](docs/STEP_20_GENERATE_SERVICE_LINK.md);
+4) [Формирование кросс-ссылок](docs/STEP_12_GENERATE_CROSS_LINKS.md);
+5) Переход по кросс-ссылке в мобильное приложение;
+6) [Получение подписываемых данных](docs/STEP_30_PREPARE_CONTENT.md) мобильным приложением;
+7) Подписание данных;
+8) [Обработка подписанных данных](docs/STEP_40_PROCESS_CONTENT.md);
+9) [Проверка статуса подписания документа](docs/STEP_50_CHECK_DOCUMENT.md).
 
 ## Тестирование
 
