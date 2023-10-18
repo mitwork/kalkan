@@ -2,6 +2,7 @@
 
 namespace Mitwork\Kalkan\Services;
 
+use Mitwork\Kalkan\Enums\ContentType;
 use Mitwork\Kalkan\Enums\SignatureType;
 
 class IntegrationService
@@ -153,7 +154,7 @@ class IntegrationService
             'meta' => $this->getMetaAttributes($id),
             'document' => [
                 'file' => [
-                    'mime' => $mime,
+                    'mime' => $mime === ContentType::PDF->value ? '@file/pdf': '',
                     'data' => $data,
                 ],
             ],
