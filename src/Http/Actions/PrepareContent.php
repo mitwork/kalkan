@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Mitwork\Kalkan\Enums\AuthType;
 use Mitwork\Kalkan\Enums\ContentType;
 use Mitwork\Kalkan\Enums\DocumentStatus;
+use Mitwork\Kalkan\Enums\RequestStatus;
 use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
 use Mitwork\Kalkan\Events\DocumentRequested;
@@ -103,6 +104,8 @@ class PrepareContent extends BaseAction
 
             DocumentRequested::dispatch($file['id'], $request->all(), $file);
         }
+
+        $this->requestService->update($id, RequestStatus::PROGRESS);
 
         RequestRequested::dispatch($id, $request->all(), $response);
 

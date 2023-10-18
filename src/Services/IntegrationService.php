@@ -152,7 +152,7 @@ class IntegrationService
             'meta' => $this->getMetaAttributes($id),
             'document' => [
                 'file' => [
-                    'mime' => $mime === ContentType::PDF->value ? '@file/pdf' : '',
+                    'mime' => $mime === ContentType::PDF->value ? '@file/pdf' : $mime,
                     'data' => $data,
                 ],
             ],
