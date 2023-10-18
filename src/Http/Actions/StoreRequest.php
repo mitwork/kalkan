@@ -40,7 +40,7 @@ class StoreRequest extends BaseAction
      */
     public function store(PrepareServiceRequest $request): JsonResponse
     {
-        $id = hrtime(true);
+        $id = Str::uuid()->toString();
         $attributes = $request->validated();
 
         if (! isset($attributes['auth']) || ! isset($attributes['auth']['type'])) {
