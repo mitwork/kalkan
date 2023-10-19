@@ -5,7 +5,7 @@ namespace Mitwork\Kalkan\Events;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class AuthRejected
+class RequestRejected
 {
     use Dispatchable, InteractsWithSockets;
 
@@ -13,9 +13,12 @@ class AuthRejected
 
     public string $message;
 
-    public function __construct($id, $message)
+    public array $result = [];
+
+    public function __construct($id, $message, $result = [])
     {
         $this->id = $id;
         $this->message = $message;
+        $this->result = $result;
     }
 }

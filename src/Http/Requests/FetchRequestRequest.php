@@ -5,7 +5,7 @@ namespace Mitwork\Kalkan\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Mitwork\Kalkan\Rules\CacheValueExists;
 
-class FetchDocumentRequest extends FormRequest
+class FetchRequestRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

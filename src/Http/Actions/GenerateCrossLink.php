@@ -3,7 +3,7 @@
 namespace Mitwork\Kalkan\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Mitwork\Kalkan\Http\Requests\FetchDocumentRequest;
+use Mitwork\Kalkan\Http\Requests\FetchRequestRequest;
 
 class GenerateCrossLink extends BaseAction
 {
@@ -14,14 +14,15 @@ class GenerateCrossLink extends BaseAction
      * работы с подписанием через мобильное приложение
      * eGov Mobile или eGov business.
      */
-    public function generate(FetchDocumentRequest $request): JsonResponse
+    public function generate(FetchRequestRequest $request): JsonResponse
     {
         $id = $request->input('id');
-        $link = $this->generateSignedLink(config('kalkan.actions.prepare-content'), ['id' => $id]);
+        $link = $this->generateTemporaryLink(config('kalkan.actions.generate-service-link'), ['id' => $id]);
 
         return response()->json([
-            'mobile' => sprintf(config('kalkan.links.mobile'), urlencode($link)),
-            'business' => sprintf(config('kalkan.links.business'), urlencode($link))]
+            'mobile' => sprintf(config('kalkan.links.mobile'), $link),
+            'business' => sprintf(config('kalkan.links.business'), $link),
+        ]
         );
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Mitwork\Kalkan\Contracts;
 
-interface AbstractDocument
+interface AbstractRequest
 {
     public function rules(): array;
 

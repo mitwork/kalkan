@@ -11,9 +11,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(\Mitwork\Kalkan\Services\KalkanSignatureService::class)]
 final class KalkanSignatureServiceTest extends BaseTestCase
 {
-    public function testXmlSigningIsWorking(): void
+    public function testXmlSigningWithGost2015(): void
     {
-        $this->loadCertificates();
+        $this->loadCertificates(['active' => true, 'type' => 'GOST2015']);
         $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
 
         $content = Str::random();
@@ -36,9 +36,60 @@ XML;
         $this->assertIsString($result, 'Подписание XML не работает');
     }
 
-    public function testCmsSigningIsWorking(): void
+    public function testXmlSigningWithGost2004(): void
     {
-        $this->loadCertificates();
+        $this->loadCertificates(['active' => true, 'type' => 'GOST2004']);
+
+        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+
+        $content = Str::random();
+
+        $data = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<test>
+  <message>{$content}</message>
+</test>
+XML;
+        $result = $service->signXml($data, $this->certificates[0]['content'], $this->certificates[0]['password']);
+        $response = $service->getResponse();
+
+        $this->assertIsArray($response, 'Получен некорректный ответ сервиса');
+        $this->assertArrayHasKey('status', $response, 'Ответ не содержит статус');
+        $this->assertEquals(200, $response['status'], 'Получен некорректный ответ сервиса');
+
+        $this->assertArrayHasKey('xml', $response, 'Ответ не содержит извлеченные данные');
+
+        $this->assertIsString($result, 'Подписание XML не работает');
+    }
+
+    public function testXmlSigningWithRsa(): void
+    {
+        $this->loadCertificates(['active' => true, 'type' => 'RSA']);
+        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+
+        $content = Str::random();
+
+        $data = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<test>
+  <message>{$content}</message>
+</test>
+XML;
+        $result = $service->signXml($data, $this->certificates[0]['content'], $this->certificates[0]['password']);
+        $response = $service->getResponse();
+
+        $this->assertIsArray($response, 'Получен некорректный ответ сервиса');
+        $this->assertArrayHasKey('status', $response, 'Ответ не содержит статус');
+        $this->assertEquals(200, $response['status'], 'Получен некорректный ответ сервиса');
+
+        $this->assertArrayHasKey('xml', $response, 'Ответ не содержит извлеченные данные');
+
+        $this->assertIsString($result, 'Подписание XML не работает');
+    }
+
+    public function testCmsSigningWithGost2015(): void
+    {
+        $this->loadCertificates(['active' => true, 'type' => 'GOST2015']);
         $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
 
         $content = Str::random();
@@ -55,7 +106,45 @@ XML;
         $this->assertIsString($result, 'Подписание CMS не работает');
     }
 
-    public function testMultipleCmsSigningIsWorking(): void
+    public function testCmsSigningWithGost2004(): void
+    {
+        $this->loadCertificates(['active' => true, 'type' => 'GOST2004']);
+        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+
+        $content = Str::random();
+
+        $result = $service->signCms($content, $this->certificates[0]['content'], $this->certificates[0]['password']);
+        $response = $service->getResponse();
+
+        $this->assertIsArray($response, 'Получен некорректный ответ сервиса');
+        $this->assertArrayHasKey('status', $response, 'Ответ не содержит статус');
+        $this->assertEquals(200, $response['status'], 'Получен некорректный ответ сервиса');
+
+        $this->assertArrayHasKey('cms', $response, 'Ответ не содержит извлеченные данные');
+
+        $this->assertIsString($result, 'Подписание CMS не работает');
+    }
+
+    public function testCmsSigningWithRsa(): void
+    {
+        $this->loadCertificates(['active' => true, 'type' => 'RSA']);
+        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+
+        $content = Str::random();
+
+        $result = $service->signCms($content, $this->certificates[0]['content'], $this->certificates[0]['password']);
+        $response = $service->getResponse();
+
+        $this->assertIsArray($response, 'Получен некорректный ответ сервиса');
+        $this->assertArrayHasKey('status', $response, 'Ответ не содержит статус');
+        $this->assertEquals(200, $response['status'], 'Получен некорректный ответ сервиса');
+
+        $this->assertArrayHasKey('cms', $response, 'Ответ не содержит извлеченные данные');
+
+        $this->assertIsString($result, 'Подписание CMS не работает');
+    }
+
+    public function testMultipleCmsSigning(): void
     {
         $this->loadCertificates();
 
@@ -94,7 +183,7 @@ XML;
 
     }
 
-    public function testSingingExceptionsIsWorking(): void
+    public function testSigningExceptions(): void
     {
         $this->loadCertificates(['active' => false]);
 

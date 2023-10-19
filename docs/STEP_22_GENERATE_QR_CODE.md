@@ -1,15 +1,15 @@
-## Шаг 1.1 - Формирование QR-кода
+## Шаг 2.1 - Формирование QR-кода
 
-На данном шаге можно получить QR-код по уникальному идентификатору документа. Шаг является опциональным, поскольку все 
-необходимые данные можно получить в [Шаг 1 - подготовка документа](STEP_10_STORE_DOCUMENT.md).
+На данном шаге можно получить QR-код по уникальному идентификатору запроса. Шаг является опциональным, поскольку все 
+необходимые данные можно получить в [Шаге 2 - Формирование запроса](STEP_20_STORE_REQUEST.md).
 
 ### Пример запроса
 
-`GET` /documents/generate-qr-code?id=acba8198-92d9-4297-905f-eb55ea69f9c4
+`GET` /api/requests/qr-code/acba8198-92d9-4297-905f-eb55ea69f9c4
 
 где:
 
- - `id` - уникальный идентификатор документа из шага 1.
+ - `id` - уникальный идентификатор документа из шага 2.
 
 ### Пример ответа
 
@@ -37,7 +37,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/documents/generate-qr-code', [\Mitwork\Kalkan\Http\Actions\GenerateQrCode::class, 'generate'])->name(config('kalkan.actions.generate-qr-code'));
+Route::get('/requests/qr-code/{id}', [\Mitwork\Kalkan\Http\Actions\GenerateQrCode::class, 'generate'])->name(config('kalkan.actions.generate-qr-code'));
 ```
 
 Так же, можно реализовать собственную логику данного шага, указав к конфигурации собственный именованный маршрут (`route`):

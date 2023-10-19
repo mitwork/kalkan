@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 #[CoversNothing]
 final class TranslationTest extends BaseTestCase
 {
-    public function testTranslationsIsWorking(): void
+    public function testMessageTranslations(): void
     {
         $messages = [
             'ru' => ['kalkan::messages.document_not_found', 'Документ не найден.'],

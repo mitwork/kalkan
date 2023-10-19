@@ -2,21 +2,21 @@
 
 namespace Mitwork\Kalkan\Contracts;
 
-use Mitwork\Kalkan\Enums\DocumentStatus;
+use Mitwork\Kalkan\Enums\RequestStatus;
 
-interface DocumentService
+interface RequestService
 {
     /**
-     * Добавление документа для обработки
+     * Добавление запроса для обработки
      *
      * @param  string|int  $id Уникальный идентификатор
      * @param  array  $attributes Содержимое и метаданные документа
      * @return bool Результат добавления
      */
-    public function add(string|int $id, array $attributes, DocumentStatus $status = DocumentStatus::CREATED): bool;
+    public function add(string|int $id, array $attributes, RequestStatus $status = RequestStatus::CREATED): bool;
 
     /**
-     * Получение документа
+     * Получение запроса
      *
      * @param  string|int  $id Уникальный идентификатор
      * @return array|null Содержимое и метаданные документа
@@ -24,7 +24,7 @@ interface DocumentService
     public function get(string|int $id): ?array;
 
     /**
-     * Проверка статуса подписания документа
+     * Проверка статуса запроса
      *
      * @param  string|int  $id Уникальный идентификатор
      * @return array|bool|null Результат проверки
@@ -32,20 +32,20 @@ interface DocumentService
     public function check(string|int $id): array|bool|null;
 
     /**
-     * Изменение статуса документа
+     * Изменение статуса запроса
      */
-    public function update(string|int $id, DocumentStatus $status): void;
+    public function update(string|int $id, RequestStatus $status): void;
 
     /**
-     * Обработка подписанного документа
+     * Обработка полученного запроса
      *
      * @param  string|int  $id Уникальный идентификатор
      * @return bool Результат обработки
      */
-    public function process(string|int $id, array $result, DocumentStatus $status = DocumentStatus::SIGNED): bool;
+    public function process(string|int $id, array $result, RequestStatus $status = RequestStatus::PROCESSED): bool;
 
     /**
-     * Отклонение документа
+     * Отклонение запроса
      *
      * @param  string|int  $id Уникальный идентификатор
      * @param  string|null  $message Сообщение или ошибка

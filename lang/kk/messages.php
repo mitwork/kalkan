@@ -5,6 +5,8 @@ return [
     'unable_to_get_document' => 'Құжатты алу мүмкін емес.',
     'unable_to_process_document' => 'Құжатты өңдеу мүмкін емес.',
     'document_not_found' => 'Құжат табылмады.',
+    'request_not_found' => 'Сұрау табылмады.',
     'empty_bearer_token' => 'Рұқсат беру белгісі жоқ.',
     'wrong_bearer_token' => 'Рұқсат ету белгісі жарамсыз.',
+    'cache_not_found' => 'Кэш табылмады.',
 ];

@@ -3,8 +3,6 @@
 namespace Mitwork\Kalkan\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
-use Mitwork\Kalkan\Enums\ContentType;
 
 class StoreDocumentRequest extends FormRequest
 {
@@ -22,12 +20,12 @@ class StoreDocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'number|string',
+            'id' => 'alpha_num:ascii|nullable',
             'name' => 'required|string',
-            'content' => 'string|required',
-            'type' => [new Enum(ContentType::class)],
+            'data' => 'string|required',
+            'mime' => 'string|required',
+            'size' => 'numeric',
             'meta' => 'array',
-            'auth' => 'array',
         ];
     }
 }

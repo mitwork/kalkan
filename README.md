@@ -13,7 +13,7 @@
 
 - Подписание XML данных;
 - Подписание бинарных данных (CMS);
-- Проверка подписанных данных;
+- Проверка и извлечение подписанных данных;
 - QR, кросс-подписание.
 
 Внешние зависимости:
@@ -22,11 +22,12 @@
 - [NCANode](https://v3.ncanode.kz/) - проверка, валидация и извлечение подписанных данных;
 - eGov mobile ([App Store](https://apps.apple.com/kz/app/egov-mobile/id1476128386), [PlayMarket](https://play.google.com/store/apps/details?id=kz.mobile.mgov&hl=ru)), eGov business ([App Store](https://apps.apple.com/kz/app/egov-business/id1597880144), [PlayMarket](https://play.google.com/store/apps/details?id=kz.mobile.mgov.business&hl=ru)) - QR и кросс-подписание.
 
-Для возможности QR и cross-подписания ваша информационная система должна быть подключена к услуге [Сервис QR подписания посредством приложения Egov Mobile](https://sb.egov.kz/smart-bridge/services/passport/NITEC-S-5096),
+Для возможности QR и кросс-подписания ваша информационная система должна быть подключена к услуге [Сервис QR подписания посредством приложения Egov Mobile](https://sb.egov.kz/smart-bridge/services/passport/NITEC-S-5096),
 и внешний адрес (адреса) должны быть добавлены на стороне оператора услуги.
 
-На этапе тестирования может понадобиться установить тестовые сборки приложений Egov Mobile, Egov Business - напрямую для OS Android, 
-либо с помощью [TestFlight](https://developer.apple.com/testflight/) по ссылке-приглашению оператора сервиса.
+На этапе тестирования может понадобиться установить тестовые сборки приложений eGov mobile, eGov business - напрямую для OS Android, 
+либо с помощью [TestFlight](https://developer.apple.com/testflight/) по ссылке-приглашению оператора сервиса. Для тестирования кросс-ссылок, так же будет
+необходимо указать корректные ссылки с идентификаторами тестовых приложений.
 
 ## Поддерживаемые версии
 
@@ -65,12 +66,14 @@ return [
     ],
     'actions' => [
         'store-document' => 'store-document',
+        'store-request' => 'store-request',
         'generate-qr-code' => 'generate-qr-code',
         'generate-cross-link' => 'generate-cross-link',
         'generate-service-link' => 'generate-service-link',
         'prepare-content' => 'prepare-content',
         'process-content' => 'process-content',
         'check-document' => 'check-document',
+        'check-request' => 'check-request',
     ],
     'options' => [
         'description' => 'Текст для пользователя',
@@ -80,12 +83,12 @@ return [
             'nameEn' => 'JS TEST',
             'bin' => '123456789012',
         ],
-        'ttl' => 180,
         'auth' => [
             'type' => 'None', // Bearer
             'token' => '',
         ],
     ],
+    'ttl' => 180,
 ];
 ```
 
@@ -95,16 +98,19 @@ return [
 - `links.prefix` - префикс для формирования ссылки в QR-code;
 - `links.mobile` - шаблон для формирования кросс-ссылки при подписании в приложении _eGov mobile_;
 - `links.business` - шаблон для формирования кросс-ссылки при подписании в приложении _eGov business_;
-- `actions` - именованные роуты для взаимодействия с приложениями при QR-подписании;
-- `options.description` - название информационной системы;
+- `actions` - именованные маршруты для взаимодействия с приложениями при QR и кросс-подписании;
+- `options.description` - название запроса или информационной системы;
 - `options.organisation` - сведения об организации;
-- `options.ttl` - время жизни одноразовых ссылок (в секундах);
 - `auth.type` - тип авторизации при формировании сервисных ссылок для QR-подписания, допустимые значения - `None`, `Bearer`;
-- `auth.token` - токен авторизации, в случае если он не задан для документа будет сформирован уникальный единоразовый токен.
+- `auth.token` - токен авторизации, в случае если он не задан для запроса - будет сформирован уникальный одноразовый токен;
+- `ttl` - время жизни одноразовых ссылок (в секундах).
 
 ## Использование
 
 ### Подписание и проверка XML данных
+
+Данный пример подписания применим для подписания на бэкенде, когда ключ ЭЦП находится на сервере.
+Для проверки подлинности данных, подписанных через NCALayer необходимо передавать подписанные данные через HTTP-запрос.
 
 ```php
 <?php
@@ -153,6 +159,9 @@ class TestXmlController extends Controller
 ```
 
 ### Подписание, проверка и извлечение CMS данных
+
+Данный пример подписания применим для подписания на бэкенде, когда ключ ЭЦП находится на сервере.
+Для проверки подлинности данных, подписанных через NCALayer необходимо передавать подписанные данные через HTTP-запрос.
 
 ```php
 <?php
@@ -219,6 +228,20 @@ class TestCmsController extends Controller
 
 Поскольку взаимодействие происходит по протоколу HTTP, данный пакет кроме сервисов содержит так же и готовые `Http\Actions` для выполнения всех требуемых шагов.
 
+- `POST` `/api/documents` - загрузка документов;
+- `POST` `/api/requests` - формирование запроса;
+- `GET` `/api/requests/generate/{id}` - генерация сервисной ссылки;
+- `GET` `/api/requests/qr-code/{id}` - формирование QR-кода;
+- `GET` `/api/requests/links/{id}` - формирование кросс-ссылок;
+- `GET` `/api/requests/{id}` - работа с данными - отдача;
+- `PUT` `/api/requests/{id}` - работа с данными - обработка;
+- `GET` `/check/document/{id}` - проверка статуса подписания документа;
+- `GET` `/check/request/{id}` - проверка статуса заявки.
+
+Для использования готовых методов, необходимо указать маршруты в `routes/api.php` описанные в [отдельном документе](docs/ROUTES_AND_ACTIONS.md) или [исходном коде](routes/api.php).
+
+При необходимости можно переопределить любой из шагов, указав собственный обработчик. Подробнее о каждом из шагов написано в разделах ниже.
+
 #### QR-подписание
 
 Данный механизм позволяет подписывать данные с помощью смартфона с использованием приложений eGov mobile или eGov business, 
@@ -226,10 +249,10 @@ class TestCmsController extends Controller
 
 **Основные шаги:**
 
-1) [Подготовка документа](docs/STEP_10_STORE_DOCUMENT.md);
-2) [Формирование QR-кода](docs/STEP_11_GENERATE_QR_CODE.md);
-3) Считывание QR-кода мобильным приложением;
-4) [Генерация сервисных данных](docs/STEP_20_GENERATE_SERVICE_LINK.md);
+1) [Загрузка документов](docs/STEP_10_STORE_DOCUMENT.md) - данный шаг опционален, документы можно отправить на шаге 2;
+2) [Формирование запроса](docs/STEP_20_STORE_REQUEST.md) и [генерация сервисной ссылки](docs/STEP_21_GENERATE_SERVICE_LINK.md);
+3) [Формирование QR-кода](docs/STEP_22_GENERATE_QR_CODE.md);
+4) Считывание QR-кода мобильным приложением;
 5) [Получение подписываемых данных](docs/STEP_30_PREPARE_CONTENT.md) мобильным приложением;
 6) Подписание данных;
 7) [Обработка подписанных данных](docs/STEP_40_PROCESS_CONTENT.md);
@@ -242,14 +265,75 @@ class TestCmsController extends Controller
 
 **Основные шаги:**
 
-1) [Подготовка документа](docs/STEP_10_STORE_DOCUMENT.md);
-2) [Формирование кросс-ссылок](docs/STEP_12_GENERATE_CROSS_LINKS.md);
-3) Переход по кросс-ссылке в мобильное приложение;
-4) [Генерация сервисных данных](docs/STEP_20_GENERATE_SERVICE_LINK.md);
+1) [Загрузка документов](docs/STEP_10_STORE_DOCUMENT.md) - данный шаг опционален, документы можно отправить на шаге 2;
+2) [Формирование запроса](docs/STEP_20_STORE_REQUEST.md) и [генерация сервисной ссылки](docs/STEP_21_GENERATE_SERVICE_LINK.md);
+3) [Формирование кросс-ссылок](docs/STEP_23_GENERATE_CROSS_LINKS.md);
+4) Переход по кросс-ссылке в мобильное приложение;
 5) [Получение подписываемых данных](docs/STEP_30_PREPARE_CONTENT.md) мобильным приложением;
 6) Подписание данных;
 7) [Обработка подписанных данных](docs/STEP_40_PROCESS_CONTENT.md);
 8) [Проверка статуса подписания документа](docs/STEP_50_CHECK_DOCUMENT.md).
+
+#### События
+
+В пакете реализованы следующие события:
+
+- `Mitwork\Kalkan\Events\AuthAccepted` - аутентификация при запросе данных мобильным приложением подтверждена;
+- `Mitwork\Kalkan\Events\AuthRejected` - аутентификация при запросе данных мобильным приложением не подтверждена;
+- `Mitwork\Kalkan\Events\DocumentRejected` - документ отклонен;
+- `Mitwork\Kalkan\Events\DocumentRequested` - документ запрошен;
+- `Mitwork\Kalkan\Events\DocumentSaved` - документ сохранен;
+- `Mitwork\Kalkan\Events\DocumentSigned` - документ подписан;
+- `Mitwork\Kalkan\Events\RequestProcessed` - запрос обработан;
+- `Mitwork\Kalkan\Events\RequestRejected` - запрос отклонен;
+- `Mitwork\Kalkan\Events\RequestRequested` - сервисные данные запрошены;
+- `Mitwork\Kalkan\Events\RequestSaved` - сервисные данные сохранены.
+
+Для подписки на любое из событий, в приложении можно реализовать собственный `EventListener`:
+
+```php
+<?php
+
+namespace App\Listeners;
+
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
+use Mitwork\Kalkan\Events\DocumentSigned;
+
+class DocumentEventsListener
+{
+    /**
+     * Create the event listener.
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    public function onSigned(DocumentSigned $event): void
+    {
+        Log::info('Документ подписан', [
+            'id' => $event->id,
+            'result' => $event->result,
+        ]);
+    }
+}
+
+```
+
+## Ограничения
+
+### Работа с несколькими файлами
+
+При реализации подписания нескольких документов с использованием NCALayer, имеется возможность подписания только XML-документов.
+API не позволяет подписывать несколько файлов (хэшей) за один раз.
+
+Варианты решения:
+
+1) Подписание на сервере через выбор ключа ЭЦП и запрос пароля - **небезопасно** и не применимо при работе с токенами (KazToken, JaCarta);
+2) Формирование на сервере и подписание на клиенте архива подписываемых документов;
+3) Подписание альтернативными способами - через мобильные приложения по QR-коду или кросс-ссылкам.
 
 ## Тестирование
 
@@ -270,3 +354,14 @@ NCANODE_DEBUG=true NCANODE_CRL_URL="http://test.pki.gov.kz/crl/nca_rsa_test.crl 
 ```shell
 java -jar NCANode-3.2.3.jar
 ```
+
+## Отказ от ответственности
+
+Данный пакет предоставляется и распространяется "как есть", автор (авторы) не несут юридической ответственности, которая может возникнуть
+при использовании данного пакета или его отдельных частей.
+
+При реализации приложений, использующих данный пакет, необходимо придерживаться законов и нормативных актов, регламентирующих работу
+с электронной цифровой подписью и электронным документом, в том числе:
+
+1) [Закон Республики Казахстан от 7 января 2003 года N 370 "Об электронном документе и электронной цифровой подписи"](https://adilet.zan.kz/rus/docs/Z030000370_);
+2) [Приказ Министра по инвестициям и развитию Республики Казахстан от 9 декабря 2015 года № 1187 Об утверждении Правил проверки подлинности электронной цифровой подписи](https://adilet.zan.kz/rus/docs/V1500012864).

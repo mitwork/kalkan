@@ -4,6 +4,7 @@ certificates:
     password: Qwerty12
     active: true
     policy: sign
+    type: GOST2015
     content: |
       MIIHRwIBAzCCBwEGCSqGSIb3DQEHAaCCBvIEggbuMIAwgAYJKoZIhvcNAQcBoIAEggFAMIIBPDCCATgGCyqGSIb3DQEMCgECoIGfMIGcMCgGCiqGSIb3DQEM
       AQMwGgQUQCbD4ydHQMY4sqvLlv/MBBPJmR0CAgQABHCiANeFAv643/qPCBQPBp6WmarE46Tiz77mNR2qZXo8ZEXYXnQu40E/b7M7STlGZxCmGWa22eoQDepY
@@ -31,6 +32,7 @@ certificates:
     password: Qwerty12
     active: true
     policy: sign
+    type: GOST2004
     content: |
       MIIGlwIBAzCCBlEGCSqGSIb3DQEHAaCCBkIEggY+MIAwgAYJKoZIhvcNAQcBoIAEggEoMIIBJDCCASAGCyqGSIb3DQEMCgECoIGHMIGEMCgGCiqGSIb3DQEM
       AQMwGgQUnkT27SVNyENfQtRrln8PqbB6HT4CAgQABFgbJOZhQVNVv+CAFpP+cecezFf60zPu1QE4GzSJw4Eov4WxDrS4PlZAfLf6VbOvrazsbjVNKqSibodb
@@ -56,6 +58,7 @@ certificates:
     password: Qwerty12
     active: true
     policy: auth
+    type: RSA
     content: |
       MIINgwIBAzCCDT0GCSqGSIb3DQEHAaCCDS4Egg0qMIAwgAYJKoZIhvcNAQcBoIAEggWcMIIFmDCCBZQGCyqGSIb3DQEMCgECoIIE+jCCBPYwKAYKKoZIhvcN
       AQwBAzAaBBQOs3kyp7dLcxjaNHNQPGGqzL0SuAICBAAEggTIkNX7SWv9IKZZ4L4BPOgyCoFLMK3PuwY3R5UOKRCstNTb6kHwtfF6vWEUtNOvCR6J9Hb7Pajz
@@ -101,6 +104,7 @@ certificates:
     password: Qwerty12
     active: true
     policy: sign
+    type: GOST2015
     content: |
       MIIHDwIBAzCCBskGCSqGSIb3DQEHAaCCBroEgga2MIAwgAYJKoZIhvcNAQcBoIAEggFAMIIBPDCCATgGCyqGSIb3DQEMCgECoIGfMIGcMCgGCiqGSIb3DQEMA
       QMwGgQUZFpsj71buZOijvnco31veIdHQvgCAgQABHDb6AknwIKJM4D1J6nYHz6+KYQf8qNx3Sef40NAYMAOvNutYAPuTp9th0ABk69L/Vt/gQat36ch1ABuoK
@@ -127,6 +131,7 @@ certificates:
     password: Qwerty12
     active: true
     policy: auth
+    type: RSA
     content: |
       MIINQwIBAzCCDP0GCSqGSIb3DQEHAaCCDO4EggzqMIAwgAYJKoZIhvcNAQcBoIAEggWcMIIFmDCCBZQGCyqGSIb3DQEMCgECoIIE+jCCBPYwKAYKKoZIhvcN
       AQwBAzAaBBTgLl166RpPoSYxDkH3YBFlwUbkvwICBAAEggTI4Y25+7ib9v0cLsGiKchjNDNyg/m+peH3yIH3PVUCq86eV1+b+HkiB2P8AkLxZ3dx9XdWXFUX
@@ -171,6 +176,7 @@ certificates:
     password: Qwerty12
     active: true
     policy: sign
+    type: RSA
     content: |
       MIINQwIBAzCCDP0GCSqGSIb3DQEHAaCCDO4EggzqMIAwgAYJKoZIhvcNAQcBoIAEggWcMIIFmDCCBZQGCyqGSIb3DQEMCgECoIIE+jCCBPYwKAYKKoZIhvcN
       AQwBAzAaBBRBE6L2gMgLfnCcD02KFs40dbgbIAICBAAEggTIUI+CCKatz3Bs7rtZJWiAK/qMbn3K/O58BivqIogNxXx26nJMGOeTzTBwS3VoOlvzS5RI7YhZ
@@ -215,6 +221,7 @@ certificates:
     password: Qwerty12
     active: false
     policy: sign
+    type: GOST2015
     content: |
       MIIHDwIBAzCCBskGCSqGSIb3DQEHAaCCBroEgga2MIAwgAYJKoZIhvcNAQcBoIAEggFAMIIBPDCCATgGCyqGSIb3DQEMCgECoIGfMIGcMCgGCiqGSIb3DQEMA
       QMwGgQUyklzBABXYeKGdSt+hoS3u8cweuQCAgQABHANPwLWlKcTZcSvy5L+uIUPoNWKe3wme+2WRw8yjvZh55xsHaKSIBlR0cHgtIupsaPDurI4kBkQxEOthI
