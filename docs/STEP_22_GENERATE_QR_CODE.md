@@ -5,7 +5,7 @@
 
 ### Пример запроса
 
-`GET` /documents/generate-qr-code?id=acba8198-92d9-4297-905f-eb55ea69f9c4
+`GET` /api/requests/qr-code/acba8198-92d9-4297-905f-eb55ea69f9c4
 
 где:
 
@@ -37,7 +37,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/documents/generate-qr-code', [\Mitwork\Kalkan\Http\Actions\GenerateQrCode::class, 'generate'])->name(config('kalkan.actions.generate-qr-code'));
+Route::get('/requests/qr-code/{id}', [\Mitwork\Kalkan\Http\Actions\GenerateQrCode::class, 'generate'])->name(config('kalkan.actions.generate-qr-code'));
 ```
 
 Так же, можно реализовать собственную логику данного шага, указав к конфигурации собственный именованный маршрут (`route`):

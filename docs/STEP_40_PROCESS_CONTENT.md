@@ -8,7 +8,7 @@
 
 **Важно:** данный запрос инициируется внешним приложением.
 
-`PUT` /documents/process-content?id=acba8198-92d9-4297-905f-eb55ea69f9c4
+`PUT` /api/requests/content/acba8198-92d9-4297-905f-eb55ea69f9c4
 
 **Работы с файлами (CMS)**
 
@@ -21,12 +21,9 @@
             "nameRu": "document.docx",
             "nameKz": "document.docx",
             "nameEn": "document.docx",
-            "meta": [{
-                "name": "0",
-                "value": {
-                    "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                }
-            }],
+            "meta": [
+                {"name": "mime", "value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
+            ],
             "documentCms": "cms..."
         }
     ]
@@ -76,7 +73,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::put('/documents/content', [\Mitwork\Kalkan\Http\Actions\ProcessContent::class, 'process'])->name(config('kalkan.actions.process-content'));
+Route::put('/requests/content/{id}', [\Mitwork\Kalkan\Http\Actions\ProcessContent::class, 'process'])->name(config('kalkan.actions.process-content'));
 ```
 
 Так же, можно реализовать собственную логику данного шага, указав к конфигурации собственный именованный маршрут (`route`):

@@ -5,7 +5,7 @@
 
 ### Пример запроса
 
-`GET` /documents/generate-cross-links?id=acba8198-92d9-4297-905f-eb55ea69f9c4
+`GET` /api/requests/cross-links/acba8198-92d9-4297-905f-eb55ea69f9c4
 
 где:
 
@@ -32,7 +32,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/documents/generate-cross-links', [\Mitwork\Kalkan\Http\Actions\GenerateCrossLink::class, 'generate'])->name(config('kalkan.actions.generate-cross-links'));
+Route::get('/requests/cross-links/{id}', [\Mitwork\Kalkan\Http\Actions\GenerateCrossLink::class, 'generate'])->name(config('kalkan.actions.generate-cross-links'));
 ```
 
 Так же, можно реализовать собственную логику данного шага, указав к конфигурации собственный именованный маршрут (`route`):

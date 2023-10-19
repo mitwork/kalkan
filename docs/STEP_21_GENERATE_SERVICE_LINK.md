@@ -7,7 +7,7 @@
 
 ### Пример запроса
 
-`POST` /documents/generate-service-link?id=acba8198-92d9-4297-905f-eb55ea69f9c4
+`POST` /api/requests/generate/acba8198-92d9-4297-905f-eb55ea69f9c4
 
 где:
 

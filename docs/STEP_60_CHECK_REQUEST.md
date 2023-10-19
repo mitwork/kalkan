@@ -6,7 +6,7 @@
 
 ### Пример запроса
 
-`GET` /requests/check?id=acba8198-92d9-4297-905f-eb55ea69f9c4
+`GET` /api/check/request/acba8198-92d9-4297-905f-eb55ea69f9c4
 
 ### Пример ответа
 
@@ -48,7 +48,7 @@ enum RequestStatus: string
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/requests/check/{id}', [\Mitwork\Kalkan\Http\Actions\CheckRequest::class, 'check'])->name(config('kalkan.actions.check-request'));
+Route::get('/check/request/{id}', [\Mitwork\Kalkan\Http\Actions\CheckRequest::class, 'check'])->name(config('kalkan.actions.check-request'));
 ```
 
 Так же, можно реализовать собственную логику данного шага, указав к конфигурации собственный именованный маршрут (`route`):

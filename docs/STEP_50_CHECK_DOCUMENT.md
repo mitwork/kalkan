@@ -6,7 +6,7 @@
 
 ### Пример запроса
 
-`GET` /documents/check?id=134372667717125
+`GET` /api/check/document/134372667717125
 
 ### Пример ответа
 
@@ -111,7 +111,7 @@ enum DocumentStatus: string
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/documents/check/{id}', [\Mitwork\Kalkan\Http\Actions\CheckDocument::class, 'check'])->name(config('kalkan.actions.check-document'));
+Route::get('/check/document/{id}', [\Mitwork\Kalkan\Http\Actions\CheckDocument::class, 'check'])->name(config('kalkan.actions.check-document'));
 ```
 
 Так же, можно реализовать собственную логику данного шага, указав к конфигурации собственный именованный маршрут (`route`):

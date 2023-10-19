@@ -8,7 +8,7 @@
 
 **Важно:** данный запрос инициируется внешним приложением.
 
-`GET` /documents/prepare-content?id=acba8198-92d9-4297-905f-eb55ea69f9c4
+`GET` /api/requests/content/acba8198-92d9-4297-905f-eb55ea69f9c4
 
 где:
 
@@ -79,7 +79,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/documents/content', [\Mitwork\Kalkan\Http\Actions\PrepareContent::class, 'prepare'])->name(config('kalkan.actions.prepare-content'));
+Route::get('/requests/content/{id}', [\Mitwork\Kalkan\Http\Actions\PrepareContent::class, 'prepare'])->name(config('kalkan.actions.prepare-content'));
 ```
 
 Так же, можно реализовать собственную логику данного шага, указав к конфигурации собственный именованный маршрут (`route`):

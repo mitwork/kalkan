@@ -1,3 +1,6 @@
+# Используемые маршруты
+
+```php
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -28,3 +31,5 @@ Route::get('/check/document/{id}', [\Mitwork\Kalkan\Http\Actions\CheckDocument::
 
 // Шаг 6 - Проверка статуса заявки
 Route::get('/check/request/{id}', [\Mitwork\Kalkan\Http\Actions\CheckRequest::class, 'check'])->name(config('kalkan.actions.check-request'));
+
+```
