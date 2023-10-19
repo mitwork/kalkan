@@ -17,11 +17,14 @@ class DocumentSigned
 
     public array $result;
 
-    public function __construct($id, $content, $signature, $result)
+    public int|string|null $requestId;
+
+    public function __construct($id, $content, $signature, $result, $requestId = null)
     {
         $this->id = $id;
         $this->content = $content;
         $this->signature = $signature;
         $this->result = $result;
+        $this->requestId = $requestId;
     }
 }
