@@ -94,7 +94,7 @@ final class ActionsTest extends BaseTestCase
         $prefix = 'CMS Multi';
 
         $content = Str::random(64);
-        $certificates = [$this->certificates[0], $this->certificates[1]];
+        $certificates = [$this->certificates[0], $this->certificates[2]];
 
         $files = [
             [
@@ -139,6 +139,8 @@ final class ActionsTest extends BaseTestCase
         // Отправка подписанных данных
 
         $response = $this->put($response['link'], $message, $headers);
+
+        var_dump($files);
 
         $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $prefix, $response->getContent()));
 
