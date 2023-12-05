@@ -140,8 +140,6 @@ final class ActionsTest extends BaseTestCase
 
         $response = $this->put($response['link'], $message, $headers);
 
-        var_dump($files);
-
         $this->assertTrue($response->isOk(), sprintf('[%s] Ошибка обработки подписанных документов: %s', $prefix, $response->getContent()));
 
         // Проверка статуса после подписания
