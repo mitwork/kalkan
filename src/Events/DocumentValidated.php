@@ -5,7 +5,7 @@ namespace Mitwork\Kalkan\Events;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class DocumentSigned
+class DocumentValidated
 {
     use Dispatchable, InteractsWithSockets;
 

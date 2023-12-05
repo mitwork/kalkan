@@ -10,6 +10,7 @@ use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
 use Mitwork\Kalkan\Events\DocumentRejected;
 use Mitwork\Kalkan\Events\DocumentSigned;
+use Mitwork\Kalkan\Events\DocumentValidated;
 use Mitwork\Kalkan\Events\RequestProcessed;
 use Mitwork\Kalkan\Events\RequestRejected;
 use Mitwork\Kalkan\Http\Requests\ProcessDocumentRequest;
@@ -92,34 +93,37 @@ class ProcessContent extends BaseAction
                     $message = __('kalkan::messages.unable_to_process_document');
                 }
 
-                RequestRejected::dispatch($id, $message, $result);
-                DocumentRejected::dispatch($signedDocument['id'], $message, $result);
-
-                $this->requestService->reject($id, $message);
-
                 if ($this->documentService->reject($signedDocument['id'], $message)) {
-                    return response()->json(['error' => $message, 'result' => $result], 422);
+                    DocumentRejected::dispatch($signedDocument['id'], $message, $result, $id);
+                }
+
+                if ($this->requestService->reject($id, $message)) {
+                    RequestRejected::dispatch($id, $message, $result, $signedDocument['id']);
                 }
 
                 return response()->json(['error' => $message, 'result' => $result], 500);
             }
 
+            DocumentValidated::dispatch($signedDocument['id'], $original['data'], $signature, $result, $id);
+
             if (! $this->documentService->process($signedDocument['id'], $result)) {
 
-                $message = __('kalkan::messages.unable_to_process_document');
+                $message = $this->documentService->message ?: __('kalkan::messages.unable_to_process_document');
 
-                RequestRejected::dispatch($id, $message, $result);
-                DocumentRejected::dispatch($signedDocument['id'], $message, $result);
+                if ($this->documentService->reject($signedDocument['id'], $message)) {
+                    DocumentRejected::dispatch($signedDocument['id'], $message, $result, $id);
+                }
 
-                $this->documentService->reject($signedDocument['id'], $message);
-                $this->requestService->reject($id, $message);
+                if ($this->requestService->reject($id, $message)) {
+                    RequestRejected::dispatch($id, $message, $result, $signedDocument['id']);
+                }
 
                 return response()->json(['error' => $message], 500);
             }
 
             $this->documentService->update($signedDocument['id'], DocumentStatus::SIGNED);
 
-            DocumentSigned::dispatch($signedDocument['id'], $original['data'], $signature, $result);
+            DocumentSigned::dispatch($signedDocument['id'], $original['data'], $signature, $result, $id);
         }
 
         $this->requestService->update($id, RequestStatus::PROCESSED);

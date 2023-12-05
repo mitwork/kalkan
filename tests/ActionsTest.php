@@ -94,7 +94,7 @@ final class ActionsTest extends BaseTestCase
         $prefix = 'CMS Multi';
 
         $content = Str::random(64);
-        $certificates = [$this->certificates[0], $this->certificates[1]];
+        $certificates = [$this->certificates[0], $this->certificates[2]];
 
         $files = [
             [
