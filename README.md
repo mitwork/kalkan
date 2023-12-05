@@ -283,6 +283,7 @@ class TestCmsController extends Controller
 - `Mitwork\Kalkan\Events\DocumentRejected` - документ отклонен;
 - `Mitwork\Kalkan\Events\DocumentRequested` - документ запрошен;
 - `Mitwork\Kalkan\Events\DocumentSaved` - документ сохранен;
+- `Mitwork\Kalkan\Events\DocumentValidated` - подпись документа проверена;
 - `Mitwork\Kalkan\Events\DocumentSigned` - документ подписан;
 - `Mitwork\Kalkan\Events\RequestProcessed` - запрос обработан;
 - `Mitwork\Kalkan\Events\RequestRejected` - запрос отклонен;

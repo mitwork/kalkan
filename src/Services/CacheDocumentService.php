@@ -9,6 +9,13 @@ use Mitwork\Kalkan\Enums\DocumentStatus;
 class CacheDocumentService implements DocumentService
 {
     /**
+     * Ошибка
+     *
+     * @var string|null
+     */
+    public string|null $message = null;
+
+    /**
      * Добавление документа в кэш
      *
      * @param  string|int  $id Идентификатор
@@ -78,6 +85,15 @@ class CacheDocumentService implements DocumentService
         $document = Cache::get($id);
 
         if (! $document) {
+            return false;
+        }
+
+        if ($document['status'] === DocumentStatus::REJECTED) {
+
+            if (isset($document['message']) && $document['message']) {
+                $this->message = $document['message'];
+            }
+
             return false;
         }
 

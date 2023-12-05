@@ -10,6 +10,7 @@ use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
 use Mitwork\Kalkan\Events\DocumentRejected;
 use Mitwork\Kalkan\Events\DocumentSigned;
+use Mitwork\Kalkan\Events\DocumentValidated;
 use Mitwork\Kalkan\Events\RequestProcessed;
 use Mitwork\Kalkan\Events\RequestRejected;
 use Mitwork\Kalkan\Http\Requests\ProcessDocumentRequest;
@@ -103,9 +104,11 @@ class ProcessContent extends BaseAction
                 return response()->json(['error' => $message, 'result' => $result], 500);
             }
 
+            DocumentValidated::dispatch($signedDocument['id'], $original['data'], $signature, $result, $id);
+
             if (! $this->documentService->process($signedDocument['id'], $result)) {
 
-                $message = __('kalkan::messages.unable_to_process_document');
+                $message = $this->documentService->message ?: __('kalkan::messages.unable_to_process_document');
 
                 if ($this->documentService->reject($signedDocument['id'], $message)) {
                     DocumentRejected::dispatch($signedDocument['id'], $message, $result, $id);
