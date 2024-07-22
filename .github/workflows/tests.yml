@@ -21,6 +21,10 @@ jobs:
 
     steps:
 
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "195.12.113.38 test.pki.gov.kz" | sudo tee -a /etc/hosts
+
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -58,6 +62,7 @@ jobs:
         ports:
           - 14579:14579
         options: --health-cmd="wget -O - http://127.0.0.1:14579/actuator/health | grep -v DOWN || exit 1" --health-interval=20s --health-timeout=30s --health-retries=7
+
 
   stub-tests:
     runs-on: ubuntu-22.04
