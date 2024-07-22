@@ -21,10 +21,6 @@ jobs:
 
     steps:
 
-      - name: Add hosts to /etc/hosts
-        run: |
-          sudo echo "195.12.113.38 test.pki.gov.kz" | sudo tee -a /etc/hosts
-
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -36,6 +32,26 @@ jobs:
 
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      - name: Set up Docker
+        run: |
+          sudo apt-get update && sudo apt-get install -y docker.io
+
+      - name: Start NCANode container with custom DNS
+        run: |
+          docker run -d --name ncanode \
+            --env NCANODE_CA_URL="http://test.pki.gov.kz/cert/root_gost_test.cer http://test.pki.gov.kz/cert/root_rsa_test.cer http://test.pki.gov.kz/cert/root_test_gost_2022.cer http://test.pki.gov.kz/cert/nca_gost_test.cer http://test.pki.gov.kz/cert/nca_rsa_test.cer http://test.pki.gov.kz/cert/nca_gost2022_test.cer" \
+            --env NCANODE_CRL_URL="http://test.pki.gov.kz/crl/nca_rsa_test.crl http://test.pki.gov.kz/crl/nca_gost_test.crl http://test.pki.gov.kz/crl/nca_gost_test_2022.crl" \
+            --env NCANODE_CRL_DELTA_URL="http://test.pki.gov.kz/crl/nca_d_rsa_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test_2022.crl" \
+            --env NCANODE_OCSP_URL=http://test.pki.gov.kz/ocsp/ \
+            --env NCANODE_TSP_URL=http://test.pki.gov.kz/tsp/ \
+            --publish 14579:14579 \
+            --dns 8.8.8.8 \
+            --health-cmd="wget -O - http://127.0.0.1:14579/actuator/health | grep -v DOWN || exit 1" \
+            --health-interval=20s \
+            --health-timeout=30s \
+            --health-retries=7 \
+            malikzh/ncanode
 
       - if: ${{ matrix.bench }}
         name: Downgrade TestBench version
@@ -49,20 +65,6 @@ jobs:
 
       - name: Run Tests
         run: vendor/bin/phpunit tests
-
-    services:
-      ncanode:
-        image: malikzh/ncanode
-        env:
-          NCANODE_CA_URL: "http://test.pki.gov.kz/cert/root_gost_test.cer http://test.pki.gov.kz/cert/root_rsa_test.cer http://test.pki.gov.kz/cert/root_test_gost_2022.cer http://test.pki.gov.kz/cert/nca_gost_test.cer http://test.pki.gov.kz/cert/nca_rsa_test.cer http://test.pki.gov.kz/cert/nca_gost2022_test.cer"
-          NCANODE_CRL_URL: "http://test.pki.gov.kz/crl/nca_rsa_test.crl http://test.pki.gov.kz/crl/nca_gost_test.crl http://test.pki.gov.kz/crl/nca_gost_test_2022.crl"
-          NCANODE_CRL_DELTA_URL: "http://test.pki.gov.kz/crl/nca_d_rsa_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test_2022.crl"
-          NCANODE_OCSP_URL: http://test.pki.gov.kz/ocsp/
-          NCANODE_TSP_URL: http://test.pki.gov.kz/tsp/
-        ports:
-          - 14579:14579
-        options: --health-cmd="wget -O - http://127.0.0.1:14579/actuator/health | grep -v DOWN || exit 1" --health-interval=20s --health-timeout=30s --health-retries=7
-
 
   stub-tests:
     runs-on: ubuntu-22.04
