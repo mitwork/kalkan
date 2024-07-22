@@ -23,7 +23,7 @@
   "require-dev": {
     "khanamiryan/qrcode-detector-decoder": "^2.0",
     "laravel/pint": "^1.13",
-    "orchestra/testbench": "^8.13|^9.2",
+    "orchestra/testbench": "^8.13",
     "phpstan/phpstan": "^1.10",
     "phpunit/phpunit": "^10.4",
     "symfony/yaml": "^6.3"
