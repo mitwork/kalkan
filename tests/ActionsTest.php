@@ -46,7 +46,7 @@ final class ActionsTest extends BaseTestCase
             $headers = $response['headers'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
             $ids = [];
 
@@ -120,7 +120,7 @@ final class ActionsTest extends BaseTestCase
         $headers = $response['headers'];
         $message = $response['message'];
 
-        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
         $ids = [];
 
@@ -175,7 +175,7 @@ final class ActionsTest extends BaseTestCase
             $headers = $response['headers'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 
@@ -232,7 +232,7 @@ final class ActionsTest extends BaseTestCase
             $headers = $response['headers'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 
@@ -284,7 +284,7 @@ final class ActionsTest extends BaseTestCase
             $headers = $response['headers'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 
@@ -339,7 +339,7 @@ final class ActionsTest extends BaseTestCase
             $headers = $response['headers'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 
@@ -390,7 +390,7 @@ final class ActionsTest extends BaseTestCase
 
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 

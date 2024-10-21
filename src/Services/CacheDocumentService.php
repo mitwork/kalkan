@@ -10,16 +10,14 @@ class CacheDocumentService implements DocumentService
 {
     /**
      * Ошибка
-     *
-     * @var string|null
      */
-    public string|null $message = null;
+    public ?string $message = null;
 
     /**
      * Добавление документа в кэш
      *
-     * @param  string|int  $id Идентификатор
-     * @param  array  $attributes Содержимое
+     * @param  string|int  $id  Идентификатор
+     * @param  array  $attributes  Содержимое
      * @return bool Результат сохранения
      */
     public function add(string|int $id, array $attributes, DocumentStatus $status = DocumentStatus::CREATED): bool
@@ -107,7 +105,7 @@ class CacheDocumentService implements DocumentService
     /**
      * {@inheritDoc}
      */
-    public function reject(int|string $id, string $message = null): bool
+    public function reject(int|string $id, ?string $message = null): bool
     {
         $document = Cache::get($id);
 

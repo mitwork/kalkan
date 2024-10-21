@@ -11,8 +11,8 @@ class CacheRequestService implements RequestService
     /**
      * Добавление документа в кэш
      *
-     * @param  string|int  $id Идентификатор
-     * @param  array  $attributes Содержимое
+     * @param  string|int  $id  Идентификатор
+     * @param  array  $attributes  Содержимое
      * @return bool Результат сохранения
      */
     public function add(string|int $id, array $attributes, RequestStatus $status = RequestStatus::CREATED): bool
@@ -85,7 +85,7 @@ class CacheRequestService implements RequestService
     /**
      * {@inheritDoc}
      */
-    public function reject(int|string $id, string $message = null): bool
+    public function reject(int|string $id, ?string $message = null): bool
     {
         $document = Cache::get($id);
 

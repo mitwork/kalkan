@@ -10,8 +10,7 @@ class GenerateQrCode extends BaseAction
 {
     public function __construct(
         public QrCodeGenerationService $qrCodeGenerationService
-    ) {
-    }
+    ) {}
 
     /**
      * Шаг 1.1 - Генерация QR-кода

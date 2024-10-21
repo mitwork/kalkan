@@ -23,7 +23,7 @@ class BaseTestCase extends TestCase
     /**
      * Загрузка сертификатов
      *
-     * @param  array  $filters Фильтры
+     * @param  array  $filters  Фильтры
      */
     public function loadCertificates(array $filters = ['active' => true, 'policy' => 'sign']): void
     {
@@ -43,8 +43,8 @@ class BaseTestCase extends TestCase
     /**
      * Подготовка документа для тестирования
      *
-     * @param  array  $files Данные документа
-     * @param  string  $prefix Префикс теста
+     * @param  array  $files  Данные документа
+     * @param  string  $prefix  Префикс теста
      * @return array Результаты
      */
     public function prepareRequest(array $files, string $prefix = '', array $auth = []): array
@@ -120,12 +120,12 @@ class BaseTestCase extends TestCase
     /**
      * Подписание документа
      *
-     * @param  array  $message Сообщение
-     * @param  array  $certificate Сертификат
+     * @param  array  $message  Сообщение
+     * @param  array  $certificate  Сертификат
      */
     public function signResponse(array &$message, array $certificate): void
     {
-        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
         foreach ($message['documentsToSign'] as &$document) {
 
@@ -150,9 +150,9 @@ class BaseTestCase extends TestCase
     /**
      * Проверка статуса запроса
      *
-     * @param  string  $id Идентификатор запроса
-     * @param  string  $prefix Префикс события
-     * @param  RequestStatus  $expectedStatus Ожидаемый статус
+     * @param  string  $id  Идентификатор запроса
+     * @param  string  $prefix  Префикс события
+     * @param  RequestStatus  $expectedStatus  Ожидаемый статус
      */
     public function checkRequestStatus(string $id, string $prefix = '', RequestStatus $expectedStatus = RequestStatus::PROCESSED): void
     {
@@ -171,9 +171,9 @@ class BaseTestCase extends TestCase
     /**
      * Проверка статуса документа
      *
-     * @param  string|int  $id Идентификатор документа
-     * @param  string  $prefix Префикс события
-     * @param  DocumentStatus  $expectedStatus Ожидаемый статус
+     * @param  string|int  $id  Идентификатор документа
+     * @param  string  $prefix  Префикс события
+     * @param  DocumentStatus  $expectedStatus  Ожидаемый статус
      */
     public function checkDocumentStatus(string|int $id, string $prefix = '', DocumentStatus $expectedStatus = DocumentStatus::SIGNED): void
     {

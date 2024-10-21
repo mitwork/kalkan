@@ -22,8 +22,7 @@ class PrepareContent extends BaseAction
         public CacheDocumentService $documentService,
         public IntegrationService $integrationService,
         public CacheRequestService $requestService
-    ) {
-    }
+    ) {}
 
     /**
      * Шаг 3 - работа с контентом документа

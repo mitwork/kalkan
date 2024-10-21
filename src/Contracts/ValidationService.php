@@ -11,11 +11,11 @@ interface ValidationService
     /**
      * Проверка подписанной XML-строки
      *
-     * @param  string  $xml Подписанный XML
-     * @param  bool  $verifyCrl Проверка по CRL
-     * @param  bool  $verifyOcsp Проверка OCSP
-     * @param  bool  $raw Возврат результата, либо ответа
-     * @param  bool  $throw Возврат исключения в случае ошибки
+     * @param  string  $xml  Подписанный XML
+     * @param  bool  $verifyCrl  Проверка по CRL
+     * @param  bool  $verifyOcsp  Проверка OCSP
+     * @param  bool  $raw  Возврат результата, либо ответа
+     * @param  bool  $throw  Возврат исключения в случае ошибки
      * @return bool|array Результат, либо ответ
      *
      * @throws NcanodeUnavailableException
@@ -27,12 +27,12 @@ interface ValidationService
     /**
      * Проверка подписанных CMS-данных
      *
-     * @param  string  $cms Подписанные данные
-     * @param  string  $data Исходные данные
-     * @param  bool  $verifyCrl Проверка по CRL
-     * @param  bool  $verifyOcsp Проверка OCSP
-     * @param  bool  $raw Возврат результата, либо ответа
-     * @param  bool  $throw Возврат исключения в случае ошибки
+     * @param  string  $cms  Подписанные данные
+     * @param  string  $data  Исходные данные
+     * @param  bool  $verifyCrl  Проверка по CRL
+     * @param  bool  $verifyOcsp  Проверка OCSP
+     * @param  bool  $raw  Возврат результата, либо ответа
+     * @param  bool  $throw  Возврат исключения в случае ошибки
      * @return bool|array Результат, либо ответ
      *
      * @throws NcanodeUnavailableException

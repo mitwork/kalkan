@@ -20,8 +20,8 @@ class IntegrationService
     /**
      * Подготовка данных для сервиса
      *
-     * @param  string  $uri Ссылка
-     * @param  array  $request Запрос
+     * @param  string  $uri  Ссылка
+     * @param  array  $request  Запрос
      * @return array Данные для сервиса
      */
     public function prepareServiceData(string $uri, array $request): array
@@ -41,11 +41,11 @@ class IntegrationService
     /**
      * Добавление метаданных
      *
-     * @param  string  $name Ключ
-     * @param  mixed  $value Значение
-     * @param  int|string|null  $key Ключ документа
+     * @param  string  $name  Ключ
+     * @param  mixed  $value  Значение
+     * @param  int|string|null  $key  Ключ документа
      */
-    public function addMetaAttribute(string $name, mixed $value, int|string $key = null): void
+    public function addMetaAttribute(string $name, mixed $value, int|string|null $key = null): void
     {
         if ($key) {
             $this->meta[$key][] = ['name' => $name, 'value' => $value];
@@ -57,7 +57,7 @@ class IntegrationService
     /**
      * Получение метаданных
      *
-     * @param  int|string  $key Ключ документа
+     * @param  int|string  $key  Ключ документа
      * @return array Метаданные
      */
     public function getMetaAttributes(int|string $key, array $meta = []): array
@@ -73,8 +73,8 @@ class IntegrationService
     /**
      * Добавление метаданных
      *
-     * @param  string|int  $id Идентификатор документа
-     * @param  array  $meta Атрибуты
+     * @param  string|int  $id  Идентификатор документа
+     * @param  array  $meta  Атрибуты
      */
     public function addMetaAttributes(string|int $id, array $meta): void
     {
@@ -102,10 +102,10 @@ class IntegrationService
     /**
      * Добавление XML-документа
      *
-     * @param  int|string  $id Уникальный идентификатор
-     * @param  string  $name Наименование
-     * @param  string  $data Содержание
-     * @param  array  $meta Метаданные
+     * @param  int|string  $id  Уникальный идентификатор
+     * @param  string  $name  Наименование
+     * @param  string  $data  Содержание
+     * @param  array  $meta  Метаданные
      * @return array Данные документа
      */
     public function addXmlDocument(int|string $requestId, int|string $id, string $name, string $data, array $meta = []): array
@@ -133,11 +133,11 @@ class IntegrationService
     /**
      * Добавление CMS-документа
      *
-     * @param  int|string  $id Уникальный идентификатор
-     * @param  string  $name Наименование
-     * @param  string  $data Содержание
-     * @param  array  $meta Метаданные
-     * @param  string  $mime Тип файла
+     * @param  int|string  $id  Уникальный идентификатор
+     * @param  string  $name  Наименование
+     * @param  string  $data  Содержание
+     * @param  array  $meta  Метаданные
+     * @param  string  $mime  Тип файла
      * @return array Данные документа
      */
     public function addCmsDocument(int|string $requestId, int|string $id, string $name, string $data, array $meta = [], string $mime = '@file/pdf'): array
@@ -170,7 +170,7 @@ class IntegrationService
     /**
      * Получение списка XML-документов
      */
-    public function getXmlDocuments(string|int $key = null): array
+    public function getXmlDocuments(string|int|null $key = null): array
     {
         return [
             'signMethod' => SignatureType::XML->value,
@@ -181,7 +181,7 @@ class IntegrationService
     /**
      * Получение списка CMS-документов
      */
-    public function getCmsDocuments(string|int $key = null): array
+    public function getCmsDocuments(string|int|null $key = null): array
     {
         return [
             'signMethod' => SignatureType::CMS_WITH_DATA->value,

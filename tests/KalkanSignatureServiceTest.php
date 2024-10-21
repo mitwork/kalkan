@@ -14,7 +14,7 @@ final class KalkanSignatureServiceTest extends BaseTestCase
     public function testXmlSigningWithGost2015(): void
     {
         $this->loadCertificates(['active' => true, 'type' => 'GOST2015']);
-        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
         $content = Str::random();
 
@@ -40,7 +40,7 @@ XML;
     {
         $this->loadCertificates(['active' => true, 'type' => 'GOST2004']);
 
-        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
         $content = Str::random();
 
@@ -65,7 +65,7 @@ XML;
     public function testXmlSigningWithRsa(): void
     {
         $this->loadCertificates(['active' => true, 'type' => 'RSA']);
-        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
         $content = Str::random();
 
@@ -90,7 +90,7 @@ XML;
     public function testCmsSigningWithGost2015(): void
     {
         $this->loadCertificates(['active' => true, 'type' => 'GOST2015']);
-        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
         $content = Str::random();
 
@@ -109,7 +109,7 @@ XML;
     public function testCmsSigningWithGost2004(): void
     {
         $this->loadCertificates(['active' => true, 'type' => 'GOST2004']);
-        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
         $content = Str::random();
 
@@ -128,7 +128,7 @@ XML;
     public function testCmsSigningWithRsa(): void
     {
         $this->loadCertificates(['active' => true, 'type' => 'RSA']);
-        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
         $content = Str::random();
 
@@ -148,8 +148,8 @@ XML;
     {
         $this->loadCertificates();
 
-        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
-        $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService();
+        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+        $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService;
 
         $content = Str::random();
 
@@ -187,8 +187,8 @@ XML;
     {
         $this->loadCertificates(['active' => false]);
 
-        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
-        $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService();
+        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+        $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService;
 
         $content = Str::random();
 

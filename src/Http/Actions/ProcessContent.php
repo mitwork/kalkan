@@ -24,8 +24,7 @@ class ProcessContent extends BaseAction
         public CacheDocumentService $documentService,
         public CacheRequestService $requestService,
         public KalkanValidationService $validationService,
-    ) {
-    }
+    ) {}
 
     /**
      * Шаг 4 - получение и обработка подписанных данных

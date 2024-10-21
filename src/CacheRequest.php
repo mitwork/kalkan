@@ -22,7 +22,7 @@ class CacheRequest implements AbstractRequest
 
     public ?string $description = null;
 
-    public function __construct(array $files, array $auth = [], array $organisation = [], string $description = null)
+    public function __construct(array $files, array $auth = [], array $organisation = [], ?string $description = null)
     {
         $this->files = $files;
         $this->auth = $auth;
@@ -50,7 +50,7 @@ class CacheRequest implements AbstractRequest
      *
      * @throws ValidationException
      */
-    public function validate(string|array $fields = null, array $data = [], bool $throw = false): bool
+    public function validate(string|array|null $fields = null, array $data = [], bool $throw = false): bool
     {
         $attributes = $this->toArray();
 

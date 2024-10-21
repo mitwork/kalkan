@@ -20,12 +20,12 @@ class StoreDocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'alpha_num:ascii|nullable',
-            'name' => 'required|string',
-            'data' => 'string|required',
-            'mime' => 'string|required',
-            'size' => 'numeric',
-            'meta' => 'array',
+            'id' => ['alpha_num:ascii', 'nullable'],
+            'name' => ['required', 'string'],
+            'data' => ['string', 'required'],
+            'mime' => ['string', 'required'],
+            'size' => ['numeric'],
+            'meta' => ['array'],
         ];
     }
 }

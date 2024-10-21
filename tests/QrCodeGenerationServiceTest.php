@@ -12,7 +12,7 @@ final class QrCodeGenerationServiceTest extends BaseTestCase
 {
     public function testQrPngGeneration(): void
     {
-        $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService();
+        $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService;
 
         $result = $service->generate('https://example.com');
 
@@ -26,7 +26,7 @@ final class QrCodeGenerationServiceTest extends BaseTestCase
 
     public function testQrSvgGeneration(): void
     {
-        $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService();
+        $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService;
 
         $result = $service->generate('https://example.com', format: QrCodeFormat::SVG);
 
@@ -37,7 +37,7 @@ final class QrCodeGenerationServiceTest extends BaseTestCase
 
     public function testQrWebpGeneration(): void
     {
-        $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService();
+        $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService;
 
         $result = $service->generate('https://example.com', format: QrCodeFormat::WEBP);
 

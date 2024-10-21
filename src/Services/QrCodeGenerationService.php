@@ -24,11 +24,11 @@ class QrCodeGenerationService extends BaseService
     /**
      * Генерация QR-кода
      *
-     * @param  string  $link Ссылка
-     * @param  int  $size Размер
-     * @param  int  $margin Отступы
-     * @param  string|null  $prefix Префикс ссылки
-     * @param  QrCodeFormat  $format Формат - png, svg
+     * @param  string  $link  Ссылка
+     * @param  int  $size  Размер
+     * @param  int  $margin  Отступы
+     * @param  string|null  $prefix  Префикс ссылки
+     * @param  QrCodeFormat  $format  Формат - png, svg
      * @return ResultInterface Результаты генерации
      */
     public function generate(string $link, int $size = 200, int $margin = 5, ?string $prefix = '', QrCodeFormat $format = QrCodeFormat::PNG): ResultInterface
@@ -54,13 +54,13 @@ class QrCodeGenerationService extends BaseService
 
         switch ($format) {
             case QrCodeFormat::PNG:
-                $this->writer = new PngWriter();
+                $this->writer = new PngWriter;
                 break;
             case QrCodeFormat::SVG:
-                $this->writer = new SvgWriter();
+                $this->writer = new SvgWriter;
                 break;
             case QrCodeFormat::WEBP:
-                $this->writer = new WebPWriter();
+                $this->writer = new WebPWriter;
                 break;
         }
 
@@ -70,7 +70,7 @@ class QrCodeGenerationService extends BaseService
     /**
      * Проверка QR-кода
      *
-     * @param  string  $link Ожидаемая ссылка
+     * @param  string  $link  Ожидаемая ссылка
      * @return bool Результат
      */
     public function validate(string $link, string $prefix = ''): bool

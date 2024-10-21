@@ -64,7 +64,7 @@ class CacheDocument implements AbstractDocument
      *
      * @throws ValidationException
      */
-    public function validate(string|array $fields = null, array $data = [], bool $throw = false): bool
+    public function validate(string|array|null $fields = null, array $data = [], bool $throw = false): bool
     {
         $attributes = $this->toArray();
 

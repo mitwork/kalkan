@@ -86,7 +86,7 @@ final class EventsTest extends BaseTestCase
             $id = $response['id'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService();
+            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 

@@ -11,7 +11,7 @@ final class DataValidationServiceTest extends BaseTestCase
 {
     public function testXmlValidation(): void
     {
-        $service = new \Mitwork\Kalkan\Services\DataValidationService();
+        $service = new \Mitwork\Kalkan\Services\DataValidationService;
 
         $result = $service->validateXml('');
         $this->assertFalse($result, 'Валидация пустой XML-строки не работает');
@@ -34,7 +34,7 @@ XML;
 
     public function testJsonValidation(): void
     {
-        $service = new \Mitwork\Kalkan\Services\DataValidationService();
+        $service = new \Mitwork\Kalkan\Services\DataValidationService;
 
         $result = $service->validateJson('');
         $this->assertFalse($result, 'Валидация пустой JSON-строки не работает');
@@ -56,7 +56,7 @@ JSON;
 
     public function testBase64Validation(): void
     {
-        $service = new \Mitwork\Kalkan\Services\DataValidationService();
+        $service = new \Mitwork\Kalkan\Services\DataValidationService;
 
         $result = $service->validateBase64('');
         $this->assertFalse($result, 'Валидация пустой Base64-строки не работает');

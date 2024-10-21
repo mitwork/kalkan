@@ -24,9 +24,7 @@ class StoreRequest extends BaseAction
         public KalkanValidationService $validationService,
         public CacheDocumentService $documentService,
         public CacheRequestService $requestService,
-    ) {
-
-    }
+    ) {}
 
     /**
      * Шаг 2 - формирование сервисного запроса
