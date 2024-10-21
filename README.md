@@ -3,7 +3,7 @@
 ---
 
 ![License:MIT](https://img.shields.io/badge/license-MIT-green.svg)
-![Downloads](https://img.shields.io/github/downloads/mitwork/kalkan/total.svg)
+![Packagist Downloads](https://img.shields.io/packagist/dt/mitwork/kalkan)
 [![Build Tests](https://github.com/mitwork/kalkan/actions/workflows/tests.yml/badge.svg)](https://github.com/mitwork/kalkan/actions/workflows/tests.yml/badge.svg)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/mitwork/kalkan)
 
