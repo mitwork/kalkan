@@ -21,7 +21,7 @@ class BaseService
     /**
      * Сохранение результата
      *
-     * @param  array  $response Результат
+     * @param  array  $response  Результат
      */
     protected function setResponse(array $response): void
     {
@@ -41,7 +41,7 @@ class BaseService
     /**
      * Сохранения ошибки
      *
-     * @param  string  $error Текст ошибки
+     * @param  string  $error  Текст ошибки
      */
     protected function setError(string $error): void
     {

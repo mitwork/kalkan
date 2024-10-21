@@ -9,14 +9,12 @@ class CheckDocument extends BaseAction
 {
     public function __construct(
         public CacheDocumentService $documentService
-    ) {
-
-    }
+    ) {}
 
     /**
      * Шаг 5 - Проверка статуса подписания документа
      *
-     * @param  int|string  $id Идентификатор
+     * @param  int|string  $id  Идентификатор
      */
     public function check(int|string $id): JsonResponse
     {

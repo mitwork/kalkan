@@ -9,8 +9,8 @@ interface DocumentService
     /**
      * Добавление документа для обработки
      *
-     * @param  string|int  $id Уникальный идентификатор
-     * @param  array  $attributes Содержимое и метаданные документа
+     * @param  string|int  $id  Уникальный идентификатор
+     * @param  array  $attributes  Содержимое и метаданные документа
      * @return bool Результат добавления
      */
     public function add(string|int $id, array $attributes, DocumentStatus $status = DocumentStatus::CREATED): bool;
@@ -18,7 +18,7 @@ interface DocumentService
     /**
      * Получение документа
      *
-     * @param  string|int  $id Уникальный идентификатор
+     * @param  string|int  $id  Уникальный идентификатор
      * @return array|null Содержимое и метаданные документа
      */
     public function get(string|int $id): ?array;
@@ -26,7 +26,7 @@ interface DocumentService
     /**
      * Проверка статуса подписания документа
      *
-     * @param  string|int  $id Уникальный идентификатор
+     * @param  string|int  $id  Уникальный идентификатор
      * @return array|bool|null Результат проверки
      */
     public function check(string|int $id): array|bool|null;
@@ -39,7 +39,7 @@ interface DocumentService
     /**
      * Обработка подписанного документа
      *
-     * @param  string|int  $id Уникальный идентификатор
+     * @param  string|int  $id  Уникальный идентификатор
      * @return bool Результат обработки
      */
     public function process(string|int $id, array $result, DocumentStatus $status = DocumentStatus::SIGNED): bool;
@@ -47,8 +47,8 @@ interface DocumentService
     /**
      * Отклонение документа
      *
-     * @param  string|int  $id Уникальный идентификатор
-     * @param  string|null  $message Сообщение или ошибка
+     * @param  string|int  $id  Уникальный идентификатор
+     * @param  string|null  $message  Сообщение или ошибка
      */
-    public function reject(string|int $id, string $message = null): bool;
+    public function reject(string|int $id, ?string $message = null): bool;
 }

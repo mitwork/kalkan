@@ -13,7 +13,7 @@ final class KalkanValidationServiceTest extends BaseTestCase
 {
     public function testXmlValidation(): void
     {
-        $service = new \Mitwork\Kalkan\Services\KalkanValidationService();
+        $service = new \Mitwork\Kalkan\Services\KalkanValidationService;
 
         $data = <<<'XML'
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><xml>test<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
@@ -75,7 +75,7 @@ XML;
 
     public function testCmsValidation(): void
     {
-        $service = new \Mitwork\Kalkan\Services\KalkanValidationService();
+        $service = new \Mitwork\Kalkan\Services\KalkanValidationService;
 
         $data = <<<'DATA'
 MIILtgYJKoZIhvcNAQcCoIILpzCCC6MCAQExDjAMBggqgw4DCgEDAwUAMBIGCSqGSIb3DQEHAaAFBAO16y2gggR6MIIEdjCCA96gAwIBAgIUUroyvCizfdta
@@ -126,7 +126,7 @@ DATA;
 
     public function testValidationExceptions(): void
     {
-        $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService();
+        $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService;
 
         $data = Str::random(64);
 

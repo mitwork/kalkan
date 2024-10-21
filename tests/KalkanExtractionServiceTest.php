@@ -11,7 +11,7 @@ final class KalkanExtractionServiceTest extends BaseTestCase
 {
     public function testCmsExtraction(): void
     {
-        $service = new \Mitwork\Kalkan\Services\KalkanExtractionService();
+        $service = new \Mitwork\Kalkan\Services\KalkanExtractionService;
 
         $data = <<<'DATA'
 MIIMgAYJKoZIhvcNAQcCoIIMcTCCDG0CAQExDjAMBggqgw4DCgEDAwUAMBIGCSqGSIb3DQEHAaAFBAO16y2gggR6MIIEdjCCA96gAwIBAgIUIgikXaIEvr7S

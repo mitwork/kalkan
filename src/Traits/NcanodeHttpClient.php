@@ -24,12 +24,12 @@ trait NcanodeHttpClient
     /**
      * Отправка запроса
      *
-     * @param  string  $url Ссылка
-     * @param  string|array|null  $body Тело запроса
-     * @param  array  $options Параметры
+     * @param  string  $url  Ссылка
+     * @param  string|array|null  $body  Тело запроса
+     * @param  array  $options  Параметры
      * @return array Результат
      */
-    public function request(string $url, string|array $body = null, array $options = [], bool $throw = true): array
+    public function request(string $url, string|array|null $body = null, array $options = [], bool $throw = true): array
     {
 
         $this->init($options);
@@ -71,8 +71,8 @@ trait NcanodeHttpClient
     /**
      * Инициализация
      *
-     * @param  array  $options Параметры
-     * @param  string  $host Хост по-умолчанию
+     * @param  array  $options  Параметры
+     * @param  string  $host  Хост по-умолчанию
      */
     private function init(array $options = [], string $host = 'http://localhost:14579'): void
     {
@@ -92,8 +92,8 @@ trait NcanodeHttpClient
     /**
      * Отправка POST-запроса
      *
-     * @param  string  $url Ссылка
-     * @param  string|array  $body Тело запроса
+     * @param  string  $url  Ссылка
+     * @param  string|array  $body  Тело запроса
      * @return \Psr\Http\Message\ResponseInterface Результат
      *
      * @throws GuzzleException
@@ -106,7 +106,7 @@ trait NcanodeHttpClient
     /**
      * Отправка GET-запроса
      *
-     * @param  string  $url Ссылка
+     * @param  string  $url  Ссылка
      * @return \Psr\Http\Message\ResponseInterface Результат
      *
      * @throws GuzzleException

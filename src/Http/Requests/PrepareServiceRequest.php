@@ -20,11 +20,11 @@ class PrepareServiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'auth' => 'array|nullable',
-            'description' => 'string|nullable',
-            'files' => 'array|required',
-            'organisation' => 'array|nullable',
-            'ttl' => 'numeric|nullable',
+            'auth' => ['array', 'nullable'],
+            'description' => ['string', 'nullable'],
+            'files' => ['array', 'required'],
+            'organisation' => ['array', 'nullable'],
+            'ttl' => ['numeric', 'nullable'],
         ];
     }
 }

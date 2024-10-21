@@ -7,7 +7,7 @@ interface ExtractionService
     /**
      * Extract CMS data
      *
-     * @param  string  $cms CMS-данные
+     * @param  string  $cms  CMS-данные
      * @return string Исходные данные
      */
     public function extractCms(string $cms): string;

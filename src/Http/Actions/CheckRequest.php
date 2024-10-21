@@ -9,14 +9,12 @@ class CheckRequest extends BaseAction
 {
     public function __construct(
         public CacheRequestService $requestService
-    ) {
-
-    }
+    ) {}
 
     /**
      * Шаг 5 - Проверка статуса обработанной заявки
      *
-     * @param  int|string  $id Идентификатор
+     * @param  int|string  $id  Идентификатор
      */
     public function check(int|string $id): JsonResponse
     {

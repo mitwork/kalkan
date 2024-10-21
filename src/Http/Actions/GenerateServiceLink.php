@@ -12,8 +12,7 @@ class GenerateServiceLink extends BaseAction
     public function __construct(
         public IntegrationService $integrationService,
         public CacheRequestService $requestService,
-    ) {
-    }
+    ) {}
 
     /**
      * Шаг 2 - генерация сервисных данных

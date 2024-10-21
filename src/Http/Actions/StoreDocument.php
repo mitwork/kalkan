@@ -12,9 +12,7 @@ class StoreDocument extends BaseAction
 {
     public function __construct(
         public CacheDocumentService $documentService,
-    ) {
-
-    }
+    ) {}
 
     /**
      * Шаг 1 - отправка файла для последующей работы

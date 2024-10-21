@@ -12,9 +12,9 @@ class DataValidationService extends BaseService
     /**
      * Проверка XML-строки
      *
-     * @param  string  $input Входная строка
-     * @param  string  $version Версия
-     * @param  string  $encoding Кодировка
+     * @param  string  $input  Входная строка
+     * @param  string  $version  Версия
+     * @param  string  $encoding  Кодировка
      * @return bool Результат
      */
     public function validateXml(string $input, string $version = '1.0', string $encoding = 'utf-8', bool $throw = false): bool
@@ -46,8 +46,8 @@ class DataValidationService extends BaseService
     /**
      * Проверка декодирования JSON-строки
      *
-     * @param  string  $input Входная строка
-     * @param  bool  $associative Ассоциативные массив
+     * @param  string  $input  Входная строка
+     * @param  bool  $associative  Ассоциативные массив
      * @return bool Результат
      */
     public function validateJson(string $input, bool $associative = true, bool $throw = false): bool
@@ -67,7 +67,7 @@ class DataValidationService extends BaseService
     /**
      * Проверка декодирования Base64-строки
      *
-     * @param  string  $input Входная строка
+     * @param  string  $input  Входная строка
      * @return bool Результат
      */
     public function validateBase64(string $input, bool $throw = false): bool

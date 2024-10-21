@@ -14,7 +14,7 @@ class KalkanSignatureService extends BaseService implements SignatureService
     /**
      * {@inheritDoc}
      */
-    public function signXml(string $xml, string $key, string $password, string $alias = null, bool $clearSignatures = false, bool $trimXml = false, bool $raw = false, bool $throw = false): string|array
+    public function signXml(string $xml, string $key, string $password, ?string $alias = null, bool $clearSignatures = false, bool $trimXml = false, bool $raw = false, bool $throw = false): string|array
     {
         if (str_contains($key, PHP_EOL)) {
             $key = str_replace(PHP_EOL, '', $key);
@@ -54,7 +54,7 @@ class KalkanSignatureService extends BaseService implements SignatureService
     /**
      * {@inheritDoc}
      */
-    public function signCms(string $data, string $key, string $password, string $alias = null, bool $withTsp = true, TsaPolicy $tsaPolicy = TsaPolicy::TSA_GOST_POLICY, bool $detached = false, string $cms = null, bool $raw = false, bool $throw = false): string|array
+    public function signCms(string $data, string $key, string $password, ?string $alias = null, bool $withTsp = true, TsaPolicy $tsaPolicy = TsaPolicy::TSA_GOST_POLICY, bool $detached = false, ?string $cms = null, bool $raw = false, bool $throw = false): string|array
     {
         if (str_contains($key, PHP_EOL)) {
             $key = str_replace(PHP_EOL, '', $key);
