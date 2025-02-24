@@ -55,10 +55,13 @@ jobs:
             --health-retries=7 \
             malikzh/ncanode
 
-      - if: ${{ matrix.bench }}
-        name: Customize TestBench version
+      - name: Customize TestBench version
         run: |
-          composer require "orchestra/testbench=^${{ matrix.bench }}" --dev --no-update
+          case ${{ matrix.laravel }} in
+            10) composer require "orchestra/testbench:^8.13"  --dev --no-update ;;
+            11) composer require "orchestra/testbench:^9.2.0"  --dev --no-update ;;
+            12) composer require "orchestra/testbench:^10.0" --dev --no-update ;;
+          esac
 
       - name: Install dependencies
         run: |
