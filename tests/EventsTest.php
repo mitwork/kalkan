@@ -19,7 +19,7 @@ final class EventsTest extends BaseTestCase
 {
     use WithWorkbench;
 
-    public function testRequestEvents(): void
+    public function test_request_events(): void
     {
         $this->loadCertificates();
 
@@ -62,7 +62,7 @@ final class EventsTest extends BaseTestCase
         $this->checkRequestStatus($id, $certificate['title']);
     }
 
-    public function testDocumentEvents(): void
+    public function test_document_events(): void
     {
         $this->loadCertificates(['active' => false]);
 

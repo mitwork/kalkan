@@ -1,0 +1,27 @@
+name: lint
+
+on:
+  push:
+    branches: [ "*.x" ]
+  pull_request:
+    branches: [ "*.x" ]
+
+jobs:
+  pint:
+
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: true
+
+    steps:
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, dom, curl, libxml, mbstring
+          coverage: none
+
+      - name: Install Pint
+        run: composer global require laravel/pint
+
+      - name: Run Pint
+        run: pint --test

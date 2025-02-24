@@ -23,10 +23,8 @@ class InstallCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int|null
      */
-    public function handle()
+    public function handle(): int
     {
         // Publish...
         $this->callSilent('vendor:publish', ['--tag' => 'kalkan-config', '--force' => true]);
@@ -38,6 +36,8 @@ class InstallCommand extends Command
         // $stubs = $this->getTestStubsPath();
 
         // copy($stubs.'/KalkanBaseTest.php', base_path('tests/Feature/KalkanBaseTest.php'));
+
+        return self::SUCCESS;
     }
 
     /**
