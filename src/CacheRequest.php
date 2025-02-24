@@ -80,7 +80,7 @@ class CacheRequest implements AbstractRequest
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, array|string|null>
      */
     public function toArray(): array
     {

@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(\Mitwork\Kalkan\Services\QrCodeGenerationService::class)]
 final class QrCodeGenerationServiceTest extends BaseTestCase
 {
-    public function testQrPngGeneration(): void
+    public function test_qr_png_generation(): void
     {
         $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService;
 
@@ -24,7 +24,7 @@ final class QrCodeGenerationServiceTest extends BaseTestCase
         $this->assertIsString($service->getError(), 'Отсутствует ошибка после валидации');
     }
 
-    public function testQrSvgGeneration(): void
+    public function test_qr_svg_generation(): void
     {
         $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService;
 
@@ -35,7 +35,7 @@ final class QrCodeGenerationServiceTest extends BaseTestCase
         $this->assertEquals('image/svg+xml', $result->getMimeType(), 'Тип изображения не соответствует image/svg+xml');
     }
 
-    public function testQrWebpGeneration(): void
+    public function test_qr_webp_generation(): void
     {
         $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService;
 

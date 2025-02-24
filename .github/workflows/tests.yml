@@ -6,16 +6,18 @@ on:
       - main
       - '*.x'
   pull_request:
+    branches:
+      - '*.x'
 
 jobs:
   tests:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: true
       matrix:
-        php: [ 8.2, 8.3 ]
-        laravel: [ 10, 11 ]
+        php: [ 8.2, 8.3, 8.4 ]
+        laravel: [ 10, 11, 12 ]
 
     name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
 
@@ -53,10 +55,13 @@ jobs:
             --health-retries=7 \
             malikzh/ncanode
 
-      - if: ${{ matrix.bench }}
-        name: Customize TestBench version
+      - name: Customize TestBench version
         run: |
-          composer require "orchestra/testbench=^${{ matrix.bench }}" --dev --no-update
+          case ${{ matrix.laravel }} in
+            10) composer require "orchestra/testbench:^8.13"  --dev --no-update ;;
+            11) composer require "orchestra/testbench:^9.2.0"  --dev --no-update ;;
+            12) composer require "orchestra/testbench:^10.0" --dev --no-update ;;
+          esac
 
       - name: Install dependencies
         run: |
@@ -67,13 +72,13 @@ jobs:
         run: vendor/bin/phpunit tests
 
   stub-tests:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: true
       matrix:
         stack: [ kalkan ]
-        laravel: [ 10, 11 ]
+        laravel: [ 10, 11, 12 ]
 
     name: Test Stubs - Laravel ${{ matrix.laravel }} - ${{ matrix.stack }}
 

@@ -94,7 +94,7 @@ class CacheDocument implements AbstractDocument
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, array|int|string>
      */
     public function toArray(): array
     {

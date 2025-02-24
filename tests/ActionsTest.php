@@ -20,7 +20,7 @@ final class ActionsTest extends BaseTestCase
 {
     use WithWorkbench;
 
-    public function testSingleCmsSigning(): void
+    public function test_single_cms_signing(): void
     {
         $this->loadCertificates();
 
@@ -88,13 +88,13 @@ final class ActionsTest extends BaseTestCase
         }
     }
 
-    public function testMultiCmsSigning(): void
+    public function test_multi_cms_signing(): void
     {
         $this->loadCertificates();
         $prefix = 'CMS Multi';
 
         $content = Str::random(64);
-        $certificates = [$this->certificates[0], $this->certificates[2]];
+        $certificates = [$this->certificates[0], $this->certificates[1]];
 
         $files = [
             [
@@ -149,7 +149,7 @@ final class ActionsTest extends BaseTestCase
         }
     }
 
-    public function testSingleXmlSigning(): void
+    public function test_single_xml_signing(): void
     {
         $this->loadCertificates();
 
@@ -196,7 +196,7 @@ final class ActionsTest extends BaseTestCase
         }
     }
 
-    public function testMultiXmlSigning(): void
+    public function test_multi_xml_signing(): void
     {
         $this->loadCertificates();
 
@@ -253,7 +253,7 @@ final class ActionsTest extends BaseTestCase
         }
     }
 
-    public function testUniqueBearerServiceLinkCheck(): void
+    public function test_unique_bearer_service_link_check(): void
     {
         $this->loadCertificates();
 
@@ -309,7 +309,7 @@ final class ActionsTest extends BaseTestCase
         }
     }
 
-    public function testHardcodedBearerServiceLinkCheck(): void
+    public function test_hardcoded_bearer_service_link_check(): void
     {
         $this->loadCertificates();
 
@@ -362,7 +362,7 @@ final class ActionsTest extends BaseTestCase
         }
     }
 
-    public function testWrongBearerServiceLinkReject(): void
+    public function test_wrong_bearer_service_link_reject(): void
     {
         $this->loadCertificates();
 
