@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(\Mitwork\Kalkan\Services\KalkanExtractionService::class)]
 final class KalkanExtractionServiceTest extends BaseTestCase
 {
-    public function testCmsExtraction(): void
+    public function test_cms_extraction(): void
     {
         $service = new \Mitwork\Kalkan\Services\KalkanExtractionService;
 
