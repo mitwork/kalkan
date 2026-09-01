@@ -6,15 +6,17 @@ namespace Mitwork\Kalkan\Tests;
 
 use Illuminate\Support\Str;
 use Mitwork\Kalkan\Exceptions\KalkanValidationException;
+use Mitwork\Kalkan\Services\KalkanSignatureService;
+use Mitwork\Kalkan\Services\KalkanValidationService;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-#[CoversClass(\Mitwork\Kalkan\Services\KalkanSignatureService::class)]
+#[CoversClass(KalkanSignatureService::class)]
 final class KalkanSignatureServiceTest extends BaseTestCase
 {
     public function test_xml_signing(): void
     {
         $this->loadCertificates(['active' => true, 'type' => 'GOST2015']);
-        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+        $service = new KalkanSignatureService;
 
         $content = Str::random();
 
@@ -39,7 +41,7 @@ XML;
     public function test_cms_signing(): void
     {
         $this->loadCertificates(['active' => true, 'type' => 'GOST2015']);
-        $service = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+        $service = new KalkanSignatureService;
 
         $content = Str::random();
 
@@ -59,8 +61,8 @@ XML;
     {
         $this->loadCertificates();
 
-        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
-        $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService;
+        $signatureService = new KalkanSignatureService;
+        $validationService = new KalkanValidationService;
 
         $content = Str::random();
 
@@ -98,8 +100,8 @@ XML;
     {
         $this->loadCertificates(['active' => false]);
 
-        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
-        $validationService = new \Mitwork\Kalkan\Services\KalkanValidationService;
+        $signatureService = new KalkanSignatureService;
+        $validationService = new KalkanValidationService;
 
         $content = Str::random();
 

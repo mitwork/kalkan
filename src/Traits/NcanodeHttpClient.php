@@ -2,14 +2,17 @@
 
 namespace Mitwork\Kalkan\Traits;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Http\Client\HttpClientException;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Http;
 use Mitwork\Kalkan\Exceptions\NcanodeStatusException;
 use Mitwork\Kalkan\Exceptions\NcanodeUnavailableException;
 
 trait NcanodeHttpClient
 {
-    protected ?Client $client = null;
+    protected ?PendingRequest $client = null;
 
     /**
      * @var array|string[]
@@ -25,9 +28,9 @@ trait NcanodeHttpClient
      * Отправка запроса
      *
      * @param  string  $url  Ссылка
-     * @param  string|array|null  $body  Тело запроса
-     * @param  array  $options  Параметры
-     * @return array Результат
+     * @param  string|array<string, mixed>|null  $body  Тело запроса
+     * @param  array<string, mixed>  $options  Параметры
+     * @return array<string, mixed> Результат
      */
     public function request(string $url, string|array|null $body = null, array $options = [], bool $throw = true): array
     {
@@ -42,18 +45,18 @@ trait NcanodeHttpClient
                 $request = $this->get($url);
             }
 
-        } catch (GuzzleException $ex) {
+        } catch (HttpClientException|GuzzleException $ex) {
             throw NcanodeUnavailableException::create($ex->getMessage());
         }
 
-        $response = $request->getBody()->getContents();
+        $response = $request->body();
         $message = json_decode($response, true);
 
-        if ($request->getStatusCode() === 200) {
+        if ($request->status() === 200) {
 
             if ($throw) {
                 if (! $message || ! isset($message['status']) || $message['status'] !== 200) {
-                    throw NcanodeStatusException::create($request->getStatusCode(), $response);
+                    throw NcanodeStatusException::create($request->status(), $response);
                 }
             }
 
@@ -61,7 +64,7 @@ trait NcanodeHttpClient
         }
 
         if ($throw) {
-            throw NcanodeStatusException::create($request->getStatusCode(), $response);
+            throw NcanodeStatusException::create($request->status(), $response);
         }
 
         return $message;
@@ -71,48 +74,61 @@ trait NcanodeHttpClient
     /**
      * Инициализация
      *
-     * @param  array  $options  Параметры
+     * @param  array<string, mixed>  $overrides  Параметры
      * @param  string  $host  Хост по-умолчанию
      */
-    private function init(array $options = [], string $host = 'http://localhost:14579'): void
+    private function init(array $overrides = [], string $host = 'http://localhost:14579'): void
     {
         $host = config('kalkan.ncanode.host', $host);
 
         $defaults = [
-            'base_uri' => $host,
             'timeout' => 120,
             'http_errors' => false,
         ];
 
-        $this->headers['Host'] = str_replace(['http://', 'https://'], '', $host);
+        $components = parse_url($host);
 
-        $this->client = new Client($defaults + $options);
+        $this->headers['Host'] = $components['host'] ?? $host;
+
+        if (isset($components['port'])) {
+            $this->headers['Host'] .= ':'.$components['port'];
+        }
+
+        $options = $defaults + $overrides;
+
+        $this->client = Http::baseUrl($host)->withOptions($options)->withHeaders($this->headers);
     }
 
     /**
      * Отправка POST-запроса
      *
      * @param  string  $url  Ссылка
-     * @param  string|array  $body  Тело запроса
-     * @return \Psr\Http\Message\ResponseInterface Результат
+     * @param  string|array<string, mixed>  $body  Тело запроса
+     * @return Response Результат
      *
+     * @throws HttpClientException
      * @throws GuzzleException
      */
-    private function post(string $url, string|array $body): \Psr\Http\Message\ResponseInterface
+    private function post(string $url, string|array $body): Response
     {
-        return $this->client->post($url, ['headers' => $this->headers, 'body' => $body]);
+        if (is_string($body)) {
+            return $this->client->withBody($body, $this->headers['Content-Type'])->post($url);
+        }
+
+        return $this->client->post($url, $body);
     }
 
     /**
      * Отправка GET-запроса
      *
      * @param  string  $url  Ссылка
-     * @return \Psr\Http\Message\ResponseInterface Результат
+     * @return Response Результат
      *
+     * @throws HttpClientException
      * @throws GuzzleException
      */
-    private function get(string $url): \Psr\Http\Message\ResponseInterface
+    private function get(string $url): Response
     {
-        return $this->client->get($url, ['headers' => $this->headers]);
+        return $this->client->get($url);
     }
 }

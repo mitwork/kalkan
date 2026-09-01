@@ -17,14 +17,14 @@ class CacheDocumentService implements DocumentService
      * Добавление документа в кэш
      *
      * @param  string|int  $id  Идентификатор
-     * @param  array  $attributes  Содержимое
+     * @param  array<string, mixed>  $attributes  Содержимое
      * @return bool Результат сохранения
      */
     public function add(string|int $id, array $attributes, DocumentStatus $status = DocumentStatus::CREATED): bool
     {
         $attributes['status'] = $status;
 
-        return Cache::add($id, $attributes, config('kalkan.ttl'));
+        return Cache::add((string) $id, $attributes, config('kalkan.ttl'));
     }
 
     /**
@@ -32,7 +32,7 @@ class CacheDocumentService implements DocumentService
      */
     public function get(string|int $id): ?array
     {
-        return Cache::get($id);
+        return Cache::get((string) $id);
     }
 
     /**
@@ -40,9 +40,9 @@ class CacheDocumentService implements DocumentService
      */
     public function check(string|int $id): array|bool|null
     {
-        $document = Cache::get($id);
+        $document = Cache::get((string) $id);
 
-        if (! $document) {
+        if (! is_array($document)) {
             return null;
         }
 
@@ -56,9 +56,9 @@ class CacheDocumentService implements DocumentService
     /**
      * {@inheritDoc}
      */
-    public function update($id, DocumentStatus $status): void
+    public function update(string|int $id, DocumentStatus $status): void
     {
-        $document = Cache::get($id);
+        $document = Cache::get((string) $id);
 
         if (! $document) {
             return;
@@ -66,7 +66,7 @@ class CacheDocumentService implements DocumentService
 
         $document['status'] = $status;
 
-        Cache::put($id, $document);
+        Cache::put((string) $id, $document);
     }
 
     /**
@@ -80,7 +80,7 @@ class CacheDocumentService implements DocumentService
             unset($this->documents['xml'][$id]);
         }
 
-        $document = Cache::get($id);
+        $document = Cache::get((string) $id);
 
         if (! $document) {
             return false;
@@ -99,7 +99,7 @@ class CacheDocumentService implements DocumentService
         $document['result'] = $result;
         $document['message'] = null;
 
-        return Cache::put($id, $document);
+        return Cache::put((string) $id, $document);
     }
 
     /**
@@ -107,7 +107,7 @@ class CacheDocumentService implements DocumentService
      */
     public function reject(int|string $id, ?string $message = null): bool
     {
-        $document = Cache::get($id);
+        $document = Cache::get((string) $id);
 
         if (! $document) {
             return false;
@@ -117,6 +117,6 @@ class CacheDocumentService implements DocumentService
         $document['result'] = null;
         $document['message'] = $message;
 
-        return Cache::put($id, $document);
+        return Cache::put((string) $id, $document);
     }
 }

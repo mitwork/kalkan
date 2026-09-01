@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Mitwork\Kalkan\Tests;
 
+use Mitwork\Kalkan\Services\KalkanExtractionService;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-#[CoversClass(\Mitwork\Kalkan\Services\KalkanExtractionService::class)]
+#[CoversClass(KalkanExtractionService::class)]
 final class KalkanExtractionServiceTest extends BaseTestCase
 {
     public function test_cms_extraction(): void
     {
-        $service = new \Mitwork\Kalkan\Services\KalkanExtractionService;
+        $service = new KalkanExtractionService;
 
         $data = <<<'DATA'
 MIIMgAYJKoZIhvcNAQcCoIIMcTCCDG0CAQExDjAMBggqgw4DCgEDAwUAMBIGCSqGSIb3DQEHAaAFBAO16y2gggR6MIIEdjCCA96gAwIBAgIUIgikXaIEvr7S

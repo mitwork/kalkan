@@ -12,10 +12,12 @@ use Mitwork\Kalkan\Enums\RequestStatus;
 use Mitwork\Kalkan\Events\AuthAccepted;
 use Mitwork\Kalkan\Events\AuthRejected;
 use Mitwork\Kalkan\Events\DocumentSigned;
+use Mitwork\Kalkan\Services\IntegrationService;
+use Mitwork\Kalkan\Services\KalkanSignatureService;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-#[CoversClass(\Mitwork\Kalkan\Services\IntegrationService::class)]
+#[CoversClass(IntegrationService::class)]
 final class ActionsTest extends BaseTestCase
 {
     use WithWorkbench;
@@ -46,7 +48,7 @@ final class ActionsTest extends BaseTestCase
             $headers = $response['headers'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+            $signatureService = new KalkanSignatureService;
 
             $ids = [];
 
@@ -60,6 +62,8 @@ final class ActionsTest extends BaseTestCase
 
                 $ids[] = $document['id'];
             }
+
+            unset($document);
 
             // Отправка подписанных данных
 
@@ -120,7 +124,7 @@ final class ActionsTest extends BaseTestCase
         $headers = $response['headers'];
         $message = $response['message'];
 
-        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+        $signatureService = new KalkanSignatureService;
 
         $ids = [];
 
@@ -135,6 +139,8 @@ final class ActionsTest extends BaseTestCase
                 }
             }
         }
+
+        unset($document);
 
         // Отправка подписанных данных
 
@@ -175,7 +181,7 @@ final class ActionsTest extends BaseTestCase
             $headers = $response['headers'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+            $signatureService = new KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 
@@ -185,6 +191,8 @@ final class ActionsTest extends BaseTestCase
                     $document['documentXml'] = $status;
                 }
             }
+
+            unset($document);
 
             // Отправка подписанных данных
 
@@ -232,7 +240,7 @@ final class ActionsTest extends BaseTestCase
             $headers = $response['headers'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+            $signatureService = new KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 
@@ -242,6 +250,8 @@ final class ActionsTest extends BaseTestCase
                     $document['documentXml'] = $status;
                 }
             }
+
+            unset($document);
 
             // Отправка подписанных данных
 
@@ -284,7 +294,7 @@ final class ActionsTest extends BaseTestCase
             $headers = $response['headers'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+            $signatureService = new KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 
@@ -294,6 +304,8 @@ final class ActionsTest extends BaseTestCase
                     $document['document']['file']['data'] = $status;
                 }
             }
+
+            unset($document);
 
             // Отправка подписанных данных
 
@@ -339,7 +351,7 @@ final class ActionsTest extends BaseTestCase
             $headers = $response['headers'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+            $signatureService = new KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 
@@ -349,6 +361,8 @@ final class ActionsTest extends BaseTestCase
                     $document['document']['file']['data'] = $status;
                 }
             }
+
+            unset($document);
 
             // Отправка подписанных данных
 
@@ -390,7 +404,7 @@ final class ActionsTest extends BaseTestCase
 
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+            $signatureService = new KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 
@@ -400,6 +414,8 @@ final class ActionsTest extends BaseTestCase
                     $document['document']['file']['data'] = $status;
                 }
             }
+
+            unset($document);
 
             // Отправка подписанных данных
 

@@ -10,6 +10,7 @@ use Mitwork\Kalkan\Enums\AuthType;
 use Mitwork\Kalkan\Enums\DocumentStatus;
 use Mitwork\Kalkan\Enums\RequestStatus;
 use Mitwork\Kalkan\Events\DocumentSaved;
+use Mitwork\Kalkan\Services\KalkanSignatureService;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase;
 use Symfony\Component\Yaml\Yaml;
@@ -25,7 +26,7 @@ class BaseTestCase extends TestCase
      *
      * @param  array  $filters  Фильтры
      */
-    public function loadCertificates(array $filters = ['active' => true, 'policy' => 'sign']): void
+    public function loadCertificates(array $filters = ['active' => true]): void
     {
         $certificates = Yaml::parseFile(__DIR__.'/certificates.yml')['certificates'];
 
@@ -72,6 +73,8 @@ class BaseTestCase extends TestCase
             $this->assertArrayHasKey('status', $response, sprintf('[%s] Ответ не содержит статус документа %s: %s', $id, $prefix, $response->getContent()));
             $this->assertTrue($response['status'] === DocumentStatus::CREATED->value, sprintf('[%s] Некорректный статус для неподписанного документа %s: %s', $id, $prefix, $response->getContent()));
         }
+
+        unset($file);
 
         $data = [
             'description' => $prefix,
@@ -125,7 +128,7 @@ class BaseTestCase extends TestCase
      */
     public function signResponse(array &$message, array $certificate): void
     {
-        $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+        $signatureService = new KalkanSignatureService;
 
         foreach ($message['documentsToSign'] as &$document) {
 
@@ -145,6 +148,8 @@ class BaseTestCase extends TestCase
                 }
             }
         }
+
+        unset($document);
     }
 
     /**

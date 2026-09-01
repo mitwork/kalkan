@@ -10,7 +10,7 @@ interface RequestService
      * Добавление запроса для обработки
      *
      * @param  string|int  $id  Уникальный идентификатор
-     * @param  array  $attributes  Содержимое и метаданные документа
+     * @param  array<string, mixed>  $attributes  Содержимое и метаданные документа
      * @return bool Результат добавления
      */
     public function add(string|int $id, array $attributes, RequestStatus $status = RequestStatus::CREATED): bool;
@@ -19,7 +19,7 @@ interface RequestService
      * Получение запроса
      *
      * @param  string|int  $id  Уникальный идентификатор
-     * @return array|null Содержимое и метаданные документа
+     * @return array<string, mixed>|null Содержимое и метаданные документа
      */
     public function get(string|int $id): ?array;
 
@@ -27,7 +27,7 @@ interface RequestService
      * Проверка статуса запроса
      *
      * @param  string|int  $id  Уникальный идентификатор
-     * @return array|bool|null Результат проверки
+     * @return array<string, mixed>|bool|null Результат проверки
      */
     public function check(string|int $id): array|bool|null;
 
@@ -40,6 +40,7 @@ interface RequestService
      * Обработка полученного запроса
      *
      * @param  string|int  $id  Уникальный идентификатор
+     * @param  array<string, mixed>  $result  Результат подписания
      * @return bool Результат обработки
      */
     public function process(string|int $id, array $result, RequestStatus $status = RequestStatus::PROCESSED): bool;

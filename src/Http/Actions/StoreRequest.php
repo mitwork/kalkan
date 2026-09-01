@@ -94,25 +94,26 @@ class StoreRequest extends BaseAction
 
         $serviceRequest = new CacheRequest(...$attributes);
 
-        $files = $serviceRequest->files;
-
-        foreach ($files as &$file) {
+        foreach ($serviceRequest->files as &$file) {
 
             if (! isset($file['id'])) {
 
-                $file = new CacheDocument(...$file);
+                $document = new CacheDocument(...$file);
 
+                $file = $document->toArray();
                 $file['id'] = hrtime(true);
 
-                if (! $this->documentService->add($file['id'], $file->toArray())) {
+                if (! $this->documentService->add($file['id'], $document->toArray())) {
                     return response()->json([
                         'message' => __('kalkan::messages.unable_to_save_document'),
                     ], 500);
                 }
 
-                DocumentSaved::dispatch($file['id'], $file->toArray());
+                DocumentSaved::dispatch($file['id'], $document->toArray());
             }
         }
+
+        unset($file);
 
         if (! $this->requestService->add($id, $serviceRequest->toArray())) {
 

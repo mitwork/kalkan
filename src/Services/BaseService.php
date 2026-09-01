@@ -4,6 +4,7 @@ namespace Mitwork\Kalkan\Services;
 
 class BaseService
 {
+    /** @var array<string, mixed> */
     public array $response = [];
 
     public ?string $error = null;
@@ -11,7 +12,7 @@ class BaseService
     /**
      * Получение результата
      *
-     * @return array Результат
+     * @return array<string, mixed> Результат
      */
     public function getResponse(): array
     {
@@ -21,7 +22,7 @@ class BaseService
     /**
      * Сохранение результата
      *
-     * @param  array  $response  Результат
+     * @param  array<string, mixed>  $response  Результат
      */
     protected function setResponse(array $response): void
     {

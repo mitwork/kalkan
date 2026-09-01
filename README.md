@@ -31,8 +31,14 @@
 
 ## Поддерживаемые версии
 
-- PHP - 8.2, 8.3, 8.4;
-- Laravel - 10, 11, 12.
+| Версия пакета | PHP           | Laravel |
+|---------------|---------------|---------|
+| `2.*`         | 8.3, 8.4, 8.5 | 12, 13  |
+| `1.2.*`       | 8.2, 8.3, 8.4 | 10, 11, 12 |
+
+Laravel 10 и 11 сняты с поддержки в версии `2.0` - обе ветки не получают исправлений безопасности,
+и composer блокирует установку их выпусков. Для проектов на этих версиях используйте `1.2.*` -
+ветку `1.x`, обновление до `2.0` composer не предложит.
 
 ## Установка
 
@@ -41,6 +47,43 @@
 ```shell
 composer require mitwork/kalkan
 ```
+
+Для проектов на Laravel 10 или 11:
+
+```shell
+composer require mitwork/kalkan:^1.2
+```
+
+## Обновление с 1.x
+
+Способ подключения и вызова сервисов не изменился, но при переходе на `2.0` нужно учесть три изменения.
+
+### Политика TSP по-умолчанию
+
+В `signCms()` значение по-умолчанию для `$tsaPolicy` изменено с `TSA_GOST_POLICY` на `TSA_GOST2015_POLICY`,
+а `TSA_GOST_POLICY` и `TSA_GOSTGT_POLICY` помечены как устаревшие. Вызовы без явной политики начнут
+получать метку времени по другой политике - код при этом не упадёт. Чтобы сохранить прежнее поведение,
+укажите политику явно:
+
+```php
+use Mitwork\Kalkan\Enums\TsaPolicy;
+
+$result = $this->signatureService->signCms($data, $key, $password, tsaPolicy: TsaPolicy::TSA_GOST_POLICY);
+```
+
+### HTTP-клиент
+
+Трейт `Mitwork\Kalkan\Traits\NcanodeHttpClient` переведён с Guzzle на HTTP-клиент Laravel.
+Свойство `$client` теперь `Illuminate\Http\Client\PendingRequest` вместо `GuzzleHttp\Client`,
+а внутренние запросы возвращают `Illuminate\Http\Client\Response` вместо `Psr\Http\Message\ResponseInterface`.
+Изменение затрагивает только тех, кто подмешивал трейт в свои сервисы и обращался к `$client`
+или переопределял `init()`.
+
+### Новое исключение
+
+Тело запроса к NCANode формируется с флагом `JSON_THROW_ON_ERROR`, поэтому `signXml()`, `signCms()`,
+`verifyXml()`, `verifyCms()` и `extractCms()` могут выбросить `JsonException` при некорректных
+входных данных. Раньше такая ошибка приводила к отправке пустого тела запроса и невнятному ответу сервиса.
 
 ## Настройка
 
@@ -343,13 +386,13 @@ API не позволяет подписывать несколько файло
 **Важно** - в тестах используются тестовые сертификаты из [SDK](https://pki.gov.kz/get-sdk/) НУЦ РК, для проверки необходимо запустить NCANode со следующими параметрами:
 
 ```shell
-NCANODE_DEBUG=true NCANODE_CRL_URL="http://test.pki.gov.kz/crl/nca_rsa_test.crl http://test.pki.gov.kz/crl/nca_gost_test.crl http://test.pki.gov.kz/crl/nca_gost2022_test.crl" NCANODE_CRL_DELTA_URL="http://test.pki.gov.kz/crl/nca_d_rsa_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test.crl http://test.pki.gov.kz/crl/nca_gost2022_d_test.crl" NCANODE_CA_URL="http://test.pki.gov.kz/cert/root_gost_test.cer http://test.pki.gov.kz/cert/root_rsa_test.cer http://test.pki.gov.kz/cert/root_test_gost_2022.cer http://test.pki.gov.kz/cert/nca_gost_test.cer http://test.pki.gov.kz/cert/nca_rsa_test.cer http://test.pki.gov.kz/cert/nca_gost2022_test.cer" NCANODE_OCSP_URL=http://test.pki.gov.kz/ocsp/ NCANODE_TSP_URL=http://test.pki.gov.kz/tsp/ java -jar NCANode-3.3.2.jar
+NCANODE_DEBUG=true NCANODE_CRL_URL="http://test.pki.gov.kz/crl/nca_gost2022_test.crl" NCANODE_CRL_DELTA_URL="http://test.pki.gov.kz/crl/nca_gost2022_d_test.crl" NCANODE_CA_URL="http://test.pki.gov.kz/cert/root_test_gost_2022.cer http://test.pki.gov.kz/cert/nca_gost2022_test.cer" NCANODE_OCSP_URL="http://test.pki.gov.kz/ocsp/" NCANODE_TSP_URL="http://test.pki.gov.kz/tsp/" java -jar NCANode-3.4.1.jar
 ```
 
 Для работы с действительными сертификатами НУЦ РК, при тестировании приложение NCANode нужно запустить с параметрами по-умолчанию:
 
 ```shell
-java -jar NCANode-3.3.2.jar
+java -jar NCANode-3.4.1.jar
 ```
 
 ## Отказ от ответственности

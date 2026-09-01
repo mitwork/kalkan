@@ -17,9 +17,12 @@ use Mitwork\Kalkan\Http\Requests\ProcessDocumentRequest;
 use Mitwork\Kalkan\Services\CacheDocumentService;
 use Mitwork\Kalkan\Services\CacheRequestService;
 use Mitwork\Kalkan\Services\KalkanValidationService;
+use Mitwork\Kalkan\Traits\TranslatesMessages;
 
 class ProcessContent extends BaseAction
 {
+    use TranslatesMessages;
+
     public function __construct(
         public CacheDocumentService $documentService,
         public CacheRequestService $requestService,
@@ -89,7 +92,7 @@ class ProcessContent extends BaseAction
                 $message = $this->validationService->getError();
 
                 if (! $message) {
-                    $message = __('kalkan::messages.unable_to_process_document');
+                    $message = self::message('kalkan::messages.unable_to_process_document');
                 }
 
                 if ($this->documentService->reject($signedDocument['id'], $message)) {
@@ -107,7 +110,7 @@ class ProcessContent extends BaseAction
 
             if (! $this->documentService->process($signedDocument['id'], $result)) {
 
-                $message = $this->documentService->message ?: __('kalkan::messages.unable_to_process_document');
+                $message = $this->documentService->message ?: self::message('kalkan::messages.unable_to_process_document');
 
                 if ($this->documentService->reject($signedDocument['id'], $message)) {
                     DocumentRejected::dispatch($signedDocument['id'], $message, $result, $id);

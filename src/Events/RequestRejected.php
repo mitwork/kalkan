@@ -13,11 +13,15 @@ class RequestRejected
 
     public string $message;
 
+    /** @var array<string, mixed> */
     public array $result = [];
 
     public int|string|null $documentId;
 
-    public function __construct($id, $message, $result = [], $documentId = null)
+    /**
+     * @param  array<string, mixed>  $result
+     */
+    public function __construct(int|string $id, string $message, array $result = [], int|string|null $documentId = null)
     {
         $this->id = $id;
         $this->message = $message;

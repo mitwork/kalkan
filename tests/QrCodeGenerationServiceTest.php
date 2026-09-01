@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Mitwork\Kalkan\Tests;
 
 use Mitwork\Kalkan\Enums\QrCodeFormat;
+use Mitwork\Kalkan\Services\QrCodeGenerationService;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-#[CoversClass(\Mitwork\Kalkan\Services\QrCodeGenerationService::class)]
+#[CoversClass(QrCodeGenerationService::class)]
 final class QrCodeGenerationServiceTest extends BaseTestCase
 {
     public function test_qr_png_generation(): void
     {
-        $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService;
+        $service = new QrCodeGenerationService;
 
         $result = $service->generate('https://example.com');
 
@@ -26,7 +27,7 @@ final class QrCodeGenerationServiceTest extends BaseTestCase
 
     public function test_qr_svg_generation(): void
     {
-        $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService;
+        $service = new QrCodeGenerationService;
 
         $result = $service->generate('https://example.com', format: QrCodeFormat::SVG);
 
@@ -37,7 +38,7 @@ final class QrCodeGenerationServiceTest extends BaseTestCase
 
     public function test_qr_webp_generation(): void
     {
-        $service = new \Mitwork\Kalkan\Services\QrCodeGenerationService;
+        $service = new QrCodeGenerationService;
 
         $result = $service->generate('https://example.com', format: QrCodeFormat::WEBP);
 

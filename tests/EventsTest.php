@@ -10,11 +10,12 @@ use Mitwork\Kalkan\Enums\RequestStatus;
 use Mitwork\Kalkan\Events\DocumentRejected;
 use Mitwork\Kalkan\Events\RequestProcessed;
 use Mitwork\Kalkan\Events\RequestSaved;
+use Mitwork\Kalkan\Services\KalkanSignatureService;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-#[CoversClass(\Mitwork\Kalkan\Events\RequestSaved::class)]
-#[CoversClass(\Mitwork\Kalkan\Events\RequestProcessed::class)]
+#[CoversClass(RequestSaved::class)]
+#[CoversClass(RequestProcessed::class)]
 final class EventsTest extends BaseTestCase
 {
     use WithWorkbench;
@@ -86,7 +87,7 @@ final class EventsTest extends BaseTestCase
             $id = $response['id'];
             $message = $response['message'];
 
-            $signatureService = new \Mitwork\Kalkan\Services\KalkanSignatureService;
+            $signatureService = new KalkanSignatureService;
 
             foreach ($message['documentsToSign'] as &$document) {
 
@@ -96,6 +97,8 @@ final class EventsTest extends BaseTestCase
                     $document['document']['file']['data'] = $status;
                 }
             }
+
+            unset($document);
 
             // Отправка подписанных данных
 

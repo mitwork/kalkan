@@ -10,13 +10,15 @@ jobs:
   pint:
 
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: true
 
     steps:
-      - uses: shivammathur/setup-php@v2
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: 8.5
           extensions: json, dom, curl, libxml, mbstring
           coverage: none
 

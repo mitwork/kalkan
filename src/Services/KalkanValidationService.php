@@ -33,7 +33,7 @@ class KalkanValidationService extends BaseService implements ValidationService
             unset($template['revocationCheck']);
         }
 
-        $message = json_encode($template);
+        $message = json_encode($template, JSON_THROW_ON_ERROR);
 
         $response = $this->request('/xml/verify', $message, throw: ! $throw);
 
@@ -80,7 +80,7 @@ class KalkanValidationService extends BaseService implements ValidationService
             unset($template['revocationCheck']);
         }
 
-        $message = json_encode($template);
+        $message = json_encode($template, JSON_THROW_ON_ERROR);
 
         $response = $this->request('/cms/verify', $message, throw: ! $throw);
 

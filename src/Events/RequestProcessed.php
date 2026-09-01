@@ -11,9 +11,13 @@ class RequestProcessed
 
     public int|string $id;
 
+    /** @var array<string, mixed> */
     public array $request;
 
-    public function __construct($id, $request)
+    /**
+     * @param  array<string, mixed>  $request
+     */
+    public function __construct(int|string $id, array $request)
     {
         $this->id = $id;
         $this->request = $request;

@@ -33,7 +33,7 @@ class KalkanSignatureService extends BaseService implements SignatureService
             'trimXml' => $trimXml,
         ];
 
-        $message = json_encode($template);
+        $message = json_encode($template, JSON_THROW_ON_ERROR);
         $response = $this->request('/xml/sign', $message);
 
         $this->setResponse($response);
@@ -54,7 +54,7 @@ class KalkanSignatureService extends BaseService implements SignatureService
     /**
      * {@inheritDoc}
      */
-    public function signCms(string $data, string $key, string $password, ?string $alias = null, bool $withTsp = true, TsaPolicy $tsaPolicy = TsaPolicy::TSA_GOST_POLICY, bool $detached = false, ?string $cms = null, bool $raw = false, bool $throw = false): string|array
+    public function signCms(string $data, string $key, string $password, ?string $alias = null, bool $withTsp = true, TsaPolicy $tsaPolicy = TsaPolicy::TSA_GOST2015_POLICY, bool $detached = false, ?string $cms = null, bool $raw = false, bool $throw = false): string|array
     {
         if (str_contains($key, PHP_EOL)) {
             $key = str_replace(PHP_EOL, '', $key);
@@ -78,7 +78,7 @@ class KalkanSignatureService extends BaseService implements SignatureService
             $template['cms'] = $cms;
         }
 
-        $message = json_encode($template);
+        $message = json_encode($template, JSON_THROW_ON_ERROR);
 
         if ($cms) {
             $response = $this->request('/cms/sign/add', $message);

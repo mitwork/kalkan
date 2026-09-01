@@ -15,11 +15,15 @@ class DocumentSigned
 
     public string $signature;
 
+    /** @var array<string, mixed> */
     public array $result;
 
     public int|string|null $requestId;
 
-    public function __construct($id, $content, $signature, $result, $requestId = null)
+    /**
+     * @param  array<string, mixed>  $result
+     */
+    public function __construct(int|string $id, string $content, string $signature, array $result, int|string|null $requestId = null)
     {
         $this->id = $id;
         $this->content = $content;

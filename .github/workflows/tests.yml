@@ -8,6 +8,10 @@ on:
   pull_request:
     branches:
       - '*.x'
+  schedule:
+    # Еженедельно - ловит поломки от новых выпусков зависимостей
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
 
 jobs:
   tests:
@@ -16,8 +20,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [ 8.2, 8.3, 8.4 ]
-        laravel: [ 10, 11, 12 ]
+        php: [ 8.3, 8.4, 8.5 ]
+        laravel: [ 12, 13 ]
 
     name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
 
@@ -42,9 +46,9 @@ jobs:
       - name: Start NCANode container with custom DNS
         run: |
           docker run -d --name ncanode \
-            --env NCANODE_CA_URL="http://test.pki.gov.kz/cert/root_gost_test.cer http://test.pki.gov.kz/cert/root_rsa_test.cer http://test.pki.gov.kz/cert/root_test_gost_2022.cer http://test.pki.gov.kz/cert/nca_gost_test.cer http://test.pki.gov.kz/cert/nca_rsa_test.cer http://test.pki.gov.kz/cert/nca_gost2022_test.cer" \
-            --env NCANODE_CRL_URL="http://test.pki.gov.kz/crl/nca_rsa_test.crl http://test.pki.gov.kz/crl/nca_gost_test.crl http://test.pki.gov.kz/crl/nca_gost2022_test.crl" \
-            --env NCANODE_CRL_DELTA_URL="http://test.pki.gov.kz/crl/nca_d_rsa_test.crl http://test.pki.gov.kz/crl/nca_d_gost_test.crl http://test.pki.gov.kz/crl/nca_gost2022_d_test.crl" \
+            --env NCANODE_CA_URL="http://test.pki.gov.kz/cert/root_test_gost_2022.cer http://test.pki.gov.kz/cert/nca_gost2022_test.cer" \
+            --env NCANODE_CRL_URL="http://test.pki.gov.kz/crl/nca_gost2022_test.crl" \
+            --env NCANODE_CRL_DELTA_URL="http://test.pki.gov.kz/crl/nca_gost2022_d_test.crl" \
             --env NCANODE_OCSP_URL=http://test.pki.gov.kz/ocsp/ \
             --env NCANODE_TSP_URL=http://test.pki.gov.kz/tsp/ \
             --publish 14579:14579 \
@@ -58,9 +62,8 @@ jobs:
       - name: Customize TestBench version
         run: |
           case ${{ matrix.laravel }} in
-            10) composer require "orchestra/testbench:^8.13"  --dev --no-update ;;
-            11) composer require "orchestra/testbench:^9.2.0"  --dev --no-update ;;
             12) composer require "orchestra/testbench:^10.0" --dev --no-update ;;
+            13) composer require "orchestra/testbench:^11.0" --dev --no-update ;;
           esac
 
       - name: Install dependencies
@@ -78,7 +81,8 @@ jobs:
       fail-fast: true
       matrix:
         stack: [ kalkan ]
-        laravel: [ 10, 11, 12 ]
+        php: [ 8.3 ]
+        laravel: [ 12, 13 ]
 
     name: Test Stubs - Laravel ${{ matrix.laravel }} - ${{ matrix.stack }}
 
@@ -86,7 +90,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, gd
           ini-values: error_reporting=E_ALL
           tools: composer:v2
@@ -99,7 +103,7 @@ jobs:
           composer config repositories.kalkan '{"type": "path", "url": "kalkan"}' --file composer.json
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           path: 'kalkan'
 

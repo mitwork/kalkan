@@ -10,7 +10,7 @@ interface DocumentService
      * Добавление документа для обработки
      *
      * @param  string|int  $id  Уникальный идентификатор
-     * @param  array  $attributes  Содержимое и метаданные документа
+     * @param  array<string, mixed>  $attributes  Содержимое и метаданные документа
      * @return bool Результат добавления
      */
     public function add(string|int $id, array $attributes, DocumentStatus $status = DocumentStatus::CREATED): bool;
@@ -19,7 +19,7 @@ interface DocumentService
      * Получение документа
      *
      * @param  string|int  $id  Уникальный идентификатор
-     * @return array|null Содержимое и метаданные документа
+     * @return array<string, mixed>|null Содержимое и метаданные документа
      */
     public function get(string|int $id): ?array;
 
@@ -27,7 +27,7 @@ interface DocumentService
      * Проверка статуса подписания документа
      *
      * @param  string|int  $id  Уникальный идентификатор
-     * @return array|bool|null Результат проверки
+     * @return array<string, mixed>|bool|null Результат проверки
      */
     public function check(string|int $id): array|bool|null;
 
@@ -40,6 +40,7 @@ interface DocumentService
      * Обработка подписанного документа
      *
      * @param  string|int  $id  Уникальный идентификатор
+     * @param  array<string, mixed>  $result  Результат подписания
      * @return bool Результат обработки
      */
     public function process(string|int $id, array $result, DocumentStatus $status = DocumentStatus::SIGNED): bool;

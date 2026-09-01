@@ -70,7 +70,13 @@ class PrepareContent extends BaseAction
             AuthAccepted::dispatch($id, $token);
         }
 
-        $files = $document['files'];
+        $files = $document['files'] ?? null;
+
+        if (! is_array($files)) {
+            return response()->json([
+                'message' => __('kalkan::messages.unable_to_get_request'),
+            ], 500);
+        }
 
         $response = [
             'signMethod' => '',

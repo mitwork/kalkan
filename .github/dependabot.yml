@@ -1,0 +1,46 @@
+version: 2
+
+updates:
+  # Зависимости composer
+  - package-ecosystem: composer
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Almaty
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    groups:
+      # Фреймворк и всё, что обновляется вместе с ним - одним PR,
+      # иначе illuminate/*, testbench и symfony/* приезжают вразнобой
+      # и по отдельности не проходят резолв
+      laravel:
+        patterns:
+          - "illuminate/*"
+          - "laravel/*"
+          - "orchestra/*"
+          - "symfony/*"
+      # Инструменты разработки
+      dev-tools:
+        patterns:
+          - "phpstan/*"
+          - "phpunit/*"
+          - "mockery/*"
+          - "khanamiryan/*"
+
+  # Версии самих GitHub Actions
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Almaty
+    labels:
+      - dependencies
+    groups:
+      actions:
+        patterns:
+          - "*"

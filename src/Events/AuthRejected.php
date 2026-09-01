@@ -13,7 +13,7 @@ class AuthRejected
 
     public string $message;
 
-    public function __construct($id, $message)
+    public function __construct(int|string $id, string $message)
     {
         $this->id = $id;
         $this->message = $message;

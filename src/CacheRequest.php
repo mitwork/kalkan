@@ -7,21 +7,29 @@ use Illuminate\Validation\ValidationException;
 use Mitwork\Kalkan\Contracts\AbstractRequest;
 
 /**
- * @property array $files
- * @property array $auth
- * @property array $organisation
+ * @property array<int, array<string, mixed>> $files
+ * @property array<string, mixed> $auth
+ * @property array<string, mixed> $organisation
  * @property string|null $description
  */
 class CacheRequest implements AbstractRequest
 {
+    /** @var array<int, array<string, mixed>> */
     public array $files;
 
+    /** @var array<string, mixed> */
     public array $auth;
 
+    /** @var array<string, mixed> */
     public array $organisation;
 
     public ?string $description = null;
 
+    /**
+     * @param  array<int, array<string, mixed>>  $files  Документы
+     * @param  array<string, mixed>  $auth  Параметры авторизации
+     * @param  array<string, mixed>  $organisation  Данные организации
+     */
     public function __construct(array $files, array $auth = [], array $organisation = [], ?string $description = null)
     {
         $this->files = $files;
@@ -48,6 +56,9 @@ class CacheRequest implements AbstractRequest
     /**
      * Валидация данных
      *
+     * @param  string|array<int, string>|null  $fields  Проверяемые поля
+     * @param  array<string, mixed>  $data  Данные вместо текущих
+     *
      * @throws ValidationException
      */
     public function validate(string|array|null $fields = null, array $data = [], bool $throw = false): bool
@@ -55,7 +66,7 @@ class CacheRequest implements AbstractRequest
         $attributes = $this->toArray();
 
         if ($fields) {
-            $attributes = collect($attributes)->only($fields);
+            $attributes = collect($attributes)->only($fields)->all();
         }
 
         if (count($data) > 0) {
@@ -80,7 +91,7 @@ class CacheRequest implements AbstractRequest
     }
 
     /**
-     * @return array<string, array|string|null>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

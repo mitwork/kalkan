@@ -2,6 +2,7 @@
 
 namespace Mitwork\Kalkan\Contracts;
 
+use JsonException;
 use Mitwork\Kalkan\Enums\TsaPolicy;
 use Mitwork\Kalkan\Exceptions\IncorrectXmlDataException;
 use Mitwork\Kalkan\Exceptions\KalkanSignatureException;
@@ -21,8 +22,9 @@ interface SignatureService
      * @param  bool  $trimXml  Очистка XML
      * @param  bool  $raw  Возврат подписанной строки, либо ответа
      * @param  bool  $throw  Возврат исключения в случае ошибки
-     * @return string|array Подписанные данные или ответ сервиса
+     * @return string|array<string, mixed> Подписанные данные или ответ сервиса
      *
+     * @throws JsonException
      * @throws IncorrectXmlDataException
      * @throws NcanodeUnavailableException
      * @throws NcanodeStatusException
@@ -43,11 +45,12 @@ interface SignatureService
      * @param  string|null  $cms  Исходные (подписанные данные)
      * @param  bool  $raw  Возврат подписанной строки, либо ответа
      * @param  bool  $throw  Возврат исключения в случае ошибки
-     * @return string|array Подписанные данные или ответ сервиса
+     * @return string|array<string, mixed> Подписанные данные или ответ сервиса
      *
+     * @throws JsonException
      * @throws NcanodeUnavailableException
      * @throws NcanodeStatusException
      * @throws KalkanSignatureException
      */
-    public function signCms(string $data, string $key, string $password, ?string $alias = null, bool $withTsp = true, TsaPolicy $tsaPolicy = TsaPolicy::TSA_GOST_POLICY, bool $detached = false, ?string $cms = null, bool $raw = false, bool $throw = false): string|array;
+    public function signCms(string $data, string $key, string $password, ?string $alias = null, bool $withTsp = true, TsaPolicy $tsaPolicy = TsaPolicy::TSA_GOST2015_POLICY, bool $detached = false, ?string $cms = null, bool $raw = false, bool $throw = false): string|array;
 }

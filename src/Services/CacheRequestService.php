@@ -12,14 +12,14 @@ class CacheRequestService implements RequestService
      * Добавление документа в кэш
      *
      * @param  string|int  $id  Идентификатор
-     * @param  array  $attributes  Содержимое
+     * @param  array<string, mixed>  $attributes  Содержимое
      * @return bool Результат сохранения
      */
     public function add(string|int $id, array $attributes, RequestStatus $status = RequestStatus::CREATED): bool
     {
         $attributes['status'] = $status;
 
-        return Cache::add($id, $attributes, config('kalkan.ttl'));
+        return Cache::add((string) $id, $attributes, config('kalkan.ttl'));
     }
 
     /**
@@ -27,7 +27,7 @@ class CacheRequestService implements RequestService
      */
     public function get(string|int $id): ?array
     {
-        return Cache::get($id);
+        return Cache::get((string) $id);
     }
 
     /**
@@ -35,9 +35,9 @@ class CacheRequestService implements RequestService
      */
     public function check(string|int $id): array|bool|null
     {
-        $document = Cache::get($id);
+        $document = Cache::get((string) $id);
 
-        if (! $document) {
+        if (! is_array($document)) {
             return null;
         }
 
@@ -51,9 +51,9 @@ class CacheRequestService implements RequestService
     /**
      * {@inheritDoc}
      */
-    public function update($id, RequestStatus $status): void
+    public function update(string|int $id, RequestStatus $status): void
     {
-        $document = Cache::get($id);
+        $document = Cache::get((string) $id);
 
         if (! $document) {
             return;
@@ -61,7 +61,7 @@ class CacheRequestService implements RequestService
 
         $document['status'] = $status;
 
-        Cache::put($id, $document);
+        Cache::put((string) $id, $document);
     }
 
     /**
@@ -69,7 +69,7 @@ class CacheRequestService implements RequestService
      */
     public function process(string|int $id, array $result = [], RequestStatus $status = RequestStatus::PROCESSED): bool
     {
-        $document = Cache::get($id);
+        $document = Cache::get((string) $id);
 
         if (! $document) {
             return false;
@@ -79,7 +79,7 @@ class CacheRequestService implements RequestService
         $document['result'] = $result;
         $document['message'] = null;
 
-        return Cache::put($id, $document);
+        return Cache::put((string) $id, $document);
     }
 
     /**
@@ -87,7 +87,7 @@ class CacheRequestService implements RequestService
      */
     public function reject(int|string $id, ?string $message = null): bool
     {
-        $document = Cache::get($id);
+        $document = Cache::get((string) $id);
 
         if (! $document) {
             return false;
@@ -97,6 +97,6 @@ class CacheRequestService implements RequestService
         $document['result'] = null;
         $document['message'] = $message;
 
-        return Cache::put($id, $document);
+        return Cache::put((string) $id, $document);
     }
 }

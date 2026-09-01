@@ -2,6 +2,7 @@
 
 namespace Mitwork\Kalkan\Contracts;
 
+use JsonException;
 use Mitwork\Kalkan\Exceptions\KalkanValidationException;
 use Mitwork\Kalkan\Exceptions\NcanodeStatusException;
 use Mitwork\Kalkan\Exceptions\NcanodeUnavailableException;
@@ -16,8 +17,9 @@ interface ValidationService
      * @param  bool  $verifyOcsp  Проверка OCSP
      * @param  bool  $raw  Возврат результата, либо ответа
      * @param  bool  $throw  Возврат исключения в случае ошибки
-     * @return bool|array Результат, либо ответ
+     * @return bool|array<string, mixed> Результат, либо ответ
      *
+     * @throws JsonException
      * @throws NcanodeUnavailableException
      * @throws NcanodeStatusException
      * @throws KalkanValidationException
@@ -33,8 +35,9 @@ interface ValidationService
      * @param  bool  $verifyOcsp  Проверка OCSP
      * @param  bool  $raw  Возврат результата, либо ответа
      * @param  bool  $throw  Возврат исключения в случае ошибки
-     * @return bool|array Результат, либо ответ
+     * @return bool|array<string, mixed> Результат, либо ответ
      *
+     * @throws JsonException
      * @throws NcanodeUnavailableException
      * @throws NcanodeStatusException
      * @throws KalkanValidationException

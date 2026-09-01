@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Mitwork\Kalkan\Tests;
 
+use Mitwork\Kalkan\Services\DataValidationService;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-#[CoversClass(\Mitwork\Kalkan\Services\DataValidationService::class)]
+#[CoversClass(DataValidationService::class)]
 final class DataValidationServiceTest extends BaseTestCase
 {
     public function test_xml_validation(): void
     {
-        $service = new \Mitwork\Kalkan\Services\DataValidationService;
+        $service = new DataValidationService;
 
         $result = $service->validateXml('');
         $this->assertFalse($result, 'Валидация пустой XML-строки не работает');
@@ -34,7 +35,7 @@ XML;
 
     public function test_json_validation(): void
     {
-        $service = new \Mitwork\Kalkan\Services\DataValidationService;
+        $service = new DataValidationService;
 
         $result = $service->validateJson('');
         $this->assertFalse($result, 'Валидация пустой JSON-строки не работает');
@@ -56,7 +57,7 @@ JSON;
 
     public function test_base64_validation(): void
     {
-        $service = new \Mitwork\Kalkan\Services\DataValidationService;
+        $service = new DataValidationService;
 
         $result = $service->validateBase64('');
         $this->assertFalse($result, 'Валидация пустой Base64-строки не работает');

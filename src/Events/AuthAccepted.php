@@ -12,7 +12,7 @@ class AuthAccepted
 
     public string $token;
 
-    public function __construct($id, $token)
+    public function __construct(int|string $id, string $token)
     {
         $this->id = $id;
         $this->token = $token;

@@ -13,7 +13,7 @@ use Mitwork\Kalkan\Contracts\AbstractDocument;
  * @property string $data Содержимое
  * @property string $mime Тип
  * @property int $size Размер
- * @property array $meta Атрибуты
+ * @property array<string, mixed> $meta Атрибуты
  */
 class CacheDocument implements AbstractDocument
 {
@@ -25,10 +25,13 @@ class CacheDocument implements AbstractDocument
 
     public int $size = 0;
 
+    /** @var array<string, mixed> */
     public array $meta = [];
 
     /**
      * Создание нового экземпляра объекта
+     *
+     * @param  array<string, mixed>  $meta  Атрибуты
      */
     public function __construct(string $name, string $data, string $mime, int $size = 0, array $meta = [])
     {
@@ -62,6 +65,9 @@ class CacheDocument implements AbstractDocument
     /**
      * Валидация данных
      *
+     * @param  string|array<int, string>|null  $fields  Проверяемые поля
+     * @param  array<string, mixed>  $data  Данные вместо текущих
+     *
      * @throws ValidationException
      */
     public function validate(string|array|null $fields = null, array $data = [], bool $throw = false): bool
@@ -69,7 +75,7 @@ class CacheDocument implements AbstractDocument
         $attributes = $this->toArray();
 
         if ($fields) {
-            $attributes = collect($attributes)->only($fields);
+            $attributes = collect($attributes)->only($fields)->all();
         }
 
         if (count($data) > 0) {
@@ -94,7 +100,7 @@ class CacheDocument implements AbstractDocument
     }
 
     /**
-     * @return array<string, array|int|string>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

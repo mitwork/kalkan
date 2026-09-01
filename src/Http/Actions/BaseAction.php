@@ -10,7 +10,7 @@ class BaseAction
      * Генерация подписанных ссылок
      *
      * @param  string  $route  Роут
-     * @param  array  $params  Параметры
+     * @param  array<string, mixed>  $params  Параметры
      * @param  int  $ttl  Время жизни
      * @return string Ссылка
      */
@@ -23,7 +23,7 @@ class BaseAction
      * Генерация обычных ссылок
      *
      * @param  string  $route  Роут
-     * @param  array  $params  Параметры
+     * @param  array<string, mixed>  $params  Параметры
      * @return string Ссылка
      */
     public function generateTemporaryLink(string $route, array $params = []): string

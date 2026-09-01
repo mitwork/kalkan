@@ -23,7 +23,7 @@ class KalkanExtractionService extends BaseService implements ExtractionService
             'cms' => $cms,
         ];
 
-        $message = json_encode($template);
+        $message = json_encode($template, JSON_THROW_ON_ERROR);
 
         $response = $this->request('/cms/extract', $message);
 

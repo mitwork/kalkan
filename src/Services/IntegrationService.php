@@ -7,10 +7,11 @@ use Mitwork\Kalkan\Enums\SignatureType;
 
 class IntegrationService
 {
+    /** @var array<int|string, mixed> */
     protected array $meta = [];
 
     /**
-     * @var array|array[]
+     * @var array<string, array<int|string, array<string, mixed>>>
      */
     protected array $documents = [
         'xml' => [],
@@ -21,8 +22,8 @@ class IntegrationService
      * Подготовка данных для сервиса
      *
      * @param  string  $uri  Ссылка
-     * @param  array  $request  Запрос
-     * @return array Данные для сервиса
+     * @param  array<string, mixed>  $request  Запрос
+     * @return array<string, mixed> Данные для сервиса
      */
     public function prepareServiceData(string $uri, array $request): array
     {
@@ -58,7 +59,8 @@ class IntegrationService
      * Получение метаданных
      *
      * @param  int|string  $key  Ключ документа
-     * @return array Метаданные
+     * @param  array<int|string, mixed>  $meta  Атрибуты
+     * @return array<int|string, mixed> Метаданные
      */
     public function getMetaAttributes(int|string $key, array $meta = []): array
     {
@@ -74,7 +76,7 @@ class IntegrationService
      * Добавление метаданных
      *
      * @param  string|int  $id  Идентификатор документа
-     * @param  array  $meta  Атрибуты
+     * @param  array<int|string, mixed>  $meta  Атрибуты
      */
     public function addMetaAttributes(string|int $id, array $meta): void
     {
@@ -105,8 +107,8 @@ class IntegrationService
      * @param  int|string  $id  Уникальный идентификатор
      * @param  string  $name  Наименование
      * @param  string  $data  Содержание
-     * @param  array  $meta  Метаданные
-     * @return array Данные документа
+     * @param  array<int|string, mixed>  $meta  Метаданные
+     * @return array<string, mixed> Данные документа
      */
     public function addXmlDocument(int|string $requestId, int|string $id, string $name, string $data, array $meta = []): array
     {
@@ -136,9 +138,9 @@ class IntegrationService
      * @param  int|string  $id  Уникальный идентификатор
      * @param  string  $name  Наименование
      * @param  string  $data  Содержание
-     * @param  array  $meta  Метаданные
+     * @param  array<int|string, mixed>  $meta  Метаданные
      * @param  string  $mime  Тип файла
-     * @return array Данные документа
+     * @return array<string, mixed> Данные документа
      */
     public function addCmsDocument(int|string $requestId, int|string $id, string $name, string $data, array $meta = [], string $mime = '@file/pdf'): array
     {
@@ -169,6 +171,8 @@ class IntegrationService
 
     /**
      * Получение списка XML-документов
+     *
+     * @return array<string, mixed>
      */
     public function getXmlDocuments(string|int|null $key = null): array
     {
@@ -180,6 +184,8 @@ class IntegrationService
 
     /**
      * Получение списка CMS-документов
+     *
+     * @return array<string, mixed>
      */
     public function getCmsDocuments(string|int|null $key = null): array
     {

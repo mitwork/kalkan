@@ -10,9 +10,13 @@ class DocumentSaved
 
     public int|string $id;
 
+    /** @var array<string, mixed> */
     public array $attributes;
 
-    public function __construct($id, $attributes)
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    public function __construct(int|string $id, array $attributes)
     {
         $this->id = $id;
         $this->attributes = $attributes;
